@@ -1,6 +1,8 @@
 # Kiosk
 
-<img src="/assets/logo.png" alt="Logo" width="250" height="250">
+<div align="center">
+    <img src="/assets/logo.png" alt="Logo" width="250" height="250">
+</div>
 
 Kiosk is a small software project that is intended to be a cash register system for a vending machine. Using a Raspberry Pi, an NFC reader and a lock, any fridge or cabinet can be transformed into a small vending machine for friends and colleagues.
 
