@@ -19,7 +19,7 @@ Kiosk is a small software project that is intended to be a cash register system 
 
 Kiosk is a Python application and used [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter) as UI. I used [poetry](https://github.com/python-poetry/poetry) as dependency manager. To start the application you can simply call a `poetry install` and then a `poetry run python3 src/main`.py.
 
-Normally the logging of the application is set to `INFO`, but if something should fail at startup or during runtime, the logging can be set a little more finely in the log manager. To do this, the corresponding code must be adjusted in the [logmgr.py: Line 19](https://github.com/morzan1001/kiosk/blob/main/Projekte/Kiosk/src/logmgr/logmgr.py#L19).
+Normally the logging of the application is set to `INFO`, but if something should fail at startup or during runtime, the logging can be set a little more finely in the log manager. To do this, the corresponding code must be adjusted in the [logmgr.py: Line 19](https://github.com/morzan1001/Kiosk/blob/main/src/logmgr/logmgr.py#L19).
 
 ⚠️ **Important!**
 
@@ -80,7 +80,7 @@ I used the following components for my setup:
 
 ![3D-Model](/assets/3d_model.png)
 
-I myself use an official Raspberry Pi display. The resolution of the software is adapted to this. In the folder [3D model](https://github.com/morzan1001/kiosk/tree/main/3D%20model) you will find a model that offers space for a Pi as well as the display, an NFC reader and a 5V relay.
+I myself use an official Raspberry Pi display. The resolution of the software is adapted to this. In the folder [3D model](https://github.com/morzan1001/Kiosk/tree/main/3d_model) you will find a model that offers space for a Pi as well as the display, an NFC reader and a 5V relay.
 
 ## Contributing
 
