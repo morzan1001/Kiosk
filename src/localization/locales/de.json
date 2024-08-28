@@ -1,0 +1,74 @@
+{
+    "general": {
+        "welcome_message": "Willkommen im Saftladen",
+        "kiosk_title": "Saftladen",
+        "heads_up": "Achtung!",
+        "scan_card_message": "Bitte Scannen Sie Ihre Karte",
+        "error_message": "Hier ist ein Fehler aufgetreten",
+        "fill_all_fields": "Füllen Sie alle Felder aus, um den Artikel zu aktualisieren",
+        "valid_number_price": "Der Preis sollte eine gültige Zahl sein",
+        "upload_image": "Bild hochladen, um Artikel hinzuzufügen"
+    },
+    "buttons": {
+        "cancel_button": "Abbrechen",
+        "confirm_button": "Bestätigen",
+        "checkout_button": "Checkout ({total:.2f}€)"
+    },
+    "user": {
+        "welcome_user_message": "Willkommen {user_name}",
+        "credits_message": "Guthaben {user_credit}€",
+        "add_new_user": "Neuen Benutzer hinzufügen",
+        "user": "Benutzer",
+        "user_list": "Benutzerliste",
+        "update_nfcid": "NFC-ID aktualisieren",
+        "credit_balance": "Guthaben {user_credit:.2f}€",
+        "credits_label": "Guthaben",
+        "enter_name": "Namen eingeben",
+        "last_month_purchase": "Einkäufe im letzten Monat",
+        "checkout_unsuccessful": "Checkout nicht erfolgreich",
+        "checkout_successful": "Checkout erfolgreich",
+        "amount_debited": "Es wurden {total:.2f}€ von Ihrem Konto abgezogen",
+        "insufficient_credit_message": "Sie haben nicht genug Guthaben in Ihrem Konto",
+        "account_not_detected": "Ihr Konto wurde nicht gefunden"
+    },
+    "admin": {
+        "welcome_admin": "Willkommen im Admin-Bereich",
+        "add_new_user": "Neuen Benutzer hinzufügen",
+        "add_new_item": "Neuen Artikel hinzufügen",
+        "update_user": "Benutzer aktualisieren",
+        "admin": "Admin",
+        "admin_password_prompt": "Geben Sie das Admin-Passwort ein:",
+        "confirmation_text": "Sicher, dass Sie diesen {to_delete} löschen möchten?",
+        "exit_message": "Vollbildmodus verlassen?",
+        "error_adding_user": "Fehler beim Hinzufügen des Benutzers",
+        "error_updating_user": "Fehler beim Aktualisieren des Benutzers",
+        "missing_nfcid_name": "Sie haben keine Werte für NFC-ID oder Namen eingegeben"
+    },
+    "items": {
+        "item_quantity_message": "Wir haben insgesamt {item_quantity} von {name} auf Lager.",
+        "add_new_item": "Neuen Artikel hinzufügen",
+        "add_item": "Artikel hinzufügen",
+        "update_item": "Artikel aktualisieren",
+        "inventory_label": "Bestand",
+        "item_name": "Artikelname",
+        "items": "Artikel",
+        "item_list": "Artikelliste",
+        "drinks": "Getränke",
+        "snacks": "Snacks",
+        "add_barcode": "Barcode hinzufügen",
+        "barcode": "Barcode",
+        "update_barcode": "Barcode aktualisieren",
+        "enter_price": "Preis eingeben",
+        "error_updating_item": "Fehler beim Aktualisieren des Artikels",
+        "purchase_items": "Artikel kaufen",
+        "quantity_limit_reached": "Maximale Menge erreicht",
+        "item_not_found": "Artikel nicht gefunden",
+        "scanned_item_not_found": "Der gescannte Artikel wurde nicht gefunden"
+    },
+    "nfc": {
+        "update_nfcid": "NFC-ID aktualisieren",
+        "add_nfcid": "NFC-ID hinzufügen",
+        "invalid_card_message": "Ungültige Karte gescannt",
+        "card_already_used": "Diese Karte wurde bereits verwendet"
+    }
+}

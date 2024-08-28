@@ -1,0 +1,74 @@
+{
+    "general": {
+        "welcome_message": "Welcome to the Kiosk",
+        "kiosk_title": "Kiosk",
+        "heads_up": "Attention!",
+        "scan_card_message": "Please scan your card",
+        "error_message": "An error occurred here",
+        "fill_all_fields": "Fill in all fields to update the item",
+        "valid_number_price": "The price should be a valid number",
+        "upload_image": "Upload image to add item"
+    },
+    "buttons": {
+        "cancel_button": "Cancel",
+        "confirm_button": "Confirm",
+        "checkout_button": "Checkout ({total:.2f}€)"
+    },
+    "user": {
+        "welcome_user_message": "Welcome {user_name}",
+        "credits_message": "Credits {user_credit}€",
+        "add_new_user": "Add new user",
+        "user": "User",
+        "user_list": "User list",
+        "update_nfcid": "Update NFC-ID",
+        "credit_balance": "Balance {user_credit:.2f}€",
+        "credits_label": "Credits",
+        "enter_name": "Enter name",
+        "last_month_purchase": "Purchases in the last month",
+        "checkout_unsuccessful": "Checkout unsuccessful",
+        "checkout_successful": "Checkout successful",
+        "amount_debited": "{total:.2f}€ has been deducted from your account",
+        "insufficient_credit_message": "You do not have enough credit in your account",
+        "account_not_detected": "Your account was not found"
+    },
+    "admin": {
+        "welcome_admin": "Welcome to the admin area",
+        "add_new_user": "Add new user",
+        "add_new_item": "Add new item",
+        "update_user": "Update user",
+        "admin": "Admin",
+        "admin_password_prompt": "Enter the admin password:",
+        "confirmation_text": "Are you sure you want to delete this {to_delete}?",
+        "exit_message": "Exit fullscreen mode?",
+        "error_adding_user": "Error adding the user",
+        "error_updating_user": "Error updating the user",
+        "missing_nfcid_name": "You did not enter values for NFC-ID or name"
+    },
+    "items": {
+        "item_quantity_message": "We have a total of {item_quantity} of {name} in stock.",
+        "add_new_item": "Add new item",
+        "add_item": "Add item",
+        "update_item": "Update item",
+        "inventory_label": "Inventory",
+        "item_name": "Item name",
+        "items": "Items",
+        "item_list": "Item list",
+        "drinks": "Drinks",
+        "snacks": "Snacks",
+        "add_barcode": "Add barcode",
+        "barcode": "Barcode",
+        "update_barcode": "Update barcode",
+        "enter_price": "Enter price",
+        "error_updating_item": "Error updating the item",
+        "purchase_items": "Purchase items",
+        "quantity_limit_reached": "Quantity limit reached",
+        "item_not_found": "Item not found",
+        "scanned_item_not_found": "The scanned item was not found"
+    },
+    "nfc": {
+        "update_nfcid": "Update NFC-ID",
+        "add_nfcid": "Add NFC-ID",
+        "invalid_card_message": "Invalid card scanned",
+        "card_already_used": "This card has already been used"
+    }
+}

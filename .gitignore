@@ -1,0 +1,72 @@
+# Build directories
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+
+# Egg metadata
+*.egg-info/
+.installed.cfg
+*.egg
+
+# General ignore
+MANIFEST
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE settings
+.idea/
+.vscode/
+
+# Log files
+*.log
+
+# Archives
+*.zip
+
+# Databases
+*.db
+
+# Pipenv lock file
+Pipfile.lock
+
+# Virtual environments
+venv/
+.venv/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
+# Test outputs
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Other IDEs settings
+.project
+.classpath
+.metadata/
+
+# Backups and temporary files
+*~
+.bak
+*.swp
