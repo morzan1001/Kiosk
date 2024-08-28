@@ -1,6 +1,6 @@
 # Kiosk
 
-![Logo](/assets/logo.png)
+![Logo](/assets/logo.png png =250x250)
 
 Kiosk is a small software project that is intended to be a cash register system for a vending machine. Using a Raspberry Pi, an NFC reader and a lock, any fridge or cabinet can be transformed into a small vending machine for friends and colleagues.
 
@@ -57,7 +57,7 @@ I used the following components for my setup and my model:
 
 ### 3D-Model
 
-![3D-Model](/assets/3d-model.png)
+![3D-Model](/assets/3d_model.png)
 
 I myself use an official Raspberry Pi display. The resolution of the software is adapted to this. In the Order 3D model you will find a model that offers space for a PI as well as the display, an NFC reader and a 5V relay.
 
