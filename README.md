@@ -6,16 +6,16 @@
 
 Kiosk is a small software project that is intended to be a cash register system for a vending machine. Using a Raspberry Pi, an NFC reader and a lock, any fridge or cabinet can be transformed into a small vending machine for friends and colleagues.
 
-## Table of Contents
+## 📋 Table of Contents
 
-- [Quick Start](#quick-start)
-- [Features](#features)
-- [Service](#service)
-- [Components](#components)
-- [3D-Model](#3d-model)
-- [Contributing](#contributing)
+- [🚀 Quick Start](#quick-start)
+- [✨ Features](#features)
+- [🛠️ Service](#service)
+- [🔧 Components](#components)
+- [📐 3D-Model](#3d-model)
+- [🤝 Contributing](#contributing)
 
-## Quick Start
+## 🚀 Quick Start
 
 Kiosk is a Python application and used [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter) as UI. I used [poetry](https://github.com/python-poetry/poetry) as dependency manager. To start the application you can simply call a `poetry install` and then a `poetry run python3 src/main`.py.
 
@@ -25,7 +25,7 @@ Normally the logging of the application is set to `INFO`, but if something shoul
 
 Both the library for controlling the GPIO pins ([gpiod](https://pypi.org/project/gpiod/)) and the library for the pn532 NFC chip ([pn532lib](https://github.com/Liam-Deacon/py532lib))can only be used on a raspberry pi. so if you want to develop on another system, the corresponding parts of the software must be commented out or bypassed in some other way.
 
-## Features
+## ✨ Features
 
 The kiosk is intended to be a small application to simplify the use of a communal refrigerator or other goods cupboard for a group of people.
 
@@ -37,12 +37,12 @@ An admin can manage the stock and users and, of course, buy something themselves
 
 Here are a few ideas on how to expand the software:
 
-- Play sounds on successful or unsuccessful checkout
-- More precise evaluation of the purchasing behavior of individual persons
-- E-mail notifications for admins when product stock is low or for users when credit is low.
+- 🎵 Play sounds on successful or unsuccessful checkout
+- 📊 More precise evaluation of the purchasing behavior of individual persons
+- 📧 E-mail notifications for admins when product stock is low or for users when credit is low.
 - ...
 
-## Service
+## 🛠️ Service
 
 I use a service so that the kiosk software starts every time the Pi is started. My configuration looks like this:
 
@@ -64,7 +64,7 @@ WantedBy=graphical.target
 
 I have stored this file under `/etc/systemd/system/`. As soon as the graphical user interface of Raspberry Pi OS has finished loading, the kiosk application starts.
 
-## Components
+## 🔧 Components
 
 I used the following components for my setup:
 
@@ -76,12 +76,12 @@ I used the following components for my setup:
 - [Lock](https://www.amazon.de/dp/B07MWBHQNM?ref=ppx_yo2ov_dt_b_fed_asin_title)
 - [Barcode scanner](https://www.amazon.de/Tera-Kabelloser-Handheld-Barcode-Scanner-Akkustandsanzeige-Ergonomischem/dp/B078SQ91FB) (The barcode scanner is not absolutely necessary, if you want to use the barcode function, any USB barcode scanner will do.)
 
-### 3D-Model
+### 📐 3D-Model
 
 ![3D-Model](/assets/3d_model.png)
 
 I myself use an official Raspberry Pi display. The resolution of the software is adapted to this. In the folder [3D model](https://github.com/morzan1001/Kiosk/tree/main/3d_model) you will find a model that offers space for a Pi as well as the display, an NFC reader and a 5V relay.
 
-## Contributing
+## 🤝 Contributing
 
 Contribution are very welcome, my software is not perfect and I am happy about everyone who wants to contribute something.
