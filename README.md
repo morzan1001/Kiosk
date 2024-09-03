@@ -29,7 +29,19 @@ Both the library for controlling the GPIO pins ([gpiod](https://pypi.org/project
 
 The kiosk is intended to be a small application to simplify the use of a communal refrigerator or other goods cupboard for a group of people.
 
+<div align="center">
+    <img src="/assets/login_screen.png" alt="Login" width="250" height="250">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <img src="/assets/card_screen.png>" alt="Shopping Card" width="250" height="250"> 
+</div>
+<br/>
+
 Each user is stored with an NFC ID. You can either use your own cards or dongles or use existing access cards or similar. A user can then select products using a barcode scanner and the costs are deducted from their (internal) account.
+
+<div align="center">
+    <img src="/assets/admin_screen.png" alt="Admin" width="250" height="250">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <img src="/assets/product_screen.png>" alt="Product" width="250" height="250"> 
+</div>
+<br/>
 
 An admin can manage the stock and users and, of course, buy something themselves.
 
@@ -78,7 +90,9 @@ I used the following components for my setup:
 
 ### 📐 3D-Model
 
-![3D-Model](/assets/3d_model.png)
+<div align="center">
+    <img src="/assets/3d_model.png" alt="3D-Model" width="250" height="250">
+</div>
 
 I myself use an official Raspberry Pi display. The resolution of the software is adapted to this. In the folder [3D model](https://github.com/morzan1001/Kiosk/tree/main/3d_model) you will find a model that offers space for a Pi as well as the display, an NFC reader and a 5V relay.
 
