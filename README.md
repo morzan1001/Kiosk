@@ -11,6 +11,7 @@ Kiosk is a small software project that is intended to be a cash register system 
 - [🚀 Quick Start](#quick-start)
 - [✨ Features](#features)
 - [🛠️ Service](#service)
+- [💾 Backup](#backup)
 - [🔧 Components](#components)
 - [📐 3D-Model](#3d-model)
 - [🤝 Contributing](#contributing)
@@ -75,6 +76,43 @@ WantedBy=graphical.target
 ```
 
 I have stored this file under `/etc/systemd/system/`. As soon as the graphical user interface of Raspberry Pi OS has finished loading, the kiosk application starts.
+
+## 💾 Backup
+
+As i have already painfully discovered, it makes sense to back up the database. If you decide to use a Postgres, MariaDB or other SQL database, I recommend using the respective program such as `pg_dump`. 
+
+In my case I use a SQLite database. This is simply backed up via a cronjob. The script for this looks like this:
+
+```bash
+#!/bin/bash
+
+# Path to the SQLite database file
+DB_FILE="/home/<user>/Kiosk/src/database/kiosk.db"
+BACKUP_DIR="/home/<user>/DB-Backup/"
+
+# Create the backup directory if it doesn't exist
+mkdir -p ${BACKUP_DIR}
+
+# Set the filename for the backup
+BACKUP_FILE="${BACKUP_DIR}/database_$(date +\%Y-\%m-\%d).db"
+
+# Copy the database file
+cp ${DB_FILE} ${BACKUP_FILE}
+```
+
+I call this script via cronjob once a day. Another script then takes care of deleting old backups. This script runs about an hour after the first one and looks like this: 
+
+```bash
+#!/bin/bash
+
+# Backup directory
+BACKUP_DIR="/home/morzan1001/DB-Backup/"
+
+# Find and delete backups older than 30 days
+find ${BACKUP_DIR} -type f -name "*.db" -mtime +30 -exec rm {} \;
+```
+
+This ensures that I always have backups of the last 30 days and can simply restore them if the worst comes to the worst. 
 
 ## 🔧 Components
 
