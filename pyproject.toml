@@ -12,6 +12,7 @@ customtkinter = "^5.2.2"
 sqlalchemy = "^2.0.4"
 py532lib = { git = "https://github.com/Liam-Deacon/py532lib.git" }
 gpiod = "1.5.4"
+pillow = "^10.4.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
