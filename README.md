@@ -106,7 +106,7 @@ I call this script via cronjob once a day. Another script then takes care of del
 #!/bin/bash
 
 # Backup directory
-BACKUP_DIR="/home/morzan1001/DB-Backup/"
+BACKUP_DIR="/home/<user>/DB-Backup/"
 
 # Find and delete backups older than 30 days
 find ${BACKUP_DIR} -type f -name "*.db" -mtime +30 -exec rm {} \;
