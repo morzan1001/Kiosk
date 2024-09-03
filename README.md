@@ -29,19 +29,15 @@ Both the library for controlling the GPIO pins ([gpiod](https://pypi.org/project
 
 The kiosk is intended to be a small application to simplify the use of a communal refrigerator or other goods cupboard for a group of people.
 
-<div align="center">
-    <img src="/assets/login_screen.png" alt="Login" height="250">
-    <img src="/assets/card_screen.png>" alt="Shopping Card" height="250"> 
-</div>
-<br/>
+Login Screen |  Shopping Card
+:-------------------------:|:-------------------------:
+<img src="/assets/login_screen.png" alt="Login" height="250"> | <img src="/assets/card_screen.png>" alt="Shopping Card" height="250"> 
 
 Each user is stored with an NFC ID. You can either use your own cards or dongles or use existing access cards or similar. A user can then select products using a barcode scanner and the costs are deducted from their (internal) account.
 
-<div align="center">
-    <img src="/assets/admin_screen.png" alt="Admin" height="250">
-    <img src="/assets/product_screen.png>" alt="Product" height="250"> 
-</div>
-<br/>
+Admin Screen | Product Screen
+:-------------------------:|:-------------------------:
+<img src="/assets/admin_screen.png" alt="Admin" height="250"> | <img src="/assets/product_screen.png>" alt="Product" height="250"> height="250"> 
 
 An admin can manage the stock and users and, of course, buy something themselves.
 
