@@ -91,7 +91,7 @@ I used the following components for my setup:
 ### 📐 3D-Model
 
 <div align="center">
-    <img src="/assets/3d_model.png" alt="3D-Model" width="250" height="250">
+    <img src="/assets/3d_model.png" alt="3D-Model" height="250">
 </div>
 
 I myself use an official Raspberry Pi display. The resolution of the software is adapted to this. In the folder [3D model](https://github.com/morzan1001/Kiosk/tree/main/3d_model) you will find a model that offers space for a Pi as well as the display, an NFC reader and a 5V relay.
