@@ -8,13 +8,13 @@ Kiosk is a small software project that is intended to be a cash register system 
 
 ## 📋 Table of Contents
 
-- [🚀 Quick Start](#quick-start)
-- [✨ Features](#features)
-- [🛠️ Service](#service)
-- [💾 Backup](#backup)
-- [🔧 Components](#components)
-- [📐 3D-Model](#3d-model)
-- [🤝 Contributing](#contributing)
+- [🚀 Quick Start](#-quick-start)
+- [✨ Features](#-features)
+- [🛠️ Service](#-service)
+- [💾 Backup](#-backup)
+- [🔧 Components](#-components)
+- [📐 3D-Model](#-3d-model)
+- [🤝 Contributing](#-contributing)
 
 ## 🚀 Quick Start
 
