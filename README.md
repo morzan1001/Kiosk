@@ -13,7 +13,6 @@ Kiosk is a small software project that is intended to be a cash register system 
 - [🛠️ Service](#service)
 - [💾 Backup](#backup)
 - [🔧 Components](#components)
-- [📐 3D-Model](#3d-model)
 - [🤝 Contributing](#contributing)
 
 ## 🚀 Quick Start
@@ -132,7 +131,6 @@ I used the following components for my setup:
 - [Barcode scanner](https://www.amazon.de/Tera-Kabelloser-Handheld-Barcode-Scanner-Akkustandsanzeige-Ergonomischem/dp/B078SQ91FB) (The barcode scanner is not absolutely necessary, if you want to use the barcode function, any USB barcode scanner will do.)
 
 ### 📐 3D-Model
-<a name="3d-model"></a>
 
 <div align="center">
     <img src="/assets/3d_model.png" alt="3D-Model" height="250">
