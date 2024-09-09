@@ -3,7 +3,7 @@ from src.lock import GPIOController
 
 gpio_controller = None
 
-def initialize_gpio(chip="/dev/gpiochip4", line_number=4):
+def initialize_gpio(chip="/dev/gpiochip0", line_number=4):
     global gpio_controller
     try:
         logger.debug(f"Initializing GPIOController with chip {chip} and line {line_number}")

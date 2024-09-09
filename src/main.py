@@ -45,7 +45,7 @@ def main():
 
         # Initialize GPIO
         logger.debug("Initializing GPIO")
-        initialize_gpio(chip="/dev/gpiochip4", line_number=4)
+        initialize_gpio(chip="/dev/gpiochip0", line_number=4)
         logger.info("GPIO initialized")
 
         # Initialize window
