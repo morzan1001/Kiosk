@@ -24,7 +24,7 @@ Normally the logging of the application is set to `INFO`, but if something shoul
 
 ⚠️ **Important!**
 
-Both the library for controlling the GPIO pins ([gpiod](https://pypi.org/project/gpiod/)) and the library for the pn532 NFC chip ([pn532lib](https://github.com/Liam-Deacon/py532lib))can only be used on a raspberry pi. so if you want to develop on another system, the corresponding parts of the software must be commented out or bypassed in some other way.
+Both the library for controlling the GPIO pins ([gpiod](https://pypi.org/project/gpiod/)) and the library for the pn532 NFC chip ([pn532lib](https://github.com/Liam-Deacon/py532lib)) can only be used on a raspberry pi. so if you want to develop on another system, the corresponding parts of the software must be commented out or bypassed in some other way.
 
 ## ✨ Features
 <a name="features"></a>
