@@ -12,22 +12,22 @@
     "buttons": {
         "cancel_button": "Abbrechen",
         "confirm_button": "Bestätigen",
-        "checkout_button": "Checkout ({total:.2f}€)"
+        "checkout_button": "Checkout ({total:.2f} €)"
     },
     "user": {
         "welcome_user_message": "Willkommen {user_name}",
-        "credits_message": "Guthaben {user_credit}€",
+        "credits_message": "Guthaben {user_credit:.2f} €",
         "add_new_user": "Neuen Benutzer hinzufügen",
         "user": "Benutzer",
         "user_list": "Benutzerliste",
         "update_nfcid": "NFC-ID aktualisieren",
-        "credit_balance": "Guthaben {user_credit:.2f}€",
+        "credit_balance": "Guthaben {user_credit:.2f} €",
         "credits_label": "Guthaben",
         "enter_name": "Namen eingeben",
         "last_month_purchase": "Einkäufe im letzten Monat",
         "checkout_unsuccessful": "Checkout nicht erfolgreich",
         "checkout_successful": "Checkout erfolgreich",
-        "amount_debited": "Es wurden {total:.2f}€ von Ihrem Konto abgezogen",
+        "amount_debited": "Es wurden {total:.2f} € von Ihrem Konto abgezogen",
         "insufficient_credit_message": "Sie haben nicht genug Guthaben in Ihrem Konto",
         "account_not_detected": "Ihr Konto wurde nicht gefunden"
     },

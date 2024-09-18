@@ -12,16 +12,16 @@
     "buttons": {
         "cancel_button": "Cancel",
         "confirm_button": "Confirm",
-        "checkout_button": "Checkout ({total:.2f}€)"
+        "checkout_button": "Checkout ({total:.2f} €)"
     },
     "user": {
         "welcome_user_message": "Welcome {user_name}",
-        "credits_message": "Credits {user_credit}€",
+        "credits_message": "Credits {user_credit:.2f} €",
         "add_new_user": "Add new user",
         "user": "User",
         "user_list": "User list",
         "update_nfcid": "Update NFC-ID",
-        "credit_balance": "Balance {user_credit:.2f}€",
+        "credit_balance": "Balance {user_credit:.2f} €",
         "credits_label": "Credits",
         "enter_name": "Enter name",
         "last_month_purchase": "Purchases in the last month",
