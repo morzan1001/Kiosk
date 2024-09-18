@@ -18,13 +18,13 @@ Kiosk is a small software project that is intended to be a cash register system 
 ## 🚀 Quick Start
 <a name="quick-start"></a>
 
-Kiosk is a Python application and used [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter) as UI. I used [poetry](https://github.com/python-poetry/poetry) as dependency manager. To start the application you can simply call a `poetry install` and then a `poetry run python3 src/main`.py.
+Kiosk is a Python application and uses [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter) as UI. I used [poetry](https://github.com/python-poetry/poetry) as a dependency manager. To start the application you can simply run `poetry install` and then `poetry run python3 src/main.py`.
 
 Normally the logging of the application is set to `INFO`, but if something should fail at startup or during runtime, the logging can be set a little more finely in the log manager. To do this, the corresponding code must be adjusted in the [logmgr.py: Line 19](https://github.com/morzan1001/Kiosk/blob/main/src/logmgr/logmgr.py#L19).
 
 ⚠️ **Important!**
 
-Both the library for controlling the GPIO pins ([gpiod](https://pypi.org/project/gpiod/)) and the library for the pn532 NFC chip ([pn532lib](https://github.com/Liam-Deacon/py532lib)) can only be used on a raspberry pi. so if you want to develop on another system, the corresponding parts of the software must be commented out or bypassed in some other way.
+Both the library for controlling the GPIO pins ([gpiod](https://pypi.org/project/gpiod/)) and the library for the pn532 NFC chip ([pn532lib](https://github.com/Liam-Deacon/py532lib)) can only be used on a raspberry pi. If you want to develop on another system, the corresponding parts of the software must be commented out or bypassed in some other way.
 
 ## ✨ Features
 <a name="features"></a>
