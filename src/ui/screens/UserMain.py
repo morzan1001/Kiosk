@@ -10,6 +10,7 @@ from src.ui.components.QuantityFrame import QuantityFrame
 from src.database import get_db, User, Item
 from src.database.models.transaction import Transaction
 from src.lock.gpio_manager import get_gpio_controller
+from src.sounds.sound_manager import sound_controller
 
 class UserMainPage(CTkFrame):
     def __init__(
@@ -243,6 +244,11 @@ class UserMainPage(CTkFrame):
             item_id, _, name, _, item_quantity, _ = item
 
             if requested_quantity > item_quantity:
+                # Play negative sound when an item is not available in sufficient quantity
+                if sound_controller:  # Check if the sound_controller is initialized
+                    logger.debug("Playing negative sound due to insufficient product quantity")
+                    sound_controller.play_sound('negative')
+
                 self.message = ShowMessage(
                     self.root,
                     image="unsuccessful",
@@ -255,6 +261,11 @@ class UserMainPage(CTkFrame):
         if self.total_price == 0:
             return
         elif self.total_price > float(self.user_credit):
+            # Play negative sound when the user does not have enough credit
+            if sound_controller:  # Check if the sound_controller is initialized
+                logger.debug("Playing negative sound due to insufficient credit")
+                sound_controller.play_sound('negative')
+                
             self.message = ShowMessage(
                 self.root,
                 image="unsuccessful",
@@ -303,6 +314,10 @@ class UserMainPage(CTkFrame):
             self.user_credit = self.user_credit - self.total_price
             self.credits_label.configure(text=self.translations["user"]["credits_message"].format(user_credit=self.user_credit))
             self.items = Item.read_all(self.session)
+
+            if sound_controller:  # Make sure sound_controller is initialized
+                logger.debug("Playing positive sound on successful logout")
+                sound_controller.play_sound('positive')
             self.root.after(5000, self.logout)
 
 
