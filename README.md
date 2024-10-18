@@ -53,7 +53,7 @@ Here are a few ideas on how to expand the software:
 
 - 🎵 Play sounds on successful or unsuccessful checkout
 - 📊 More precise evaluation of the purchasing behavior of individual persons
-- 📧 E-mail notifications for admins when product stock is low or for users when credit is low.
+- 📧 E-mail notifications for admins when product stock is low or for users when credit is low. (✅)
 - ...
 
 ## 🛠️ Service

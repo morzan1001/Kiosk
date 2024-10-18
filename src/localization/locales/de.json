@@ -74,6 +74,7 @@
     "email": {
         "low_balance_subject": "Kontostand niedrig",
         "monthly_summary_subject": "Monatliche Kaufübersicht",
+        "low_stock_subject": "Produktbestand niedrig",
         "footer": "Saftladen - https://github.com/morzan1001/Kiosk",
         "do_not_respond": "Bitte antworten Sie nicht auf diese E-Mail. Das Postfach wird nicht überwacht."
     }

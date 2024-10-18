@@ -296,6 +296,9 @@ class UserMainPage(CTkFrame):
                         category=category
                     )
                     new_transaction.create(self.session)
+                    
+            # Check product stock and notify admins after checkout
+            self.check_product_stock_and_notify()
 
             # Update the user's credit   
             credit = float(self.user_credit) - self.total_price
@@ -336,6 +339,21 @@ class UserMainPage(CTkFrame):
         else:
             # Append the scanned character to the barcode string
             self.barcode += event.char
+
+    def check_product_stock_and_notify(self):
+        critical_stock_level = 2  # Define threshold
+
+        for item in self.items:
+            if item.available_quantity < critical_stock_level:  # Assuming available_quantity is part of item
+                admins = User.get_admins_email(self.session)
+                for admin in admins:
+                    if admin.email:
+                        email_controller.notify_low_stock(
+                            recipient_email=admin.email,
+                            product_name=item.name,  # Assuming item has a name attribute
+                            available_quantity=item.available_quantity,
+                            language=get_system_language()
+                        )
 
     def process_barcode(self, barcode_value):
         # Function to handle the barcode value

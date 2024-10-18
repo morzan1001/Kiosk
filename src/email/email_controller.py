@@ -4,7 +4,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
 from datetime import datetime
 from src.logmgr import logger
-from src.localization.translator import get_translations  # Import translations
+from src.localization.translator import get_translations
 import os
 
 class EmailController:
@@ -67,14 +67,20 @@ class EmailController:
             logger.error(f"Failed to load template {template_name}: {e}")
             return ""
 
-    def notify_low_balance(self, recipient_email, balance, language='de'):
+    def notify_low_balance(self, recipient_email, balance, language='en'):
         translated_subject = self.translations["email"]["low_balance_subject"]
         template_file = f"low_balance_{language}.html"
         body = self.load_template(template_file, {"balance": balance})
         self.send_email(recipient_email, translated_subject, body, is_html=True)
 
-    def send_monthly_summary(self, recipient_email, summary, language='de'):
+    def send_monthly_summary(self, recipient_email, summary, language='en'):
         translated_subject = self.translations["email"]["monthly_summary_subject"]
         template_file = f"monthly_summary_{language}.html"
         body = self.load_template(template_file, {"summary": summary})
+        self.send_email(recipient_email, translated_subject, body, is_html=True)
+
+    def notify_low_stock(self, recipient_email, product_name, available_quantity, language='en'):
+        translated_subject = self.translations["email"]["low_stock_subject"]
+        template_file = f"product_low_stock_{language}.html"
+        body = self.load_template(template_file, {"product_name": product_name, "available_quantity": available_quantity})
         self.send_email(recipient_email, translated_subject, body, is_html=True)

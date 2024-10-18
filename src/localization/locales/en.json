@@ -74,6 +74,7 @@
     "email": {
         "low_balance_subject": "Low balance",
         "monthly_summary_subject": "Monthly summary",
+        "low_stock_subject": "Low Stock Alert",
         "footer": "Saftladen - https://github.com/morzan1001/Kiosk",
         "do_not_respond": "Please do not respond to this email. The mailbox will not be monitored."
     }
