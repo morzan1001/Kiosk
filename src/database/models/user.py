@@ -55,3 +55,7 @@ class User(Base):
     @classmethod
     def get_count(cls, session):
         return session.query(cls).count()
+    
+    @classmethod
+    def get_admins(cls, session):
+        return session.query(cls).filter_by(user_type='Admin').all()
