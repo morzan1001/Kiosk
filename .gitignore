@@ -71,6 +71,5 @@ Thumbs.db
 .bak
 *.swp
 
-config.json
-sounds/negative/*
-sounds/positive/*
+src/sounds/negative/*
+src/sounds/positive/*
