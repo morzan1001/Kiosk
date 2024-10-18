@@ -10,6 +10,8 @@ from src.ui.components.QuantityFrame import QuantityFrame
 from src.database import get_db, User, Item
 from src.database.models.transaction import Transaction
 from src.lock.gpio_manager import get_gpio_controller
+from src.email.email_manager import email_controller
+from src.localization.translator import get_system_language
 
 class UserMainPage(CTkFrame):
     def __init__(
@@ -62,6 +64,14 @@ class UserMainPage(CTkFrame):
 
         self.quantities = []  # Store quantities of items
 
+
+        """
+        This part of the code is commented out, as a specific decision can be made here. 
+        On the one hand, all products can be displayed and selected. If you wish to do this, 
+        the code should be commented in. However, if you only want the products that are 
+        actually scanned to be displayed in the shopping cart, the code should be commented out. 
+        the first is practical, for example, if you do not want to use a barcode scanner. 
+        """
         # Add frames for items
         #for indx, item in enumerate(self.items):
         #    sub_frame = CTkFrame(
@@ -292,6 +302,14 @@ class UserMainPage(CTkFrame):
             user_instance = User.get_by_id(self.session, self.user_id)
             if user_instance:
                 user_instance.update(self.session, credit=credit)
+
+                # Send email if the balance is below 3€
+                if credit < 3.0 and user_instance.email:
+                    email_controller.notify_low_balance(
+                        recipient_email=user_instance.email,
+                        balance=credit,
+                        language=get_system_language()
+                    )
 
             # Show success message
             self.message = ShowMessage(

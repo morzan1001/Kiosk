@@ -11,25 +11,28 @@ class User(Base):
     name = Column(String, nullable=False)
     user_type = Column(String, nullable=False)
     credit = Column(Float, nullable=False)
+    email = Column(String, nullable=True)
 
     def __repr__(self):
         return (
-            f"<User(id={self.nfcid}, name='{self.name}', credit={self.credit})>"
+            f"<User(id={self.nfcid}, name='{self.name}', credit={self.credit}, email='{self.email}')>"
         )
 
     def create(self, session):
         session.add(self)
         session.commit()
 
-    def update(self, session, nfcid=None, user_type=None, name=None, credit=None):
+    def update(self, session, nfcid=None, user_type=None, name=None, credit=None, email=None):
         if nfcid:
             self.nfcid = nfcid
         if user_type:
             self.user_type = user_type
         if name:
             self.name = name
-        if credit:
+        if credit is not None:
             self.credit = credit
+        if email is not None:
+            self.email = email
         session.commit()
 
     def delete(self, session):
@@ -39,7 +42,7 @@ class User(Base):
     @classmethod
     def read_all(cls, session):
         users = session.query(cls).all()
-        return [(user.id, user.name, user.credit) for user in users]
+        return [(user.id, user.name, user.credit, user.email) for user in users]
 
     @classmethod
     def get_by_id(cls, session, user_id):
@@ -52,4 +55,3 @@ class User(Base):
     @classmethod
     def get_count(cls, session):
         return session.query(cls).count()
-    
