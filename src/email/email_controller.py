@@ -5,6 +5,17 @@ from email.mime.image import MIMEImage
 from datetime import datetime
 from src.logmgr import logger
 from src.localization.translator import get_translations
+from jinja2 import Environment, FileSystemLoader
+import os
+
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.image import MIMEImage
+from datetime import datetime
+from src.logmgr import logger
+from src.localization.translator import get_translations
+from jinja2 import Environment, FileSystemLoader
 import os
 
 class EmailController:
@@ -19,23 +30,28 @@ class EmailController:
         self.translations = get_translations()
         logger.debug("Translations loaded")
 
+        # Set up Jinja2 environment
+        template_dir = os.path.join(os.path.dirname(__file__), 'templates')
+        self.jinja_env = Environment(loader=FileSystemLoader(template_dir))
+        logger.debug("Jinja2 environment set up")
+
     def send_email(self, recipient_email, subject, body, is_html=False):
         # Sends an email with the provided subject and body to the recipient_email
         try:
             logger.debug(f"Preparing to send email to {recipient_email} with subject '{subject}'")
-            msg = MIMEMultipart()
+            msg = MIMEMultipart('related')
             msg['From'] = self.login
             msg['To'] = recipient_email
             msg['Subject'] = subject
 
-            # Attach the body text, which can be plain or HTML
-            body_part = MIMEText(body, 'html' if is_html else 'plain')
+            # Attach the body text, which should be HTML in this case
+            body_part = MIMEText(body, 'html', 'utf-8')
             msg.attach(body_part)
             logger.debug("Email body attached")
 
             # Add logo as inline image in the email
             logger.debug("Adding logo as inline image")
-            logo_path = os.path.join(os.path.dirname(__file__), '../../assets/logo.png')
+            logo_path = os.path.join(os.path.dirname(__file__), '../images/logo.png')
             with open(logo_path, 'rb') as img_file:
                 img_data = img_file.read()
             image = MIMEImage(img_data, name='logo.png')
@@ -55,30 +71,19 @@ class EmailController:
             logger.error(f"Failed to send email: {e}")
 
     def load_template(self, template_name, context):
-        # Loads an email template, fills it with the provided context, and returns the full email body
+        # Loads an email template using Jinja2, fills it with the provided context, and returns the rendered email body
         try:
             logger.debug(f"Loading email template '{template_name}'")
-            template_path = os.path.join(os.path.dirname(__file__), 'templates', template_name)
-            with open(template_path, 'r', encoding='utf-8') as file:
-                content_template = file.read()
+            # Prepare additional context
+            context.update({
+                'do_not_respond': self.translations["email"]["do_not_respond"],
+                'footer': f"{self.translations["email"]["footer"] - {datetime.now().strftime('%d.%m.%Y')}}",
+            })
 
-            base_template_path = os.path.join(os.path.dirname(__file__), 'templates', 'base.html')
-            with open(base_template_path, 'r', encoding='utf-8') as base_file:
-                base_template = base_file.read()
-
-            logger.debug("Email template and base template loaded")
-            
-            # Prepare the footer with translation and current date
-            footer_text = self.translations["email"]["footer"]
-            current_date = datetime.now().strftime("%d.%m.%Y")
-            footer_with_date = f"{footer_text} - {current_date}"
-            logger.debug(f"Footer prepared with current date: {footer_with_date}")
-
-            do_not_respond = self.translations["email"]["do_not_respond"]
-
-            content = content_template.format(**context)
-            full_body = base_template.replace("{{ content }}", content).replace("{{ do_not_respond }}", do_not_respond).replace("{{ footer }}", footer_with_date)
-            logger.debug("Full email body constructed")
+            # Load and render the template
+            template = self.jinja_env.get_template(template_name)
+            full_body = template.render(context)
+            logger.debug("Email body rendered using Jinja2")
             return full_body
         except Exception as e:
             logger.error(f"Failed to load template {template_name}: {e}")

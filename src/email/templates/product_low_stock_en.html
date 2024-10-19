@@ -1,1 +1,9 @@
+<!-- product_low_stock_en.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Low Stock Alert</h1>
 <p>The product <strong>{{ product_name }}</strong> is running low on stock: <strong>{{ available_quantity }}</strong> units left.</p>
+<p>Please replenish the stock soon.</p>
+{% endblock %}

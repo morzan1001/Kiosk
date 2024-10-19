@@ -1,13 +1,46 @@
+<!-- base.html -->
+
+<!DOCTYPE html>
 <html>
-<body style="background-color: #acd090; text-align: center; padding: 20px;">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* Add any base styles here */
+        body {
+            background-color: #acd090;
+            text-align: center;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .email-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            display: inline-block;
+            max-width: 600px;
+            width: 100%;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #555;
+        }
+        .do-not-respond {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
     <img src="cid:logo" alt="Logo" style="width: 150px; height: auto; margin-bottom: 20px;" />
-    <div style="background-color: white; padding: 20px; border-radius: 8px; display: inline-block;">
-        {{ content }}
+    <div class="email-container">
+        {% block content %}{% endblock %}
     </div>
-    <div style="margin-top: 20px; font-size: 20px; color: #888;">
-        {{ do_not_responde }}
+    <div class="do-not-respond">
+        {{ do_not_respond }}
     </div>
-    <div style="margin-top: 20px; font-size: 12px; color: #555;">
+    <div class="footer">
         {{ footer }}
     </div>
 </body>

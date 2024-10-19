@@ -73,3 +73,7 @@ Thumbs.db
 
 # Config file
 config.json
+
+# Sounds
+src/sounds/negative/*
+src/sounds/positive/*

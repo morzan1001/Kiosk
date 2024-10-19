@@ -1,1 +1,9 @@
+<!-- low_balance_de.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Ihr Kontostand ist niedrig</h1>
 <p>Ihr Kontostand ist unter 3€ gefallen und beträgt aktuell <strong>{{ balance }}€</strong>.</p>
+<p>Bitte laden Sie Ihr Konto bald wieder auf, um weiterhin einkaufen zu können.</p>
+{% endblock %}
