@@ -321,7 +321,6 @@ class UserMainPage(CTkFrame):
                 self.sound_controller.play_sound('positive')
             self.root.after(5000, self.logout)
 
-
     def on_barcode_scan(self, event):
         # Check if Enter key is pressed, which typically signals the end of a barcode scan
         if event.keysym == "Return":
