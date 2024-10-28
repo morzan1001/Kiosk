@@ -70,3 +70,6 @@ Thumbs.db
 *~
 .bak
 *.swp
+
+src/sounds/negative/*
+src/sounds/positive/*

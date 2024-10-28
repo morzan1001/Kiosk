@@ -16,7 +16,7 @@ class LogMgr:
     def __init__(self):
         """Class constructor"""
         self.logger = logging.getLogger("Kiosk")
-        self.logger.setLevel(logging.INFO)
+        self.logger.setLevel(logging.DEBUG)
         self.logger.propagate = False
 
         if not self.logger.handlers:

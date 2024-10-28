@@ -8,6 +8,7 @@ from src.database import get_db, User, Item
 from src.lock.gpio_manager import get_gpio_controller
 from src.nfc_reader import NFC_READER
 from logmgr import logger
+from src.sounds.sound_manager import sound_controller
 
 class KioskMainFrame(CTkFrame):
     def __init__(self, parent, *args, **kwargs):
@@ -110,6 +111,10 @@ class KioskMainFrame(CTkFrame):
             heading=self.translations["user"]["account_not_detected"],
             text=self.translations["nfc"]["invalid_card_message"],
         )
+        # Play negative sound when the user does not have valid ID
+        if sound_controller:  # Check if the sound_controller is initialized
+            logger.debug("Playing negative sound due to no valid ID")
+            sound_controller.play_sound('negative')
         self.parent.after(5000, self.message.destroy)
 
     def login(self, current_id):
@@ -119,7 +124,7 @@ class KioskMainFrame(CTkFrame):
             if user:
                 self.handle_user_type(user)
             else:
-                 # Show warning message, "USER Not Found"
+                # Show warning message, "USER Not Found"
                 self.showUserNotFoundScreen()
                 logger.error("No user with this ID found")
 
