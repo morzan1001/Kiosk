@@ -9,10 +9,10 @@ packages = [{include = "src"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 customtkinter = "^5.2.2"
-sqlalchemy = "^2.0.35"
+sqlalchemy = "^2.0.36"
 py532lib = { git = "https://github.com/Liam-Deacon/py532lib.git" }
 gpiod = "^2.2.1"
-pillow = "^10.4.0"
+pillow = "^11.0.0"
 sounddevice = "^0.5.1"
 soundfile = "^0.12.1"
 numpy = "^2.1.2"
