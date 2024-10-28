@@ -10,7 +10,7 @@ from src.ui.components.QuantityFrame import QuantityFrame
 from src.database import get_db, User, Item
 from src.database.models.transaction import Transaction
 from src.lock.gpio_manager import get_gpio_controller
-from src.sounds.sound_manager import sound_controller
+from src.sounds.sound_manager import get_sound_controller
 
 class UserMainPage(CTkFrame):
     def __init__(
@@ -31,6 +31,7 @@ class UserMainPage(CTkFrame):
         self.grid(row=0, column=0, sticky="nsew")
 
         self.gpio_controller = get_gpio_controller()
+        self.sound_controller = get_sound_controller()
 
         self.configure(width=800, height=480, fg_color="transparent")
 
@@ -245,9 +246,9 @@ class UserMainPage(CTkFrame):
 
             if requested_quantity > item_quantity:
                 # Play negative sound when an item is not available in sufficient quantity
-                if sound_controller:  # Check if the sound_controller is initialized
+                if self.sound_controller:  # Check if the sound_controller is initialized
                     logger.debug("Playing negative sound due to insufficient product quantity")
-                    sound_controller.play_sound('negative')
+                    self.sound_controller.play_sound('negative')
 
                 self.message = ShowMessage(
                     self.root,
@@ -262,9 +263,9 @@ class UserMainPage(CTkFrame):
             return
         elif self.total_price > float(self.user_credit):
             # Play negative sound when the user does not have enough credit
-            if sound_controller:  # Check if the sound_controller is initialized
+            if self.sound_controller:  # Check if the sound_controller is initialized
                 logger.debug("Playing negative sound due to insufficient credit")
-                sound_controller.play_sound('negative')
+                self.sound_controller.play_sound('negative')
                 
             self.message = ShowMessage(
                 self.root,
@@ -315,9 +316,9 @@ class UserMainPage(CTkFrame):
             self.credits_label.configure(text=self.translations["user"]["credits_message"].format(user_credit=self.user_credit))
             self.items = Item.read_all(self.session)
 
-            if sound_controller:  # Make sure sound_controller is initialized
+            if self.sound_controller:  # Make sure sound_controller is initialized
                 logger.debug("Playing positive sound on successful logout")
-                sound_controller.play_sound('positive')
+                self.sound_controller.play_sound('positive')
             self.root.after(5000, self.logout)
 
 
