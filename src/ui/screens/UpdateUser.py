@@ -227,7 +227,7 @@ class UpdateUserFrame(CTkFrame):
 
         filtered_transactions = []
         for transaction in transactions:
-            date_transaction = datetime.strptime(transaction[1], "%Y-%m-%d")
+            date_transaction = transaction[1]  # Assuming transaction[1] is already a datetime object
             if start_date <= date_transaction <= current_date:
                 filtered_transactions.append(transaction)
 
