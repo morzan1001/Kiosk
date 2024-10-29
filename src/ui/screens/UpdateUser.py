@@ -161,7 +161,7 @@ class UpdateUserFrame(CTkFrame):
             logger.debug("Calculated category percentages: %s", category_percentages)
 
             # Further reduced pie chart size and adjusted to display percentages correctly
-            pie_chart = CTkPieChart(self.graph_frame, line_width=15, size=100)  # Adjust size as needed
+            pie_chart = CTkPieChart(self.graph_frame, line_width=15, size=80)  # Adjust size as needed
             pie_chart.pack(side="left", padx=(5, 5), pady=(5, 5))
 
             for i, (category, percentage) in enumerate(category_percentages.items()):
