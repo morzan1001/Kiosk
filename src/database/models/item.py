@@ -44,11 +44,7 @@ class Item(Base):
 
     @classmethod
     def read_all(cls, session):
-        items = session.query(cls).all()
-        return [
-            (item.id, item.image, item.name, float(item.price), item.quantity, item.category)
-            for item in items
-        ]
+        return session.query(cls).all()
     
     @classmethod
     def get_by_id(cls, session, item_id):
@@ -61,7 +57,4 @@ class Item(Base):
 
     @classmethod
     def get_by_barcode(cls, session, barcode):
-        item = session.query(cls).filter_by(barcode=barcode).first()
-        if item:
-            return (item.id, item.image, item.name, float(item.price), item.quantity, item.category)
-        return None  # Return None if no item is found with the given barcode
+        return session.query(cls).filter_by(barcode=barcode).first()

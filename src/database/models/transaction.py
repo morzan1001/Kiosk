@@ -10,7 +10,7 @@ class Transaction(Base):
     __tablename__ = "transactions"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     item_id = Column(Integer, ForeignKey('items.id'), nullable=False)
     date = Column(DateTime, nullable=False)
     cost = Column(String, nullable=False)

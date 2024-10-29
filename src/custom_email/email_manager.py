@@ -1,4 +1,4 @@
-from src.email.email_controller import EmailController
+from src.custom_email.email_controller import EmailController
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from src.logmgr import logger
@@ -20,6 +20,12 @@ def initialize_email_controller(server: str, port: int, login: str, password: st
         password=password
     )
     initialize_scheduler()
+
+def get_email_controller():
+    global email_controller
+    if email_controller is None:
+        logger.error("Email-Controller is not initialized")
+    return email_controller
 
 def initialize_scheduler():
     """Initialize the APScheduler to run monthly summaries."""
@@ -92,8 +98,11 @@ def get_monthly_summary(user, session):
     return summary
 
 def shutdown_scheduler():
-    """Shutdown the scheduler."""
-    global scheduler
+    """Shutdown the scheduler and email controller."""
+    global scheduler, email_controller
     if scheduler:
         scheduler.shutdown()
         logger.info("Scheduler shut down")
+    if email_controller:
+        email_controller.stop()
+        logger.info("EmailController thread stopped")

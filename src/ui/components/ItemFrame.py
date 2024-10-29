@@ -3,11 +3,13 @@ from PIL import Image, ImageTk
 from io import BytesIO
 
 class ItemFrame(CTkFrame):
-    def __init__(self, master, data,*args, **kwargs):
+    def __init__(self, master, data, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
 
-        # Extract data
-        item_id, item_image, item_name, item_price, _, _ = data
+        # Access item attributes directly
+        item_image = data.image
+        item_name = data.name
+        item_price = data.price
 
         if item_image:
             # Create a BytesIO object from the image data
@@ -21,7 +23,6 @@ class ItemFrame(CTkFrame):
             image_label = CTkLabel(self, image=photo, text="")
             image_label.image = photo
             image_label.grid(row=0, column=0, rowspan=2, padx=10, pady=10)
-
         else:
             image_label = CTkLabel(self, text="")
             image_label.grid(row=0, column=0, rowspan=2, padx=10, pady=10)

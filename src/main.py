@@ -13,7 +13,7 @@ from src.ui.screens.WelcomePage import *
 from src.lock import initialize_gpio, cleanup_gpio
 from src.logmgr import logger
 from src.database.connection import session_manager
-from src.email.email_manager import initialize_email_controller, shutdown_scheduler
+from src.custom_email.email_manager import initialize_email_controller, shutdown_scheduler
 
 def load_config():
     config_path = os.path.join(os.path.dirname(__file__), "../config.json")

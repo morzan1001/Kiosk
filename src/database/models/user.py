@@ -9,7 +9,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     nfcid = Column(String, nullable=False)
     name = Column(String, nullable=False)
-    user_type = Column(String, nullable=False)
+    type = Column(String, nullable=False)
     credit = Column(Float, nullable=False)
     email = Column(String, nullable=True)
 
@@ -22,11 +22,11 @@ class User(Base):
         session.add(self)
         session.commit()
 
-    def update(self, session, nfcid=None, user_type=None, name=None, credit=None, email=None):
+    def update(self, session, nfcid=None, type=None, name=None, credit=None, email=None):
         if nfcid:
             self.nfcid = nfcid
-        if user_type:
-            self.user_type = user_type
+        if type:
+            self.type = type
         if name:
             self.name = name
         if credit is not None:
@@ -58,4 +58,4 @@ class User(Base):
     
     @classmethod
     def get_admins(cls, session):
-        return session.query(cls).filter_by(user_type='Admin').all()
+        return session.query(cls).filter_by(type='Admin').all()
