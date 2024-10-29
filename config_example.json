@@ -1,0 +1,18 @@
+{
+    "email": {
+        "smtp_server": "<server>",
+        "smtp_port": 587,
+        "login": "<login>",
+        "password": "<password>"
+    },
+    "gpio": {
+        "chip": "/dev/gpiochip0",
+        "line_number": 4
+    },
+    "appearance": {
+        "mode": "Dark"
+    },
+    "admin": {
+        "password": "super-secure-password"
+    }
+}

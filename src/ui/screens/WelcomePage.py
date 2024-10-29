@@ -122,7 +122,7 @@ class KioskMainFrame(CTkFrame):
             logger.info(f"Scanned NFC ID: {current_id}")
             user = self.get_user_by_nfc_id(current_id)
             if user:
-                self.handle_user_type(user)
+                self.handle_type(user)
             else:
                 # Show warning message, "USER Not Found"
                 self.showUserNotFoundScreen()
@@ -131,10 +131,10 @@ class KioskMainFrame(CTkFrame):
     def get_user_by_nfc_id(self, current_id):
         return User.get_by_nfcid(self.session, current_id)
 
-    def handle_user_type(self, user):
-        if user.user_type == self.translations["user"]["user"]:
+    def handle_type(self, user):
+        if user.type == self.translations["user"]["user"]:
             self.navigate_to_customer(user)
-        elif user.user_type == self.translations["admin"]["admin"]:
+        elif user.type == self.translations["admin"]["admin"]:
             self.navigate_to_admin(user)
 
     def cleanup_resources(self):

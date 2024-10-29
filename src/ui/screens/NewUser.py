@@ -67,7 +67,7 @@ class AddUserFrame(CTkFrame):
             row=3, column=1, padx=(10, 20), pady=(10, 10), sticky="w"
         )
 
-        self.user_type = CTkOptionMenu(
+        self.type = CTkOptionMenu(
             self,
             values=[self.translations["user"]["user"], self.translations["admin"]["admin"]],
             width=620,
@@ -82,7 +82,7 @@ class AddUserFrame(CTkFrame):
             dropdown_hover_color="#575757",
             dropdown_font=("Inter", 18, "bold"),
         )
-        self.user_type.grid(row=4, column=0, columnspan=2, pady=(10, 10), padx=(20, 20), sticky="n")
+        self.type.grid(row=4, column=0, columnspan=2, pady=(10, 10), padx=(20, 20), sticky="n")
 
         # Update NFCID button
         self.update_nfcid_button = CTkButton(
@@ -135,7 +135,7 @@ class AddUserFrame(CTkFrame):
     def add_user(self):
         name = self.name_entry.get()
         user_credits = self.credits_frame.get()
-        user_type = self.user_type.get()
+        type = self.type.get()
         nfcid = self.nfcid
 
         if not (name and nfcid):
@@ -163,7 +163,7 @@ class AddUserFrame(CTkFrame):
         else:
             # Create a new User instance
             new_user = User(
-                nfcid=nfcid, name=name, user_type=user_type, credit=user_credits
+                nfcid=nfcid, name=name, type=type, credit=user_credits
             )
 
         # Save the new user to the database

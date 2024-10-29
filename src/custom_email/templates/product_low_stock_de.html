@@ -1,0 +1,9 @@
+<!-- product_low_stock_de.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Geringer Lagerbestand</h1>
+<p>Das Produkt <strong>{{ product_name }}</strong> ist nur noch in geringer Stückzahl verfügbar: <strong>{{ available_quantity }}</strong> Stück.</p>
+<p>Bitte kümmern Sie sich um die Auffüllung des Bestands.</p>
+{% endblock %}

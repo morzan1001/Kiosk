@@ -1,18 +1,22 @@
 """This file holds the transaction model."""
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 
 from src.database.connection import Base
+
+from sqlalchemy.orm import relationship
 
 # Define the Transaction model
 class Transaction(Base):
     __tablename__ = "transactions"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, nullable=False)
-    date = Column(String, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    item_id = Column(Integer, ForeignKey('items.id'), nullable=False)
+    date = Column(DateTime, nullable=False)
     cost = Column(String, nullable=False)
     category = Column(String, nullable=False)
 
+    item = relationship("Item")
 
     def __repr__(self):
         return (

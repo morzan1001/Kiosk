@@ -1,0 +1,33 @@
+<!-- monthly_summary_en.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Monthly Purchase Summary</h1>
+<p>Here is your summary for the period {{ summary.period }}:</p>
+
+<h2>Total Expenditure: €{{ "%.2f"|format(summary.total_amount) }}</h2>
+<h2>Number of Transactions: {{ summary.total_transactions }}</h2>
+
+<h2>Purchased Products:</h2>
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+    <thead>
+        <tr>
+            <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Product Name</th>
+            <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Quantity</th>
+            <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Total Cost (€)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product_name, details in summary.product_purchases.items() %}
+        <tr>
+            <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">{{ product_name }}</td>
+            <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">{{ details.quantity }}</td>
+            <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">{{ "%.2f"|format(details.total_cost) }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p>Thank you for your purchases!</p>
+{% endblock %}

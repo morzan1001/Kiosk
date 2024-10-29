@@ -86,7 +86,7 @@ class UpdateUserFrame(CTkFrame):
         )
         self.credits_frame.grid(row=2, column=1, padx=(10, 20), pady=(5, 5), sticky="w")
 
-        self.user_type = CTkOptionMenu(
+        self.type = CTkOptionMenu(
             self,
             values=[self.translations["user"]["user"], self.translations["admin"]["admin"]],
             width=600,
@@ -101,7 +101,7 @@ class UpdateUserFrame(CTkFrame):
             dropdown_hover_color="#575757",
             dropdown_font=("Inter", 16, "bold"),
         )
-        self.user_type.grid(row=3, column=0, columnspan=2, pady=(5, 5), padx=(20, 20), sticky="n")
+        self.type.grid(row=3, column=0, columnspan=2, pady=(5, 5), padx=(20, 20), sticky="n")
 
         # Adjusted graph frame with reduced height
         self.graph_frame = CTkFrame(self, width=600, height=100)  # Reduced height
@@ -143,13 +143,13 @@ class UpdateUserFrame(CTkFrame):
             name = user.name
             self.nfcid = user.nfcid
             credit = user.credit
-            user_type = user.user_type
+            type = user.type
 
-            logger.debug("User data loaded: name=%s, nfcid=%s, credit=%s, user_type=%s", name, self.nfcid, credit, user_type)
+            logger.debug("User data loaded: name=%s, nfcid=%s, credit=%s, type=%s", name, self.nfcid, credit, type)
 
             self.name_entry.insert(0, name)
             self.credits_frame.set_entry_text(credit)
-            self.user_type.set(user_type)
+            self.type.set(type)
 
             transactions = Transaction.read_all_for_user(self.session, self.user_id)
             logger.debug("Number of transactions found: %d", len(transactions))
@@ -282,11 +282,11 @@ class UpdateUserFrame(CTkFrame):
         logger.debug("Starting update_user")
         name = self.name_entry.get().strip()
         user_credits = self.credits_frame.get()
-        user_type = self.user_type.get()
+        type = self.type.get()
         nfcid = self.nfcid.strip()
 
-        logger.debug("Input data: name='%s', nfcid='%s', user_credits='%s', user_type='%s'",
-                     name, nfcid, user_credits, user_type)
+        logger.debug("Input data: name='%s', nfcid='%s', user_credits='%s', type='%s'",
+                     name, nfcid, user_credits, type)
 
         if not (name and nfcid):
             logger.debug("Name or NFCID is missing")
@@ -316,7 +316,7 @@ class UpdateUserFrame(CTkFrame):
             logger.debug("Updating user: %s", user_instance)
             if user_instance:
                 try:
-                    user_instance.update(self.session, nfcid=nfcid, name=name, user_type=user_type, credit=user_credits)
+                    user_instance.update(self.session, nfcid=nfcid, name=name, type=type, credit=user_credits)
                     logger.debug("User updated successfully")
                 except Exception as e:
                     logger.exception("Error updating user")
