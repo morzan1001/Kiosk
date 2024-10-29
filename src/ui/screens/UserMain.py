@@ -12,6 +12,7 @@ from src.database.models.transaction import Transaction
 from src.lock.gpio_manager import get_gpio_controller
 from src.custom_email.email_manager import get_email_controller
 from src.localization.translator import get_system_language
+from src.sounds.sound_manager import get_sound_controller
 
 class UserMainPage(CTkFrame):
     def __init__(
@@ -33,6 +34,7 @@ class UserMainPage(CTkFrame):
 
         self.gpio_controller = get_gpio_controller()
         self.email_controller = get_email_controller()
+        self.sound_controller = get_sound_controller()
 
         self.configure(width=800, height=480, fg_color="transparent")
 
@@ -259,6 +261,11 @@ class UserMainPage(CTkFrame):
             category = item.category
 
             if requested_quantity > item_quantity:
+                # Play negative sound when an item is not available in sufficient quantity
+                if self.sound_controller:  # Check if the sound_controller is initialized
+                    logger.debug("Playing negative sound due to insufficient product quantity")
+                    self.sound_controller.play_sound('negative')
+
                 self.message = ShowMessage(
                     self.root,
                     image="unsuccessful",
@@ -271,6 +278,11 @@ class UserMainPage(CTkFrame):
         if self.total_price == 0:
             return
         elif self.total_price > float(self.user_credit):
+            # Play negative sound when the user does not have enough credit
+            if self.sound_controller:  # Check if the sound_controller is initialized
+                logger.debug("Playing negative sound due to insufficient credit")
+                self.sound_controller.play_sound('negative')
+                
             self.message = ShowMessage(
                 self.root,
                 image="unsuccessful",
@@ -334,8 +346,11 @@ class UserMainPage(CTkFrame):
             self.user_credit = self.user_credit - self.total_price
             self.credits_label.configure(text=self.translations["user"]["credits_message"].format(user_credit=self.user_credit))
             self.items = Item.read_all(self.session)
-            self.root.after(5000, self.logout)
 
+            if self.sound_controller:  # Make sure sound_controller is initialized
+                logger.debug("Playing positive sound on successful logout")
+                self.sound_controller.play_sound('positive')
+            self.root.after(5000, self.logout)
 
     def on_barcode_scan(self, event):
         # Check if Enter key is pressed, which typically signals the end of a barcode scan

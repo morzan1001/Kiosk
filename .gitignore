@@ -71,6 +71,7 @@ Thumbs.db
 .bak
 *.swp
 
+
 # Config file
 config.json
 

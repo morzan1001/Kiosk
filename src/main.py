@@ -6,6 +6,7 @@ from customtkinter import CTk
 from time import sleep
 from src.localization import initialize_translations
 from src.localization.translator import get_translations
+from src.sounds.sound_manager import initialize_sound_controller, stop_sound_controller
 
 # Add the root directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -57,10 +58,18 @@ def main():
         initialize_gpio(chip=config["gpio"]["chip"], line_number=config["gpio"]["line_number"])
         logger.info("GPIO initialized")
 
+
         # Initialize EmailController
         logger.debug("Initializing Email Controller")
         initialize_email_controller(server=config["email"]["smtp_server"], port=config["email"]["smtp_port"], login=config["email"]["login"], password=config["email"]["password"])
         logger.info("Email Controller initialized")
+
+        # Initialize SoundController
+        logger.debug("Initializing Sound Controller")
+        pos_sound_dir = "src/sounds/positive/"  
+        neg_sound_dir = "src/sounds/negative/" 
+        initialize_sound_controller(pos_sound_dir, neg_sound_dir)
+
 
         # Initialize window
         logger.debug("Initializing main window")
@@ -92,8 +101,9 @@ def main():
 
 def on_closing(root):
     logger.info("Exiting application")
-    session_manager.close_session()
     shutdown_scheduler()
+    session_manager.close_session()  # Close the database session
+    stop_sound_controller()
     cleanup_gpio()
     root.destroy()
     root.quit()
