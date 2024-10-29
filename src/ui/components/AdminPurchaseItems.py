@@ -1,7 +1,6 @@
 from customtkinter import *
 from PIL import Image, ImageTk
 
-
 class AdminPurchaseItemsFrame(CTkFrame):
     def __init__(self, master, image, heading, data, *args, **kwargs):
         super().__init__(master, *args, **kwargs)

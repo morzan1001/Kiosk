@@ -58,18 +58,19 @@ def main():
         initialize_gpio(chip=config["gpio"]["chip"], line_number=config["gpio"]["line_number"])
         logger.info("GPIO initialized")
 
-
         # Initialize EmailController
         logger.debug("Initializing Email Controller")
         initialize_email_controller(server=config["email"]["smtp_server"], port=config["email"]["smtp_port"], login=config["email"]["login"], password=config["email"]["password"])
         logger.info("Email Controller initialized")
 
-        # Initialize SoundController
-        logger.debug("Initializing Sound Controller")
-        pos_sound_dir = "src/sounds/positive/"  
-        neg_sound_dir = "src/sounds/negative/" 
-        initialize_sound_controller(pos_sound_dir, neg_sound_dir)
-
+        # Initialize SoundController based on config
+        if config["sound"]["enabled"]:
+            logger.debug("Initializing Sound Controller")
+            pos_sound_dir = config["sound"]["positive_directory"]
+            neg_sound_dir = config["sound"]["negative_directory"]
+            initialize_sound_controller(pos_sound_dir, neg_sound_dir)
+        else:
+            logger.info("Sound is disabled in configuration")
 
         # Initialize window
         logger.debug("Initializing main window")
@@ -80,7 +81,7 @@ def main():
         logger.debug("Set application to fullscreen mode")
 
         set_appearance_mode(config["appearance"]["mode"])  # Use appearance config
-        
+
         logger.debug("Setting up main kiosk frame")
         kiosk_frame = KioskMainFrame(root)
         kiosk_frame.grid(row=0, column=0, sticky="nsew")
