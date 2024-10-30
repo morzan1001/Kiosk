@@ -22,7 +22,7 @@ Kiosk is a Python application and uses [CustomTkinter](https://github.com/TomSch
 
 Normally the logging of the application is set to `INFO`, but if something should fail at startup or during runtime, the logging can be set a little more finely in the log manager. To do this, the corresponding code must be adjusted in the [logmgr.py: Line 19](https://github.com/morzan1001/Kiosk/blob/main/src/logmgr/logmgr.py#L19).
 
-In order for the application to start, the (config_example.json)[https://github.com/morzan1001/Kiosk/blob/main/config_example.json] must be renamed to `config.json`, it is not absolutely necessary to specify a mailserver, so the program should also start with the values from the (config_example.json)[https://github.com/morzan1001/Kiosk/blob/main/config_example.json]. However, any adjustments can of course be made here. 
+In order for the application to start, the [config_example.json](https://github.com/morzan1001/Kiosk/blob/main/config_example.json) must be renamed to `config.json`, it is not absolutely necessary to specify a mailserver, so the program should also start with the values from the [config_example.json](https://github.com/morzan1001/Kiosk/blob/main/config_example.json). However, any adjustments can of course be made here. 
 
 ⚠️ **Important!**
 
@@ -60,11 +60,11 @@ Here are a few ideas on how to expand the software:
 
 ### 🎵 Sounds
 
-As no gag I have implemented that the kiosk can play sounds when a product is purchased or when a purchase fails. For this purpose, sound files can be specified in two folders. Once positive sounds and once negative sounds. the whole thing can be switched on and off in (config.json)[https://github.com/morzan1001/Kiosk/blob/55f6aa53e813dca5f23ecad09443a982eb1d9212/config_example.json#L18]. 
+As no gag I have implemented that the kiosk can play sounds when a product is purchased or when a purchase fails. For this purpose, sound files can be specified in two folders. Once positive sounds and once negative sounds. the whole thing can be switched on and off in [config.json](https://github.com/morzan1001/Kiosk/blob/55f6aa53e813dca5f23ecad09443a982eb1d9212/config_example.json#L18). 
 
 ### 📧 E-Mail
 
-The kiosk can notify users when their account balance gets low, or administrators when a product stock is running low. In addition, the kiosk can send monthly statistics to users about their purchasing behavior. A corresponding SMTP server can be configured in (config.json)[https://github.com/morzan1001/Kiosk/blob/55f6aa53e813dca5f23ecad09443a982eb1d9212/config_example.json#L2]. If a user does not have a stored e-mail address in the database, he simply does not receive any e-mails, the field is not mandatory. 
+The kiosk can notify users when their account balance gets low, or administrators when a product stock is running low. In addition, the kiosk can send monthly statistics to users about their purchasing behavior. A corresponding SMTP server can be configured in [config.json](https://github.com/morzan1001/Kiosk/blob/55f6aa53e813dca5f23ecad09443a982eb1d9212/config_example.json#L2). If a user does not have a stored e-mail address in the database, he simply does not receive any e-mails, the field is not mandatory. 
 
 ## 🛠️ Service
 <a name="service"></a>
