@@ -366,19 +366,23 @@ class UserMainPage(CTkFrame):
             self.barcode += event.char
 
     def check_product_stock_and_notify(self):
-        critical_stock_level = 2  # Define threshold
+        critical_stock_level = 3  
 
-        for item in self.items:
-            if item.quantity < critical_stock_level:  # Assuming available_quantity is part of item
-                admins = User.get_admins(self.session)
-                for admin in admins:
-                    if admin.email:
-                        self.email_controller.notify_low_stock(
-                            recipient_email=admin.email,
-                            product_name=item.name,  # Assuming item has a name attribute
-                            available_quantity=item.quantity,
-                            language=get_system_language()
-                        )
+        for quantity, item in self.quantities:
+            requested_quantity = int(quantity.get())
+            if requested_quantity > 0: # Only check items that were actually purchased because only these items were updated
+                new_quantity = item.quantity - requested_quantity 
+
+                if new_quantity < critical_stock_level:
+                    admins = User.get_admins(self.session)
+                    for admin in admins:
+                        if admin.email:
+                            self.email_controller.notify_low_stock(
+                                recipient_email=admin.email,
+                                product_name=item.name,
+                                available_quantity=new_quantity,
+                                language=get_system_language()
+                            )
 
     def process_barcode(self, barcode_value):
         # Function to handle the barcode value
