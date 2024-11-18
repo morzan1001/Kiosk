@@ -65,7 +65,7 @@ class UserMainPage(CTkFrame):
         #for i in range(len(self.items)):
         #    self.item_frame.grid_rowconfigure(i, weight=1)
 
-        self.quantities = []  # Store quantities of items
+        self.shopping_cart = []  # Store shopping_cart with items and quantity
 
 
         """
@@ -90,7 +90,7 @@ class UserMainPage(CTkFrame):
         #    # Create an IntVar for the quantity
         #    quantity = IntVar()
         #    quantity.set(0)  # Initialize quantity to 0
-        #    self.quantities.append((quantity, item))  # Store quantity and item details
+        #    self.shopping_cart.append((quantity, item))  # Store quantity and item details
 
         #    # Add widgets to the sub_frame
         #    ItemFrame(sub_frame, data=item, fg_color="white").grid(
@@ -196,13 +196,13 @@ class UserMainPage(CTkFrame):
                 # Increment the quantity in the UI if there's enough stock
                 quantity_var.set(current_quantity + 1)
                 self.update_total_price()
-                # self.quantities.append((quantity, item))  # Store quantity and item details
+                # self.shopping_cart.append((quantity, item))  # Store quantity and item details
 
         else:
             # Add the item to the list as it has not been added yet
             quantity = IntVar()
             quantity.set(1)  # Initialize quantity to 1
-            self.quantities.append((quantity, item))  # Store quantity and item details
+            self.shopping_cart.append((quantity, item))  # Store quantity and item details
             self.update_total_price()
 
             indx = len(self.displayed_items)  # New row index
@@ -240,7 +240,7 @@ class UserMainPage(CTkFrame):
     def update_total_price(self):
         total = 0.0
 
-        for quantity, item in self.quantities:
+        for quantity, item in self.shopping_cart:
             total += int(quantity.get()) * float(item.price)
         self.total_price = total
         self.checkout_button.configure(text=self.translations["buttons"]["checkout_button"].format(total=self.total_price))
@@ -251,7 +251,7 @@ class UserMainPage(CTkFrame):
         self.main_menu(self.root).grid(row=0, column=0, sticky="nsew")
 
     def checkout(self):
-        for quantity, item in self.quantities:
+        for quantity, item in self.shopping_cart:
             requested_quantity = int(quantity.get())
 
             item_id = item.id
@@ -292,7 +292,7 @@ class UserMainPage(CTkFrame):
             self.root.after(5000, self.message.destroy)
         else:
             current_datetime = datetime.now()
-            for quantity, item in self.quantities:
+            for quantity, item in self.shopping_cart:
                 requested_quantity = int(quantity.get())
 
                 if requested_quantity > 0:
@@ -318,9 +318,10 @@ class UserMainPage(CTkFrame):
                         category=category
                     )
                     new_transaction.create(self.session)
-                    
-            # Check product stock and notify admins after checkout
-            self.check_product_stock_and_notify()
+
+                    # Check product stock and notify admins after checkout
+                    self.check_product_stock_and_notify(item)
+
 
             # Update the user's credit   
             credit = float(self.user_credit) - self.total_price
@@ -365,24 +366,19 @@ class UserMainPage(CTkFrame):
             # Append the scanned character to the barcode string
             self.barcode += event.char
 
-    def check_product_stock_and_notify(self):
-        critical_stock_level = 3  
-
-        for quantity, item in self.quantities:
-            requested_quantity = int(quantity.get())
-            if requested_quantity > 0: # Only check items that were actually purchased because only these items were updated
-                new_quantity = item.quantity - requested_quantity 
-
-                if new_quantity < critical_stock_level:
-                    admins = User.get_admins(self.session)
-                    for admin in admins:
-                        if admin.email:
-                            self.email_controller.notify_low_stock(
-                                recipient_email=admin.email,
-                                product_name=item.name,
-                                available_quantity=new_quantity,
-                                language=get_system_language()
-                            )
+    def check_product_stock_and_notify(self, item: Item):
+        critical_stock_level = 2  # Define threshold
+        
+        if item.quantity < critical_stock_level:  # Assuming available_quantity is part of item
+            admins = User.get_admins(self.session)
+            for admin in admins:
+                if admin.email:
+                    self.email_controller.notify_low_stock(
+                        recipient_email=admin.email,
+                        product_name=item.name,  # Assuming item has a name attribute
+                        available_quantity=item.quantity,
+                        language=get_system_language()
+                    )
 
     def process_barcode(self, barcode_value):
         # Function to handle the barcode value
