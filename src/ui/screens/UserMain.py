@@ -366,7 +366,7 @@ class UserMainPage(CTkFrame):
             # Append the scanned character to the barcode string
             self.barcode += event.char
 
-    def check_product_stock_and_notify(self, item):
+    def check_product_stock_and_notify(self, item: Item):
         critical_stock_level = 2  # Define threshold
         
         if item.quantity < critical_stock_level:  # Assuming available_quantity is part of item
