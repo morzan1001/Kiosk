@@ -14,5 +14,10 @@
     },
     "admin": {
         "password": "super-secure-password"
+    },
+    "sound": {
+        "enabled": true,
+        "positive_directory": "src/sounds/positive/",
+        "negative_directory": "src/sounds/negative/"
     }
 }

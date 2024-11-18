@@ -1,7 +1,7 @@
 from customtkinter import *
 from tkinter import IntVar
 from PIL import Image, ImageTk
-from datetime import date
+from datetime import date, datetime
 from logmgr import logger
 from src.localization.translator import get_translations
 from src.ui.components.Message import ShowMessage
@@ -291,7 +291,7 @@ class UserMainPage(CTkFrame):
             )
             self.root.after(5000, self.message.destroy)
         else:
-            current_date = date.today()
+            current_datetime = datetime.now()
             for quantity, item in self.shopping_cart:
                 requested_quantity = int(quantity.get())
 
@@ -313,14 +313,14 @@ class UserMainPage(CTkFrame):
                     new_transaction = Transaction(
                         item_id=item_id,
                         user_id=self.user_id, 
-                        date=current_date, 
+                        date=current_datetime, 
                         cost=str(price * requested_quantity), 
                         category=category
                     )
                     new_transaction.create(self.session)
 
-                # Check product stock and notify admins after checkout
-                self.check_product_stock_and_notify(item)
+                    # Check product stock and notify admins after checkout
+                    self.check_product_stock_and_notify(item)
 
 
             # Update the user's credit   

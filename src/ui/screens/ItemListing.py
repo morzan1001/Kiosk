@@ -63,26 +63,26 @@ class ItemListFrame(CTkFrame):
 
             sub_frame.bind(
                 "<Button-1>",
-                lambda event, item_id=item[0]: self.update_item(event, item_id),
+                lambda event, item_id=item.id: self.update_item(event, item_id),
             )
 
             item_frame.bind(
                 "<Button-1>",
-                lambda event, item_id=item[0]: self.update_item(event, item_id),
+                lambda event, item_id=item.id: self.update_item(event, item_id),
             )
 
             # Bind all children of sub_frame to update_item
             for child in sub_frame.winfo_children():
                 child.bind(
                     "<Button-1>",
-                    lambda event, item_id=item[0]: self.update_item(event, item_id),
+                    lambda event, item_id=item.id: self.update_item(event, item_id),
                 )
 
             # Bind all children of item_frame to update_item
             for child in item_frame.winfo_children():
                 child.bind(
                     "<Button-1>",
-                    lambda event, item_id=item[0]: self.update_item(event, item_id),
+                    lambda event, item_id=item.id: self.update_item(event, item_id),
                 )
 
         self.add_new_item_button = CTkButton(
