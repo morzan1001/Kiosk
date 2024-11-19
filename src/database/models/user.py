@@ -1,4 +1,5 @@
 """This file holds the user model."""
+from typing import List
 from sqlalchemy import Column, Integer, String, Float
 
 from src.database.connection import Base
@@ -40,22 +41,21 @@ class User(Base):
         session.commit()
 
     @classmethod
-    def read_all(cls, session):
-        users = session.query(cls).all()
-        return [(user.id, user.name, user.credit, user.email) for user in users]
+    def read_all(cls, session) -> List['User']:
+        return session.query(cls).all()
 
     @classmethod
-    def get_by_id(cls, session, user_id):
+    def get_by_id(cls, session, user_id: int) -> 'User':
         return session.query(cls).filter_by(id=user_id).first()
 
     @classmethod
-    def get_by_nfcid(cls, session, nfcid):
+    def get_by_nfcid(cls, session, nfcid: str) -> 'User':
         return session.query(cls).filter_by(nfcid=nfcid).first()
 
     @classmethod
-    def get_count(cls, session):
+    def get_count(cls, session) -> int:
         return session.query(cls).count()
     
     @classmethod
-    def get_admins(cls, session):
+    def get_admins(cls, session) -> List['User']:
         return session.query(cls).filter_by(type='Admin').all()

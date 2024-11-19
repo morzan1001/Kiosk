@@ -1,8 +1,8 @@
 """This file holds the item model."""
+from typing import List
 from sqlalchemy import Column, Integer, String, Float, LargeBinary
 
 from src.database.connection import Base
-
 
 # Define the Item model
 class Item(Base):
@@ -43,18 +43,17 @@ class Item(Base):
         session.commit()
 
     @classmethod
-    def read_all(cls, session):
+    def read_all(cls, session) -> List['Item']:
         return session.query(cls).all()
     
     @classmethod
-    def get_by_id(cls, session, item_id):
+    def get_by_id(cls, session, item_id) -> 'Item':
         return session.query(cls).filter_by(id=item_id).first()
 
     @classmethod
-    def get_count(cls, session):
- 
+    def get_count(cls, session) -> int:
         return session.query(cls).count()
 
     @classmethod
-    def get_by_barcode(cls, session, barcode):
+    def get_by_barcode(cls, session, barcode) -> 'Item':
         return session.query(cls).filter_by(barcode=barcode).first()
