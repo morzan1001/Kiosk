@@ -1,27 +1,28 @@
 from customtkinter import *
+from typing import List
 from tkinter import IntVar
 from PIL import Image, ImageTk
-from datetime import date, datetime
+from datetime import datetime
 from logmgr import logger
 from src.localization.translator import get_translations
 from src.ui.components.Message import ShowMessage
 from src.ui.components.ItemFrame import ItemFrame
 from src.ui.components.QuantityFrame import QuantityFrame
-from src.database import get_db, User, Item
-from src.database.models.transaction import Transaction
-from src.lock.gpio_manager import get_gpio_controller
-from src.custom_email.email_manager import get_email_controller
-from src.localization.translator import get_system_language
-from src.sounds.sound_manager import get_sound_controller
+from database import get_db, User, Item
+from database.models.transaction import Transaction
+from lock.gpio_manager import get_gpio_controller
+from custom_email.email_manager import get_email_controller
+from localization.translator import get_system_language
+from sounds.sound_manager import get_sound_controller
 
 class UserMainPage(CTkFrame):
     def __init__(
-        self, root, main_menu, user_id, user_name, user_credit, items, *args, **kwargs
+        self, root, main_menu, user: User, items: List[Item], *args, **kwargs
     ):
         super().__init__(root, *args, **kwargs)
 
-        self.barcode = ""
-        self.items = items  # Store all items in memory
+        self.barcode: str = ""
+        self.items: List[Item] = items  # Store all items in memory
         self.displayed_items = (
             {}
         )  # Dictionary to track added items using item_id as key
@@ -43,9 +44,7 @@ class UserMainPage(CTkFrame):
 
         self.root = root
         self.main_menu = main_menu
-        self.user_id = user_id
-        self.user_name = user_name
-        self.user_credit = user_credit
+        self.user: User = user
         self.translations = get_translations()
 
         self.total_price = 0.0  # Initialize total price
@@ -112,7 +111,7 @@ class UserMainPage(CTkFrame):
         welcome_label = CTkButton(
             self,
             image=user_image,
-            text=self.translations["user"]["welcome_user_message"].format(user_name=self.user_name),
+            text=self.translations["user"]["welcome_user_message"].format(user_name=self.user.name),
             font=("Arial", 18, "bold"),
             fg_color="white",
             hover_color="white",
@@ -126,7 +125,7 @@ class UserMainPage(CTkFrame):
         self.credits_label = CTkButton(
             self,
             image=credit_image,
-            text=self.translations["user"]["credits_message"].format(user_credit=self.user_credit),
+            text=self.translations["user"]["credits_message"].format(user_credit=self.user.credit),
             font=("Arial", 18, "bold"),
             fg_color="white",
             hover_color="white",
@@ -174,7 +173,7 @@ class UserMainPage(CTkFrame):
         Adds the scanned item to the UI list if it's not already added.
         Updates the quantity if the item is already added.
         """
-        item_id = item.id  # Assuming the first element in the tuple is the item_id
+        item_id = item.id
         available_quantity = item.quantity
 
         if item_id in self.displayed_items:
@@ -357,7 +356,7 @@ class UserMainPage(CTkFrame):
         # Check if Enter key is pressed, which typically signals the end of a barcode scan
         if event.keysym == "Return":
             # Call the function to process the scanned barcode
-            self.process_barcode(self.barcode)
+            self.search_product(self.barcode)
 
             logger.debug(f"Scanned barcode: {self.barcode}")
             # Reset the barcode value after processing
@@ -370,7 +369,7 @@ class UserMainPage(CTkFrame):
         critical_stock_level = 2  # Define threshold
         
         if item.quantity < critical_stock_level:  # Assuming available_quantity is part of item
-            admins = User.get_admins(self.session)
+            admins: List[User] = User.get_admins(self.session)
             for admin in admins:
                 if admin.email:
                     self.email_controller.notify_low_stock(
@@ -380,12 +379,8 @@ class UserMainPage(CTkFrame):
                         language=get_system_language()
                     )
 
-    def process_barcode(self, barcode_value):
-        # Function to handle the barcode value
-        self.search_product(barcode_value)
-
-    def search_product(self, barcode_value):
-        item = Item.get_by_barcode(self.session, barcode_value)
+    def search_product(self, barcode_value: str):
+        item: Item = Item.get_by_barcode(self.session, barcode_value)
 
         if item:
             self.add_item_to_list(item)

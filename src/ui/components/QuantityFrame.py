@@ -2,13 +2,13 @@ from customtkinter import *
 from PIL import Image, ImageTk
 
 class QuantityFrame(CTkFrame):
-    def __init__(self, master, data, update_total_price, item_price, *args, **kwargs):
+    def __init__(self, master, data, update_total_price, item_price: float, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
 
         # Set the textvariable
         self.data = data
         self.update_total_price = update_total_price
-        self.item_price = item_price
+        self.item_price: float = item_price
 
         self.grid_columnconfigure((0, 1, 2), weight=1)
         self.grid_rowconfigure((0), weight=1)

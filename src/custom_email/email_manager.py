@@ -21,7 +21,7 @@ def initialize_email_controller(server: str, port: int, login: str, password: st
     )
     initialize_scheduler()
 
-def get_email_controller():
+def get_email_controller() -> EmailController:
     global email_controller
     if email_controller is None:
         logger.error("Email-Controller is not initialized")

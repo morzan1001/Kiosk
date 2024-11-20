@@ -7,7 +7,7 @@ pn532 = Pn532_i2c()
 pn532.SAMconfigure()
 mifare = Mifare()
 
-class NFC_READER:
+class NFCReader:
     """
     Initializes the NFC_READER class.
     Starts a separate thread for continuous reading of NFC data.

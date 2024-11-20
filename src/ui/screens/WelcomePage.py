@@ -1,23 +1,25 @@
+from typing import List
 from customtkinter import *
+from lock.lock import GPIOController
 from src.localization.translator import get_translations
 from src.ui.components.Message import ShowMessage
 from PIL import Image, ImageTk
 from src.ui.screens.AdminMain import AdminMainFrame
 from src.ui.screens.UserMain import UserMainPage
-from src.database import get_db, User, Item
-from src.lock.gpio_manager import get_gpio_controller
-from src.nfc_reader import NFC_READER
+from database import get_db, User, Item
+from lock.gpio_manager import get_gpio_controller
+from nfc_reader import NFCReader
 from logmgr import logger
-from src.sounds.sound_manager import sound_controller
+from sounds.sound_manager import sound_controller
 
 class KioskMainFrame(CTkFrame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
         self.translations = get_translations()
-        self.nfc_reader = NFC_READER()
+        self.nfc_reader: NFCReader = NFCReader()
         self.session = get_db()
-        self.gpio_controller = get_gpio_controller()
+        self.gpio_controller: GPIOController = get_gpio_controller()
 
         self.parent = parent
         self.parent.title(self.translations["general"]["kiosk_title"])
@@ -72,12 +74,12 @@ class KioskMainFrame(CTkFrame):
         # Register the login callback
         self.nfc_reader.register_callback(self.login)
 
-    def navigate_to_admin(self, user):
+    def navigate_to_admin(self, user: User):
         self.destroy()
         self.gpio_controller.activate()
         try:
-            user_count = User.get_count(self.session)
-            item_count = Item.get_count(self.session)
+            user_count: int = User.get_count(self.session)
+            item_count: int = Item.get_count(self.session)
             AdminMainFrame(
                 self.parent,
                 main_menu=KioskMainFrame,
@@ -88,17 +90,15 @@ class KioskMainFrame(CTkFrame):
         finally:
             self.cleanup_resources()
 
-    def navigate_to_customer(self, user):
+    def navigate_to_customer(self, user: User):
         self.destroy()
         self.gpio_controller.activate()
         try:
-            items = Item.read_all(self.session)
+            items: List[Item] = Item.read_all(self.session)
             UserMainPage(
                 self.parent,
                 main_menu=KioskMainFrame,
-                user_id=user.id,
-                user_name=user.name,
-                user_credit=user.credit,
+                user=user,
                 items=items,
             )
         finally:
@@ -117,10 +117,10 @@ class KioskMainFrame(CTkFrame):
             sound_controller.play_sound('negative')
         self.parent.after(5000, self.message.destroy)
 
-    def login(self, current_id):
+    def login(self, current_id: str):
         if current_id:
             logger.info(f"Scanned NFC ID: {current_id}")
-            user = self.get_user_by_nfc_id(current_id)
+            user: User = User.get_by_nfcid(self.session, current_id)
             if user:
                 self.handle_type(user)
             else:
@@ -128,10 +128,7 @@ class KioskMainFrame(CTkFrame):
                 self.showUserNotFoundScreen()
                 logger.error("No user with this ID found")
 
-    def get_user_by_nfc_id(self, current_id):
-        return User.get_by_nfcid(self.session, current_id)
-
-    def handle_type(self, user):
+    def handle_type(self, user: User):
         if user.type == self.translations["user"]["user"]:
             self.navigate_to_customer(user)
         elif user.type == self.translations["admin"]["admin"]:
