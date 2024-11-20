@@ -68,7 +68,7 @@ The kiosk can notify users when their account balance gets low, or administrator
 
 ### 🎺 Mattermost
 
-the kiosk can also notify users via mattermost webhooks. On the one hand, standard messages such as “low account balance” or for admins “low stock” are possible. On the other hand, short-term marketing messages can also be sent. The idea is that the kiosk regularly evaluates which users have bought little, on this basis individual users are offered a discount via mattermost that is valid for a certain time. the entire mattermost integration can be configured in [config.json](https://github.com/morzan1001/Kiosk/blob/55f6aa53e813dca5f23ecad09443a982eb1d9212/config_example.json#L8).
+the kiosk can also notify users via a mattermost bot account. On the one hand, standard messages such as “low account balance” or for admins “low stock” are possible. On the other hand, short-term marketing messages can also be sent. The idea is that the kiosk regularly evaluates which users have bought little, on this basis individual users are offered a discount via mattermost that is valid for a certain time. the entire mattermost integration can be configured in [config.json](https://github.com/morzan1001/Kiosk/blob/55f6aa53e813dca5f23ecad09443a982eb1d9212/config_example.json#L8).
 
 ## 🛠️ Service
 <a name="service"></a>

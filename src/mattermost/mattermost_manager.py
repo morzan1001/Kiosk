@@ -1,4 +1,3 @@
-from localization.translator import get_translations
 from src.mattermost.mattermost_controller import MattermostController
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -7,14 +6,15 @@ from src.database.connection import get_db
 from src.database.models.user import User
 from src.database.models.transaction import Transaction
 from datetime import datetime, timedelta
+from src.localization.translator import get_translations, get_system_language
 
 mattermost_controller = None
 scheduler = None
 
-def initialize_mattermost_controller(webhook_url: str):
+def initialize_mattermost_controller(base_url: str, bot_token: str):
     """Initialize the MattermostController and the scheduler."""
     global mattermost_controller
-    mattermost_controller = MattermostController(webhook_url=webhook_url)
+    mattermost_controller = MattermostController(base_url=base_url, bot_token=bot_token)
     initialize_scheduler()
 
 def get_mattermost_controller():
@@ -44,18 +44,22 @@ def send_monthly_summaries():
         # Generate the summary for the user
         summary = get_monthly_summary(user, session)
         # Send the message if the user has a Mattermost username
-        if user.mattermost_username:
+        if user.mattermost_user_id and user.notifications_enabled:
             mattermost_controller.send_direct_message(
-                username=user.mattermost_username,
-                message=f"Dein monatlicher Bericht: {summary}"
+                user_id=user.mattermost_user_id,
+                message=summary
             )
             logger.info(f"Monthly summary sent to user {user.name} ({user.mattermost_username})")
         else:
-            logger.warning(f"User {user.name} does not have a Mattermost username, skipping.")
+            logger.warning(f"User {user.name} does not have a Mattermost user ID or notifications are disabled, skipping.")
     logger.info("Monthly summaries have been sent to all users")
 
 def get_monthly_summary(user, session):
     """Generate a monthly summary for a given user."""
+    # Get translations based on user's language
+    language = user.language if hasattr(user, 'language') else 'de'
+    translations = get_translations(language)
+
     # Calculate the date range for the last month
     today = datetime.today()
     first_day_of_current_month = today.replace(day=1)
@@ -88,17 +92,23 @@ def get_monthly_summary(user, session):
             }
 
     # Prepare the summary
-    summary = f"**Monatlicher Bericht für {user.name}**\n"
-    summary += f"Zeitraum: {first_day_of_last_month.strftime('%d.%m.%Y')} - {last_day_of_last_month.strftime('%d.%m.%Y')}\n"
-    summary += f"Gesamtausgaben: {total_amount:.2f}€\n"
-    summary += f"Anzahl der Transaktionen: {len(transactions_in_last_month)}\n\n"
-    summary += "| Produkt | Menge | Gesamtkosten |\n"
-    summary += "|---------|-------|--------------|\n"
+    summary = translations["monthly_summary"]["title"].format(name=user.name) + "\n"
+    summary += translations["monthly_summary"]["period"].format(
+        start_date=first_day_of_last_month.strftime('%d.%m.%Y'),
+        end_date=last_day_of_last_month.strftime('%d.%m.%Y')
+    ) + "\n"
+    summary += translations["monthly_summary"]["total_spent"].format(total_amount=total_amount) + "\n"
+    summary += translations["monthly_summary"]["transaction_count"].format(transaction_count=len(transactions_in_last_month)) + "\n\n"
+    summary += translations["monthly_summary"]["product_table_header"] + "\n"
 
     for product_name, details in product_purchases.items():
-        summary += f"| {product_name} | {details['quantity']} | {details['total_cost']:.2f}€ |\n"
+        summary += translations["monthly_summary"]["product_table_row"].format(
+            product_name=product_name,
+            quantity=details['quantity'],
+            total_cost=details['total_cost']
+        ) + "\n"
 
-    summary += "\n:moneybag: Vielen Dank für deine Einkäufe! :moneybag:"
+    summary += "\n" + translations["monthly_summary"]["footer"]
 
     return summary
 

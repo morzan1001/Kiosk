@@ -7,7 +7,8 @@
     },
     "mattermost": {
         "enabled": true,
-        "webhook_url": "YOUR_MATTERMOST_WEBHOOK_URL"
+        "base_url": "YOUR_MATTERMOST_BASE_URL",
+        "bot_token": "YOUR_MATTERMOST_BOT_TOKEN"
     },
     "gpio": {
         "chip": "/dev/gpiochip0",

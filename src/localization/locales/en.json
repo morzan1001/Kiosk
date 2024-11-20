@@ -81,5 +81,14 @@
     "mattermost": {
         "low_balance": ":warning: **Attention {name}!** :warning:\n\nYour balance is low: **{balance:.2f}€**.\nPlease top up your account to continue shopping.\n:money_with_wings: Thank you! :money_with_wings:",
         "low_stock": ":warning: **Attention Admin!** :warning:\n\nThe product **{product_name}** has only **{available_quantity}** items left in stock.\nPlease reorder.\n:package: Thank you! :package:"
+    },
+    "monthly_summary": {
+        "title": "Monthly Report for {name}",
+        "period": "Period: {start_date} - {end_date}",
+        "total_spent": "Total spent: {total_amount:.2f}€",
+        "transaction_count": "Number of transactions: {transaction_count}",
+        "product_table_header": "| Product | Quantity | Total cost |",
+        "product_table_row": "| {product_name} | {quantity} | {total_cost:.2f}€ |",
+        "footer": ":moneybag: Thank you for your purchases! :moneybag:"
     }
 }
