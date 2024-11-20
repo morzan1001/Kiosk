@@ -63,6 +63,14 @@ def main():
         initialize_email_controller(server=config["email"]["smtp_server"], port=config["email"]["smtp_port"], login=config["email"]["login"], password=config["email"]["password"])
         logger.info("Email Controller initialized")
 
+        # Initialize MattermostController if enabled
+        if config["mattermost"]["enabled"]:
+            logger.debug("Initializing Mattermost Controller")
+            initialize_mattermost_controller(webhook_url=config["mattermost"]["webhook_url"])
+            logger.info("Mattermost Controller initialized")
+        else:
+            logger.info("Mattermost notifications are disabled in configuration")
+
         # Initialize SoundController based on config
         if config["sound"]["enabled"]:
             logger.debug("Initializing Sound Controller")

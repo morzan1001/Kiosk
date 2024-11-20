@@ -77,5 +77,9 @@
         "low_stock_subject": "Produktbestand niedrig",
         "footer": "Saftladen - <a href=\"https://github.com/morzan1001/Kiosk\">https://github.com/morzan1001/Kiosk</a>",
         "do_not_respond": "Bitte antworten Sie nicht auf diese E-Mail. Das Postfach wird nicht überwacht."
+    },
+    "mattermost": {
+        "low_balance": ":warning: **Achtung {name}!** :warning:\n\nDein Kontostand ist niedrig: **{balance:.2f}€**.\nBitte lade dein Konto auf, um weiterhin einkaufen zu können.\n:money_with_wings: Vielen Dank! :money_with_wings:",
+        "low_stock": ":warning: **Achtung Admin!** :warning:\n\nDas Produkt **{product_name}** hat nur noch **{available_quantity}** Stück auf Lager.\nBitte kümmere dich um eine Nachbestellung.\n:package: Vielen Dank! :package:"
     }
 }

@@ -13,6 +13,7 @@ from src.lock.gpio_manager import get_gpio_controller
 from src.custom_email.email_manager import get_email_controller
 from src.localization.translator import get_system_language
 from src.sounds.sound_manager import get_sound_controller
+from src.mattermost.mattermost_manager import get_mattermost_controller
 
 class UserMainPage(CTkFrame):
     def __init__(
@@ -35,6 +36,7 @@ class UserMainPage(CTkFrame):
         self.gpio_controller = get_gpio_controller()
         self.email_controller = get_email_controller()
         self.sound_controller = get_sound_controller()
+        self.mattermost_controller = get_mattermost_controller()
 
         self.configure(width=800, height=480, fg_color="transparent")
 
@@ -336,6 +338,11 @@ class UserMainPage(CTkFrame):
                         balance=credit,
                         language=get_system_language()
                     )
+                if credit < 3.0 and user_instance.mattermost_username:    
+                    self.mattermost_controller.notify_low_balance(
+                        username=user_instance.mattermost_username,
+                        balance=credit
+                    )
 
             # Show success message
             self.message = ShowMessage(
@@ -375,9 +382,15 @@ class UserMainPage(CTkFrame):
                 if admin.email:
                     self.email_controller.notify_low_stock(
                         recipient_email=admin.email,
-                        product_name=item.name,  # Assuming item has a name attribute
+                        product_name=item.name,  
                         available_quantity=item.quantity,
                         language=get_system_language()
+                    )
+                if admin.mattermost_username:
+                    self.mattermost_controller.notify_low_stock(
+                        username=admin.mattermost_username,
+                        product_name=item.name,  
+                        available_quantity=item.quantity
                     )
 
     def process_barcode(self, barcode_value):
