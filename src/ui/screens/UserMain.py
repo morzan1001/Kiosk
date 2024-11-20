@@ -3,10 +3,7 @@ from typing import List
 from tkinter import IntVar
 from PIL import Image, ImageTk
 from datetime import datetime
-from custom_email.email_controller import EmailController
-from lock.lock import GPIOController
 from logmgr import logger
-from sounds.sound_controller import SoundController
 from src.localization.translator import get_translations
 from src.ui.components.Message import ShowMessage
 from src.ui.components.ItemFrame import ItemFrame
@@ -36,9 +33,9 @@ class UserMainPage(CTkFrame):
         # Define the main frame
         self.grid(row=0, column=0, sticky="nsew")
 
-        self.gpio_controller: GPIOController = get_gpio_controller()
-        self.email_controller: EmailController = get_email_controller()
-        self.sound_controller: SoundController = get_sound_controller()
+        self.gpio_controller = get_gpio_controller()
+        self.email_controller = get_email_controller()
+        self.sound_controller = get_sound_controller()
 
         self.configure(width=800, height=480, fg_color="transparent")
 

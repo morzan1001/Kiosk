@@ -1,3 +1,4 @@
+from typing import List
 from customtkinter import *
 from src.localization.translator import get_translations
 from src.ui.components.HeadingFrame import HeadingFrame
@@ -8,14 +9,15 @@ from src.database import get_db, Item
 
 class ItemListFrame(CTkFrame):
     def __init__(
-        self, parent, heading_text, back_button_function, data, *args, **kwargs
+        self, parent, heading_text: str, back_button_function: function, items: List[Item], *args, **kwargs
     ):
         super().__init__(parent, *args, **kwargs)
 
         self.parent = parent
-        self.heading_text = heading_text
-        self.back_button_function = back_button_function
+        self.heading_text: str = heading_text
+        self.back_button_function: function = back_button_function
         self.translations = get_translations()
+        self.items: List[Item] = items
 
         self.session = get_db()
 
@@ -40,11 +42,11 @@ class ItemListFrame(CTkFrame):
 
         self.item_list_frame.grid_columnconfigure(0, weight=1)
 
-        for i in range(len(data)):
+        for i in range(len(self.items)):
             self.item_list_frame.grid_rowconfigure(i, weight=1)
 
         # Add frames for items
-        for indx, item in enumerate(data):
+        for indx, item in enumerate(self.items):
             sub_frame = CTkFrame(
                 self.item_list_frame, fg_color="white", width=580, height=60
             )
@@ -98,9 +100,9 @@ class ItemListFrame(CTkFrame):
         self.add_new_item_button.grid(row=2, column=0, pady=10)
 
     def return_to_items_listing(self):
-        items = Item.read_all(self.session)
+        all_items: List[Item] = Item.read_all(self.session)
         ItemListFrame(
-            self.parent, self.heading_text, self.back_button_function, items
+            self.parent, self.heading_text, self.back_button_function, all_items
         ).grid(row=0, column=0, sticky="ns", ipadx=50, ipady=20)
         if hasattr(self, "new_item_frame"):
             self.new_item_frame.destroy()
@@ -115,7 +117,7 @@ class ItemListFrame(CTkFrame):
         )
         self.new_item_frame.grid(row=0, column=0, sticky="ns")
 
-    def update_item(self, event, item_id):
+    def update_item(self, event, item_id: int):
         self.destroy()
         self.new_item_frame = UpdateItemFrame(
             self.parent,

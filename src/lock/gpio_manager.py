@@ -14,7 +14,7 @@ def initialize_gpio(chip="/dev/gpiochip0", line_number=4):
         logger.error("Error starting GPIO: ", e)
         raise
 
-def get_gpio_controller():
+def get_gpio_controller() -> GPIOController:
     global gpio_controller
     if gpio_controller is None:
         logger.error("GPIO Controller is not initialized")
