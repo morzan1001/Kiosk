@@ -10,7 +10,7 @@ from src.database import get_db, User, Item
 
 
 class AdminMainFrame(CTkFrame):
-    def __init__(self, parent, main_menu, user, user_count, item_count):
+    def __init__(self, parent, main_menu, user: User, user_count: int, item_count: int):
         super().__init__(parent)
 
         self.parent = parent

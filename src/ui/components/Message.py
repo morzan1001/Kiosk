@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 
 
 class ShowMessage(CTkFrame):
-    def __init__(self, root, image, heading, text, *args, **kwargs):
+    def __init__(self, root, image, heading: str, text: str, *args, **kwargs):
         super().__init__(root, *args, **kwargs)
 
         # Create the main frame

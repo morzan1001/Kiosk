@@ -16,7 +16,7 @@ class AddNewItemFrame(CTkFrame):
         self.grid_columnconfigure((0, 1), weight=1)
         self.grid_rowconfigure((0, 1, 2, 3, 4, 5), weight=1)
 
-        self.barcode = ""
+        self.barcode: str = ""
         self.parent = parent
         self.back_button_function = back_button_function
         self.translations = get_translations()

@@ -7,7 +7,7 @@ class AddBarcodeFrame(CTkToplevel):
         super().__init__(parent, *args, **kwargs)
 
         # Initialize a variable to store the barcode
-        self.barcode = ""
+        self.barcode: str = ""
         self.confirm_function = confirm_function
         self.translations = get_translations()
 
@@ -103,7 +103,7 @@ class AddBarcodeFrame(CTkToplevel):
             # Append the scanned character to the barcode string
             self.barcode += event.char
 
-    def process_barcode(self, barcode_value):
+    def process_barcode(self, barcode_value: str):
         # Function to handle the barcode value
         self.barcode_entry.delete(0, 'end')  # Clear the previous entry to avoid appending
         self.barcode_entry.insert(0, str(barcode_value))

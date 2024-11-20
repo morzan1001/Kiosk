@@ -2,7 +2,7 @@ from customtkinter import *
 from PIL import Image, ImageTk
 
 class AdminPurchaseItemsFrame(CTkFrame):
-    def __init__(self, master, image, heading, data, *args, **kwargs):
+    def __init__(self, master, image, heading: str, data, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
 
         self.grid_columnconfigure((0, 1), weight=1)

@@ -2,7 +2,7 @@ from customtkinter import *
 from PIL import Image, ImageTk
 
 class HeadingFrame(CTkFrame):
-    def __init__(self, parent, heading_text, back_button_function, delete_button_function=None, *args, **kwargs):
+    def __init__(self, parent, heading_text: str, back_button_function, delete_button_function=None, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
         # Configure the frame

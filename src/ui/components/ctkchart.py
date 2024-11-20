@@ -10,12 +10,7 @@ class CTkPieChart(ctk.CTkLabel):
     Version: 0.1
     """
     
-    def __init__(self,
-                 master,
-                 command=None,
-                 values={},
-                 font_size=None,
-                 **kwargs):
+    def __init__(self, master, command=None, values={}, font_size=None, **kwargs):
 
         self.arc = None
         self.im = Image.new('RGBA', (1000, 1000))

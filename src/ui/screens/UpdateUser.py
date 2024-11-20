@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
 class UpdateUserFrame(CTkFrame):
-    def __init__(self, parent, back_button_function, user_id, *args, **kwargs):
+    def __init__(self, parent, back_button_function, user_id: int, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
         logger.debug("Initializing UpdateUserFrame with user_id=%s", user_id)
@@ -25,9 +25,9 @@ class UpdateUserFrame(CTkFrame):
 
         self.parent = parent
         self.back_button_function = back_button_function
-        self.user_id = user_id
+        self.user_id: int = user_id
         self.translations = get_translations()
-        self.nfcid = ""
+        self.nfcid: str = ""
 
         self.session = get_db()
 
@@ -285,8 +285,7 @@ class UpdateUserFrame(CTkFrame):
         type = self.type.get()
         nfcid = self.nfcid.strip()
 
-        logger.debug("Input data: name='%s', nfcid='%s', user_credits='%s', type='%s'",
-                     name, nfcid, user_credits, type)
+        logger.debug("Input data: name='%s', nfcid='%s', user_credits='%s', type='%s'", name, nfcid, user_credits, type)
 
         if not (name and nfcid):
             logger.debug("Name or NFCID is missing")

@@ -1,3 +1,4 @@
+from typing import List
 from customtkinter import *
 from src.localization.translator import get_translations
 from .NewUser import AddUserFrame
@@ -8,13 +9,13 @@ from src.ui.components.UserFrame import UserFrame
 
 class UserListFrame(CTkFrame):
     def __init__(
-        self, parent, heading_text, back_button_function, data, *args, **kwargs
+        self, parent, heading_text: str, back_button_function, users: List[User], *args, **kwargs
     ):
         super().__init__(parent, *args, **kwargs)
 
         self.parent = parent
         self.back_button_function = back_button_function
-        self.heading_text = heading_text
+        self.heading_text: str = heading_text
         self.translations = get_translations()
 
         self.session = get_db()
@@ -40,11 +41,11 @@ class UserListFrame(CTkFrame):
 
         self.user_list_frame.grid_columnconfigure(0, weight=1)
 
-        for i in range(len(data)):
+        for i in range(len(users)):
             self.user_list_frame.grid_rowconfigure(i, weight=1)
 
         # Add frames for users
-        for indx, user in enumerate(data):
+        for indx, user in enumerate(users):
             sub_frame = CTkFrame(
                 self.user_list_frame, fg_color="white", width=580, height=60
             )
@@ -57,26 +58,26 @@ class UserListFrame(CTkFrame):
 
             # Add widgets to the sub_frame
             user_frame = UserFrame(
-                sub_frame, data=(user[0], user[1], user[2]), fg_color="white"
+                sub_frame, data=(user.id, user.name, user.credit), fg_color="white"
             )
             user_frame.grid(row=0, column=0, sticky="w")
 
             sub_frame.bind(
                 "<Button-1>",
-                lambda event, user_id=user[0]: self.update_user(event, user_id),
+                lambda event, user_id=user.id: self.update_user(event, user_id),
             )
 
             user_frame.bind(
                 "<Button-1>",
-                lambda event, user_id=user[0]: self.update_user(event, user_id),
+                lambda event, user_id=user.id: self.update_user(event, user_id),
             )
 
             # Bind all children of user_count_frame to user_count_clicked
             for child in sub_frame.winfo_children():
-                child.bind("<Button-1>", lambda event, user_id=user[0]: self.update_user(event, user_id))
+                child.bind("<Button-1>", lambda event, user_id=user.id: self.update_user(event, user_id))
 
             for child in user_frame.winfo_children():
-                child.bind("<Button-1>", lambda event, user_id=user[0]: self.update_user(event, user_id))
+                child.bind("<Button-1>", lambda event, user_id=user.id: self.update_user(event, user_id))
 
         self.add_new_user_button = CTkButton(
             self,
@@ -90,7 +91,7 @@ class UserListFrame(CTkFrame):
         )
         self.add_new_user_button.grid(row=2, column=0, pady=10)
 
-    def update_user(self, event, user_id):
+    def update_user(self, event, user_id: int):
         self.destroy()
         self.update_user_frame = UpdateUserFrame(
             self.parent,
@@ -103,7 +104,7 @@ class UserListFrame(CTkFrame):
         self.update_user_frame.grid(row=0, column=0, sticky="ns")
 
     def return_to_user_listing(self):
-        users = User.read_all(self.session)
+        users: List[User] = User.read_all(self.session)
         UserListFrame(
             self.parent, self.heading_text, self.back_button_function, users
         ).grid(row=0, column=0, sticky="ns", ipadx=50, ipady=20)

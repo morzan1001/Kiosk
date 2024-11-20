@@ -14,7 +14,7 @@ class AddUserFrame(CTkFrame):
         self.parent = parent
         self.back_button_function = back_button_function
         self.translations = get_translations()
-        self.nfcid = ""
+        self.nfcid: str = ""
 
         self.session = get_db()
 

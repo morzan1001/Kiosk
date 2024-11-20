@@ -1,30 +1,22 @@
 from src.localization.translator import get_translations
-from src.nfc_reader import NFC_READER
+from src.nfc_reader import NFCReader
 from src.logmgr import logger
 from customtkinter import *
 from PIL import Image, ImageTk
 from src.ui.components.HeadingFrame import HeadingFrame
 
 class ScanCardFrame(CTkFrame):
-    def __init__(
-        self,
-        parent,
-        heading_text,
-        set_nfcid_id,
-        back_button_function,
-        *args,
-        **kwargs
-    ):
+    def __init__(self, parent, heading_text: str, set_nfcid_id: str, back_button_function, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
-        self.nfc_reader = NFC_READER()
+        self.nfc_reader = NFCReader()
 
         self.go_back_function = back_button_function
         self.parent = parent
         self.translations = get_translations()
         self.parent.title(self.translations["general"]["kiosk_title"])
         self.parent.geometry("800x480")
-        self.set_nfcid_id = set_nfcid_id
+        self.set_nfcid_id: str = set_nfcid_id
         
 
         # Register the callback to be called when an NFC ID is read
@@ -67,7 +59,7 @@ class ScanCardFrame(CTkFrame):
         self.bottom_image_label = CTkLabel(self, image=self.bottom_image, text="")
         self.bottom_image_label.grid(row=4, column=0)
 
-    def process_nfc_id(self, current_id):
+    def process_nfc_id(self, current_id: str):
         """
         Callback function to process the NFC ID.
         """

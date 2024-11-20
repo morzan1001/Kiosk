@@ -10,14 +10,14 @@ from src.database import get_db, Item
 from io import BytesIO
 
 class UpdateItemFrame(CTkFrame):
-    def __init__(self, parent, back_button_function, item_id, *args, **kwargs):
+    def __init__(self, parent, back_button_function, item_id: int, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
         self.parent = parent
-        self.item_id = item_id
+        self.item_id: int = item_id
         self.back_button_function = back_button_function
         self.translations = get_translations()
-        self.barcode = ""
+        self.barcode: str = ""
 
         self.session = get_db()
 
