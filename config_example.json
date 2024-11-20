@@ -5,6 +5,10 @@
         "login": "<login>",
         "password": "<password>"
     },
+    "mattermost": {
+        "enabled": true,
+        "webhook_url": "YOUR_MATTERMOST_WEBHOOK_URL"
+    },
     "gpio": {
         "chip": "/dev/gpiochip0",
         "line_number": 4

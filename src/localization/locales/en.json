@@ -77,5 +77,9 @@
         "low_stock_subject": "Low Stock Alert",
         "footer": "Kiosk - <a href=\"https://github.com/morzan1001/Kiosk\">https://github.com/morzan1001/Kiosk</a>",
         "do_not_respond": "Please do not respond to this email. The mailbox will not be monitored."
+    },
+    "mattermost": {
+        "low_balance": ":warning: **Attention {name}!** :warning:\n\nYour balance is low: **{balance:.2f}€**.\nPlease top up your account to continue shopping.\n:money_with_wings: Thank you! :money_with_wings:",
+        "low_stock": ":warning: **Attention Admin!** :warning:\n\nThe product **{product_name}** has only **{available_quantity}** items left in stock.\nPlease reorder.\n:package: Thank you! :package:"
     }
 }
