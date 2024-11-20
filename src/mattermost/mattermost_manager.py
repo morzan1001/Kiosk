@@ -10,7 +10,6 @@ from datetime import datetime, timedelta
 
 mattermost_controller = None
 scheduler = None
-translations = get_translations()
 
 def initialize_mattermost_controller(webhook_url: str):
     """Initialize the MattermostController and the scheduler."""

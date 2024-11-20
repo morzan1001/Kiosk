@@ -5,6 +5,7 @@ from src.database.connection import Base
 
 class User(Base):
     __tablename__ = "users"
+    __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     nfcid = Column(String, nullable=False)
@@ -12,17 +13,18 @@ class User(Base):
     type = Column(String, nullable=False)
     credit = Column(Float, nullable=False)
     email = Column(String, nullable=True)
+    mattermost_username = Column(String, nullable=True)
 
     def __repr__(self):
         return (
-            f"<User(id={self.nfcid}, name='{self.name}', credit={self.credit}, email='{self.email}')>"
+            f"<User(id={self.nfcid}, name='{self.name}', credit={self.credit}, email='{self.email}', mattermost_username='{self.mattermost_username}')>"
         )
 
     def create(self, session):
         session.add(self)
         session.commit()
 
-    def update(self, session, nfcid=None, type=None, name=None, credit=None, email=None):
+    def update(self, session, nfcid=None, type=None, name=None, credit=None, email=None, mattermost_username=None):
         if nfcid:
             self.nfcid = nfcid
         if type:
@@ -33,6 +35,8 @@ class User(Base):
             self.credit = credit
         if email is not None:
             self.email = email
+        if mattermost_username is not None:
+            self.mattermost_username = mattermost_username
         session.commit()
 
     def delete(self, session):
