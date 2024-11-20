@@ -60,11 +60,15 @@ Here are a few ideas on how to expand the software:
 
 ### 🎵 Sounds
 
-As no gag I have implemented that the kiosk can play sounds when a product is purchased or when a purchase fails. For this purpose, sound files can be specified in two folders. Once positive sounds and once negative sounds. the whole thing can be switched on and off in [config.json](https://github.com/morzan1001/Kiosk/blob/55f6aa53e813dca5f23ecad09443a982eb1d9212/config_example.json#L18). 
+As no gag I have implemented that the kiosk can play sounds when a product is purchased or when a purchase fails. For this purpose, sound files can be specified in two folders. Once positive sounds and once negative sounds. the whole thing can be switched on and off in [config.json](https://github.com/morzan1001/Kiosk/blob/55f6aa53e813dca5f23ecad09443a982eb1d9212/config_example.json#L22).
 
 ### 📧 E-Mail
 
-The kiosk can notify users when their account balance gets low, or administrators when a product stock is running low. In addition, the kiosk can send monthly statistics to users about their purchasing behavior. A corresponding SMTP server can be configured in [config.json](https://github.com/morzan1001/Kiosk/blob/55f6aa53e813dca5f23ecad09443a982eb1d9212/config_example.json#L2). If a user does not have a stored e-mail address in the database, he simply does not receive any e-mails, the field is not mandatory. 
+The kiosk can notify users when their account balance gets low, or administrators when a product stock is running low. In addition, the kiosk can send monthly statistics to users about their purchasing behavior. A corresponding SMTP server can be configured in [config.json](https://github.com/morzan1001/Kiosk/blob/55f6aa53e813dca5f23ecad09443a982eb1d9212/config_example.json#L2). If a user does not have a stored e-mail address in the database, he simply does not receive any e-mails, the field is not mandatory.
+
+## 🎺 Mattermost
+
+the kiosk can also notify users via mattermost webhooks. On the one hand, standard messages such as “low account balance” or for admins “low stock” are possible. On the other hand, short-term marketing messages can also be sent. The idea is that the kiosk regularly evaluates which users have bought little, on this basis individual users are offered a discount via mattermost that is valid for a certain time. the entire mattermost integration can be configured in [config.json](https://github.com/morzan1001/Kiosk/blob/55f6aa53e813dca5f23ecad09443a982eb1d9212/config_example.json#L8).
 
 ## 🛠️ Service
 <a name="service"></a>
