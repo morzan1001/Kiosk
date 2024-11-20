@@ -1,4 +1,5 @@
 """This file holds the transaction model."""
+from typing import List
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 
 from src.database.connection import Base
@@ -28,9 +29,5 @@ class Transaction(Base):
         session.commit()
 
     @classmethod
-    def read_all_for_user(cls, session, user_id):
-        transactions = session.query(cls).filter(cls.user_id == user_id).all()
-        return [
-            (transaction.id, transaction.date, transaction.cost, transaction.category)
-            for transaction in transactions
-        ]
+    def read_all_for_user(cls, session, user_id: int) -> List['Transaction']:
+        return session.query(cls).filter(cls.user_id == user_id).all()

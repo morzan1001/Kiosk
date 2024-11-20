@@ -9,7 +9,7 @@ from src.database import get_db, Item
 
 
 class AddNewItemFrame(CTkFrame):
-    def __init__(self, parent, back_button_function: function, *args, **kwargs):
+    def __init__(self, parent, back_button_function, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
         # Configure the grid for the frame
@@ -18,7 +18,7 @@ class AddNewItemFrame(CTkFrame):
 
         self.barcode: str = ""
         self.parent = parent
-        self.back_button_function: function = back_button_function
+        self.back_button_function = back_button_function
         self.translations = get_translations()
 
         self.session = get_db()

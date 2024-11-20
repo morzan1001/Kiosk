@@ -8,11 +8,11 @@ from src.ui.components.Message import ShowMessage
 
 
 class AddUserFrame(CTkFrame):
-    def __init__(self, parent, back_button_function: function, *args, **kwargs):
+    def __init__(self, parent, back_button_function, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
         self.parent = parent
-        self.back_button_function: function = back_button_function
+        self.back_button_function = back_button_function
         self.translations = get_translations()
         self.nfcid: str = ""
 

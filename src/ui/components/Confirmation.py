@@ -5,10 +5,10 @@ from src.localization.translator import get_translations
 
 
 class DeleteConfirmation(CTkToplevel):
-    def __init__(self, parent, confirm_function: function, to_delete, *args, **kwargs):
+    def __init__(self, parent, confirm_function, to_delete, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
-        self.confirm_function: function = confirm_function
+        self.confirm_function = confirm_function
         self.translations = get_translations()
 
         # Get screen width and height

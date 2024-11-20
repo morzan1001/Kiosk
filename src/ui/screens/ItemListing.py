@@ -9,13 +9,13 @@ from src.database import get_db, Item
 
 class ItemListFrame(CTkFrame):
     def __init__(
-        self, parent, heading_text: str, back_button_function: function, items: List[Item], *args, **kwargs
+        self, parent, heading_text: str, back_button_function, items: List[Item], *args, **kwargs
     ):
         super().__init__(parent, *args, **kwargs)
 
         self.parent = parent
         self.heading_text: str = heading_text
-        self.back_button_function: function = back_button_function
+        self.back_button_function = back_button_function
         self.translations = get_translations()
         self.items: List[Item] = items
 

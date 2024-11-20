@@ -9,12 +9,12 @@ from src.ui.components.UserFrame import UserFrame
 
 class UserListFrame(CTkFrame):
     def __init__(
-        self, parent, heading_text: str, back_button_function: function, users: List[User], *args, **kwargs
+        self, parent, heading_text: str, back_button_function, users: List[User], *args, **kwargs
     ):
         super().__init__(parent, *args, **kwargs)
 
         self.parent = parent
-        self.back_button_function: function = back_button_function
+        self.back_button_function = back_button_function
         self.heading_text: str = heading_text
         self.translations = get_translations()
 

@@ -3,12 +3,12 @@ from customtkinter import *
 from src.localization.translator import get_translations
 
 class AddBarcodeFrame(CTkToplevel):
-    def __init__(self, parent, confirm_function: function, *args, **kwargs):
+    def __init__(self, parent, confirm_function, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
         # Initialize a variable to store the barcode
         self.barcode: str = ""
-        self.confirm_function: function = confirm_function
+        self.confirm_function = confirm_function
         self.translations = get_translations()
 
         # Bind the event for handling barcode input (keypress events)
