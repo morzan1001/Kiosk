@@ -9,6 +9,7 @@ from sqlalchemy.orm import relationship
 # Define the Transaction model
 class Transaction(Base):
     __tablename__ = "transactions"
+    __table_args__ = {"extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
