@@ -18,7 +18,8 @@ class Transaction(Base):
     cost = Column(String, nullable=False)
     category = Column(String, nullable=False)
 
-    item = relationship("Item")
+    item = relationship("Item", overlaps="item")
+    user = relationship("User", overlaps="user")
 
     def __repr__(self):
         return (

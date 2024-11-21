@@ -63,7 +63,7 @@ class MattermostController:
         }
         # Create a direct message channel
         channel_url = f"{self.base_url}/api/v4/channels/direct"
-        channel_payload = [user_id]
+        channel_payload = [self._get_bot_user_id(), user_id]
         channel_response = requests.post(channel_url, json=channel_payload, headers=headers)
         if channel_response.status_code != 201:
             logger.error(f"Failed to create direct message channel: {channel_response.text}")
@@ -81,8 +81,11 @@ class MattermostController:
         else:
             logger.info(f"Direct message sent to Mattermost user {user_id}")
 
-
     def _get_user_id(self, username: str):
+        # Entferne das '@'-Symbol, falls vorhanden
+        if username.startswith('@'):
+            username = username[1:]
+
         url = f"{self.base_url}/api/v4/users/username/{username}"
         headers = {
             "Authorization": f"Bearer {self.bot_token}",
@@ -91,6 +94,18 @@ class MattermostController:
         response = requests.get(url, headers=headers)
         if response.status_code != 200:
             logger.error(f"Failed to get user ID for username {username}: {response.text}")
+            return None
+        return response.json().get("id")
+
+    def _get_bot_user_id(self):
+        url = f"{self.base_url}/api/v4/users/me"
+        headers = {
+            "Authorization": f"Bearer {self.bot_token}",
+            "Content-Type": "application/json"
+        }
+        response = requests.get(url, headers=headers)
+        if response.status_code != 200:
+            logger.error(f"Failed to get bot user ID: {response.text}")
             return None
         return response.json().get("id")
 

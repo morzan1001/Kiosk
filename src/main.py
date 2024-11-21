@@ -67,7 +67,7 @@ def main():
         # Initialize MattermostController if enabled
         if config["mattermost"]["enabled"]:
             logger.debug("Initializing Mattermost Controller")
-            initialize_mattermost_controller(webhook_url=config["mattermost"]["webhook_url"])
+            initialize_mattermost_controller(base_url=config["mattermost"]["base_url"],bot_token=config["mattermost"]["bot_token"])
             logger.info("Mattermost Controller initialized")
         else:
             logger.info("Mattermost notifications are disabled in configuration")
