@@ -83,12 +83,12 @@
         "low_stock": ":warning: **Attention Admin!** :warning:\n\nThe product **{product_name}** has only **{available_quantity}** items left in stock.\nPlease reorder.\n:package: Thank you! :package:"
     },
     "monthly_summary": {
-        "title": "Monthly Report for {name}",
-        "period": "Period: {start_date} - {end_date}",
-        "total_spent": "Total spent: {total_amount:.2f}€",
-        "transaction_count": "Number of transactions: {transaction_count}",
-        "product_table_header": "| Product | Quantity | Total cost |",
-        "product_table_row": "| {product_name} | {quantity} | {total_cost:.2f}€ |",
-        "footer": ":moneybag: Thank you for your purchases! :moneybag:"
+        "title": "# :bar_chart: **Monthly Report for {name}** :bar_chart:",
+        "period": "## :calendar: Period: **{start_date} - {end_date}**",
+        "total_spent": ":euro: Total spent: **{total_amount:.2f}€**",
+        "transaction_count": ":shopping_bags: Number of transactions: **{transaction_count}**",
+        "product_table_header": "\n### :shopping_cart: Purchased Products\n\n| Product | Quantity | Total Cost |\n|---|---|---|",
+        "product_table_row": "| {product_name} | **{quantity}** | **{total_cost:.2f}€** |",
+        "footer": "\n\n:money_with_wings: **Thank you for your purchases!** :money_with_wings:"
     }
 }

@@ -3,7 +3,7 @@ import sqlalchemy.exc
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from logmgr import logger
+from src.logmgr import logger
 
 DATABASE_URL = "sqlite:///src/database/kiosk.db"
 

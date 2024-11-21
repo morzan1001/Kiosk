@@ -1,10 +1,8 @@
 """This file holds the transaction model."""
 from typing import List
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Float, Integer, String, DateTime, ForeignKey
 
 from src.database.connection import Base
-
-from sqlalchemy.orm import relationship
 
 # Define the Transaction model
 class Transaction(Base):
@@ -15,15 +13,12 @@ class Transaction(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     item_id = Column(Integer, ForeignKey('items.id'), nullable=False)
     date = Column(DateTime, nullable=False)
-    cost = Column(String, nullable=False)
+    cost = Column(Float, nullable=False)
     category = Column(String, nullable=False)
-
-    item = relationship("Item", overlaps="item")
-    user = relationship("User", overlaps="user")
 
     def __repr__(self):
         return (
-            f"<Transaction(id={self.id}, category={self.category}, cost='{self.cost}')>"
+            f"<Transaction(id={self.id}, category={self.category}, cost='{self.cost}', item_id='{self.item_id}', user_id='{self.user_id}', date='{self.date}')>"
         )
 
     def create(self, session):

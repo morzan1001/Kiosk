@@ -1,17 +1,14 @@
 import requests
 import threading
 from queue import Queue
-from src.logmgr import logger
-from src.localization.translator import get_translations
-from src.database.connection import get_db
-from src.database.models.user import User
+from logmgr import logger
+from localization.translator import get_translations
 
 class MattermostController:
     def __init__(self, base_url, bot_token):
         self.base_url = base_url
         self.bot_token = bot_token
         self.queue = Queue()
-        self.translations = get_translations()
         self.thread = threading.Thread(target=self._process_queue)
         self.thread.daemon = True
         self.thread.start()

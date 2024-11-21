@@ -78,3 +78,6 @@ config.json
 # Sounds
 src/sounds/negative/*
 src/sounds/positive/*
+
+alembic/
+alembic.ini

@@ -1,12 +1,13 @@
-from src.mattermost.mattermost_controller import MattermostController
+from mattermost.mattermost_controller import MattermostController
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
-from src.logmgr import logger
-from src.database.connection import get_db
-from src.database.models.user import User
-from src.database.models.transaction import Transaction
+from logmgr import logger
+from database.connection import get_db
+from database.models.user import User
+from database.models.transaction import Transaction
+from database.models.item import Item
 from datetime import datetime, timedelta
-from src.localization.translator import get_translations, get_system_language
+from src.localization.translator import get_translations
 
 mattermost_controller = None
 scheduler = None
@@ -44,21 +45,19 @@ def send_monthly_summaries():
         # Generate the summary for the user
         summary = get_monthly_summary(user, session)
         # Send the message if the user has a Mattermost username
-        if user.mattermost_user_id and user.notifications_enabled:
+        if user.mattermost_username:
             mattermost_controller.send_direct_message(
-                user_id=user.mattermost_user_id,
+                username=user.mattermost_username,
                 message=summary
             )
             logger.info(f"Monthly summary sent to user {user.name} ({user.mattermost_username})")
         else:
-            logger.warning(f"User {user.name} does not have a Mattermost user ID or notifications are disabled, skipping.")
+            logger.warning(f"User {user.name} does not have a Mattermost username, skipping.")
     logger.info("Monthly summaries have been sent to all users")
 
 def get_monthly_summary(user, session):
     """Generate a monthly summary for a given user."""
-    # Get translations based on user's language
-    language = user.language if hasattr(user, 'language') else 'de'
-    translations = get_translations(language)
+    translations = get_translations()
 
     # Calculate the date range for the last month
     today = datetime.today()
@@ -80,7 +79,9 @@ def get_monthly_summary(user, session):
 
     for t in transactions_in_last_month:
         total_amount += t.cost
-        product_name = t.item.name if t.item else "Unknown Product"
+
+        item = Item.get_by_id(session, item_id=t.item_id) if t.item_id else None
+        product_name = item.name if item else "Unknown Product"
 
         if product_name in product_purchases:
             product_purchases[product_name]["quantity"] += 1

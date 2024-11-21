@@ -1,11 +1,13 @@
-from src.custom_email.email_controller import EmailController
+from custom_email.email_controller import EmailController
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
-from src.logmgr import logger
-from src.database.connection import get_db
-from src.database.models.user import User
-from src.database.models.transaction import Transaction
+from logmgr import logger
+from database.connection import get_db
+from database.models.user import User
+from database.models.transaction import Transaction
+from database.models.item import Item
 from datetime import datetime, timedelta
+from localization.translator import get_system_language
 
 email_controller = None
 scheduler = None
@@ -49,7 +51,7 @@ def send_monthly_summaries():
         summary = get_monthly_summary(user, session)
         # Send the email if the user has an email address
         if user.email:
-            email_controller.send_monthly_summary(recipient_email=user.email, summary=summary)
+            email_controller.send_monthly_summary(recipient_email=user.email, summary=summary, language=get_system_language())
             logger.info(f"Monthly summary sent to user {user.name} ({user.email})")
         else:
             logger.warning(f"User {user.name} does not have an email address, skipping.")
@@ -77,7 +79,9 @@ def get_monthly_summary(user, session):
 
     for t in transactions_in_last_month:
         total_amount += t.cost
-        product_name = t.item.name if t.item else "Unknown Product"
+
+        item = Item.get_by_id(session, item_id=t.item_id) if t.item_id else None
+        product_name = item.name if item else "Unknown Product"
 
         if product_name in product_purchases:
             product_purchases[product_name]["quantity"] += 1

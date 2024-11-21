@@ -7,6 +7,7 @@ from src.database.connection import Base
 # Define the Item model
 class Item(Base):
     __tablename__ = "items"
+    __table_args__ = {"extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     image = Column(LargeBinary, nullable=True)  # For storing images as binary data
