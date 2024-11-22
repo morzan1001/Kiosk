@@ -1,8 +1,8 @@
 import requests
 import threading
 from queue import Queue
-from logmgr import logger
-from localization.translator import get_translations
+from src.logmgr import logger
+from src.localization.translator import get_translations
 
 class MattermostController:
     def __init__(self, base_url, bot_token):
@@ -109,10 +109,10 @@ class MattermostController:
     def notify_low_balance(self, user, balance):
         """Notify user about low balance via Mattermost."""
         translations = get_translations()
-        if user.mattermost_user_id and user.notifications_enabled:
+        if user.mattermost_username:
             message = translations["mattermost"]["low_balance"].format(name=user.name, balance=balance)
             self.send_direct_message(
-                user_id=user.mattermost_user_id,
+                username=user.mattermost_username,
                 message=message
             )
             logger.info(f"Low balance notification sent to user {user.name} ({user.mattermost_user_id})")
@@ -122,10 +122,10 @@ class MattermostController:
     def notify_low_stock(self, admin, product_name, available_quantity):
         """Notify admin about low stock via Mattermost."""
         translations = get_translations()
-        if admin.mattermost_user_id and admin.notifications_enabled:
+        if admin.mattermost_username:
             message = translations["mattermost"]["low_stock"].format(product_name=product_name, available_quantity=available_quantity)
             self.send_direct_message(
-                user_id=admin.mattermost_user_id,
+                username=admin.mattermost_username,
                 message=message
             )
             logger.info(f"Low stock notification sent to admin {admin.name} ({admin.mattermost_user_id})")

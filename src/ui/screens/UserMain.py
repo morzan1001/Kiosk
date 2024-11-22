@@ -3,17 +3,17 @@ from typing import List
 from tkinter import IntVar
 from PIL import Image, ImageTk
 from datetime import datetime
-from logmgr import logger
-from src.localization.translator import get_translations
+from src.logmgr import logger
 from src.ui.components.Message import ShowMessage
 from src.ui.components.ItemFrame import ItemFrame
 from src.ui.components.QuantityFrame import QuantityFrame
-from database import get_db, User, Item
-from database.models.transaction import Transaction
-from lock.gpio_manager import get_gpio_controller
-from custom_email.email_manager import get_email_controller
-from localization.translator import get_system_language
-from sounds.sound_manager import get_sound_controller
+from src.database import get_db, User, Item
+from src.database.models.transaction import Transaction
+from src.lock.gpio_manager import get_gpio_controller
+from src.custom_email.email_manager import get_email_controller
+from src.localization.translator import get_system_language, get_translations
+from src.sounds.sound_manager import get_sound_controller
+from src.mattermost.mattermost_manager import get_mattermost_controller
 
 class UserMainPage(CTkFrame):
     def __init__(
@@ -251,112 +251,127 @@ class UserMainPage(CTkFrame):
         self.main_menu(self.root).grid(row=0, column=0, sticky="nsew")
 
     def checkout(self):
-        for quantity, item in self.shopping_cart:
-            requested_quantity = int(quantity.get())
-
-            item_id = item.id
-            name = item.name
-            price = item.price
-            item_quantity = item.quantity
-            category = item.category
-
-            if requested_quantity > item_quantity:
-                # Play negative sound when an item is not available in sufficient quantity
-                if self.sound_controller:  # Check if the sound_controller is initialized
-                    logger.debug("Playing negative sound due to insufficient product quantity")
-                    self.sound_controller.play_sound('negative')
-
-                self.message = ShowMessage(
-                    self.root,
-                    image="unsuccessful",
-                    heading=self.translations["user"]["checkout_unsuccessful"],
-                    text=self.translations["items"]["item_quantity_message"].format(item_quantity=item_quantity, name=name),
-                )
-                self.root.after(5000, self.message.destroy)
-                return
-            
         if self.total_price == 0:
             return
-        elif self.total_price > float(self.user_credit):
-            # Play negative sound when the user does not have enough credit
-            if self.sound_controller:  # Check if the sound_controller is initialized
-                logger.debug("Playing negative sound due to insufficient credit")
-                self.sound_controller.play_sound('negative')
-                
-            self.message = ShowMessage(
-                self.root,
-                image="unsuccessful",
-                heading=self.translations["user"]["checkout_unsuccessful"],
-                text=self.translations["user"]["insufficient_credit_message"],
+
+        user_credit = self.user.credit
+        if self.total_price > float(user_credit):
+            self._handle_insufficient_credit()
+            return
+
+        # First validate all items are available in requested quantities
+        for quantity, item in self.shopping_cart:
+            requested_quantity = int(quantity.get())
+            if requested_quantity > item.quantity:
+                self._handle_insufficient_quantity(item, requested_quantity)
+                return
+
+        # If validation passed, process the checkout
+        try:
+            self._process_checkout(user_credit)
+        except Exception as e:
+            logger.error(f"Checkout failed: {str(e)}")
+            self._handle_checkout_error()
+
+    def _process_checkout(self, user_credit):
+        current_datetime = datetime.now()
+        
+        # Process all items in one loop
+        for quantity, item in self.shopping_cart:
+            requested_quantity = int(quantity.get())
+            if requested_quantity <= 0:
+                continue
+
+            # Update item quantity
+            item_instance = Item.get_by_id(self.session, item.id)
+            if item_instance:
+                new_quantity = item.quantity - requested_quantity
+                item_instance.update(self.session, quantity=new_quantity)
+
+            # Create transaction
+            new_transaction = Transaction(
+                item_id=item.id,
+                user_id=self.user.id,
+                date=current_datetime,
+                cost=str(item.price * requested_quantity),
+                category=item.category
             )
-            self.root.after(5000, self.message.destroy)
-        else:
-            current_datetime = datetime.now()
-            for quantity, item in self.shopping_cart:
-                requested_quantity = int(quantity.get())
+            new_transaction.create(self.session)
 
-                if requested_quantity > 0:
-                    item_id = item.id
-                    name = item.name
-                    price = item.price
-                    item_quantity = item.quantity
-                    category = item.category
-                    new_quantity = item_quantity - requested_quantity
+            # Check stock levels
+            self.check_product_stock_and_notify(item)
 
-                    # Load the item using the class method get_by_id
-                    item_instance = Item.get_by_id(self.session, item_id)
-                    if item_instance:
-                        # Update the item
-                        item_instance.update(self.session, quantity=new_quantity)
+        # Update user credit
+        new_credit = float(user_credit) - self.total_price
+        user_instance = User.get_by_id(self.session, self.user.id)
+        if user_instance:
+            user_instance.update(self.session, credit=new_credit)
+            self._check_low_balance(user_instance, new_credit)
 
-                    # Create and save a new transaction
-                    new_transaction = Transaction(
-                        item_id=item_id,
-                        user_id=self.user_id, 
-                        date=current_datetime, 
-                        cost=str(price * requested_quantity), 
-                        category=category
-                    )
-                    new_transaction.create(self.session)
+        self._show_success_message()
+        self.credits_label.configure(
+            text=self.translations["user"]["credits_message"].format(user_credit=new_credit)
+        )
+        self.items = Item.read_all(self.session)
+        
+        if self.sound_controller:
+            logger.debug("Playing positive sound on successful checkout")
+            self.sound_controller.play_sound('positive')
+        
+        self.root.after(5000, self.logout)
 
-                    # Check product stock and notify admins after checkout
-                    self.check_product_stock_and_notify(item)
+    def _handle_insufficient_credit(self):
+        if self.sound_controller:
+            logger.debug("Playing negative sound due to insufficient credit")
+            self.sound_controller.play_sound('negative')
+        
+        self.message = ShowMessage(
+            self.root,
+            image="unsuccessful",
+            heading=self.translations["user"]["checkout_unsuccessful"],
+            text=self.translations["user"]["insufficient_credit_message"],
+        )
+        self.root.after(5000, self.message.destroy)
 
+    def _handle_insufficient_quantity(self, item, requested_quantity):
+        if self.sound_controller:
+            logger.debug("Playing negative sound due to insufficient product quantity")
+            self.sound_controller.play_sound('negative')
 
-            # Update the user's credit   
-            credit = float(self.user_credit) - self.total_price
-            user_instance = User.get_by_id(self.session, self.user_id)
-            if user_instance:
-                user_instance.update(self.session, credit=credit)
+        self.message = ShowMessage(
+            self.root,
+            image="unsuccessful",
+            heading=self.translations["user"]["checkout_unsuccessful"],
+            text=self.translations["items"]["item_quantity_message"].format(
+                item_quantity=item.quantity, 
+                name=item.name
+            ),
+        )
+        self.root.after(5000, self.message.destroy)
 
-                # Send email if the balance is below 3€
-                if credit < 3.0 and user_instance.email:
-                    self.email_controller.notify_low_balance(
-                        recipient_email=user_instance.email,
-                        balance=credit,
-                        language=get_system_language()
-                    )
-                if credit < 3.0 and user_instance.mattermost_username:    
-                    self.mattermost_controller.notify_low_balance(
-                        username=user_instance.mattermost_username,
-                        balance=credit
-                    )
-
-            # Show success message
-            self.message = ShowMessage(
-                self.root,
-                image="successful",
-                heading=self.translations["user"]["checkout_successful"],
-                text=self.translations["user"]["amount_debited"].format(total=self.total_price),
+    def _check_low_balance(self, user_instance, credit):
+        if credit >= 3.0:
+            return
+            
+        if user_instance.email:
+            self.email_controller.notify_low_balance(
+                recipient_email=user_instance.email,
+                balance=credit,
+                language=get_system_language()
             )
-            self.user_credit = self.user_credit - self.total_price
-            self.credits_label.configure(text=self.translations["user"]["credits_message"].format(user_credit=self.user_credit))
-            self.items = Item.read_all(self.session)
+        if user_instance.mattermost_username:
+            self.mattermost_controller.notify_low_balance(
+                username=user_instance.mattermost_username,
+                balance=credit
+            )
 
-            if self.sound_controller:  # Make sure sound_controller is initialized
-                logger.debug("Playing positive sound on successful logout")
-                self.sound_controller.play_sound('positive')
-            self.root.after(5000, self.logout)
+    def _show_success_message(self):
+        self.message = ShowMessage(
+            self.root,
+            image="successful",
+            heading=self.translations["user"]["checkout_successful"],
+            text=self.translations["user"]["amount_debited"].format(total=self.total_price),
+        )
 
     def on_barcode_scan(self, event):
         # Check if Enter key is pressed, which typically signals the end of a barcode scan
@@ -386,7 +401,7 @@ class UserMainPage(CTkFrame):
                     )
                 if admin.mattermost_username:
                     self.mattermost_controller.notify_low_stock(
-                        username=admin.mattermost_username,
+                        admin=admin.mattermost_username,
                         product_name=item.name,  
                         available_quantity=item.quantity
                     )

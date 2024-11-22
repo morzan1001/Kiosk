@@ -1,5 +1,5 @@
 import threading
-from logmgr import logger
+from src.logmgr import logger
 from py532lib.i2c import Pn532_i2c
 from py532lib.mifare import Mifare
 

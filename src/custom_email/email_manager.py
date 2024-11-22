@@ -1,13 +1,13 @@
-from custom_email.email_controller import EmailController
+from src.custom_email.email_controller import EmailController
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
-from logmgr import logger
-from database.connection import get_db
-from database.models.user import User
-from database.models.transaction import Transaction
-from database.models.item import Item
+from src.logmgr import logger
+from src.database.connection import get_db
+from src.database.models.user import User
+from src.database.models.transaction import Transaction
+from src.database.models.item import Item
 from datetime import datetime, timedelta
-from localization.translator import get_system_language
+from src.localization.translator import get_system_language
 
 email_controller = None
 scheduler = None

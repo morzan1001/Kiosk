@@ -83,8 +83,8 @@
         "low_stock": ":warning: **Achtung Admin!** :warning:\n\nDas Produkt **{product_name}** hat nur noch **{available_quantity}** Stück auf Lager.\nBitte kümmere dich um eine Nachbestellung.\n:package: Vielen Dank! :package:"
     },
     "monthly_summary": {
-        "title": "# :bar_chart: **Monatlicher Bericht für {name}** :bar_chart:",
-        "period": "## :calendar: Zeitraum: **{start_date} - {end_date}**",
+        "title": "## Monatlicher Bericht für {name}",
+        "period": ":calendar: Zeitraum: **{start_date} - {end_date}**",
         "total_spent": ":euro: Gesamtausgaben: **{total_amount:.2f}€**",
         "transaction_count": ":shopping_bags: Anzahl der Transaktionen: **{transaction_count}**",
         "product_table_header": "\n### :shopping_cart: Gekaufte Produkte\n\n| Produkt | Menge | Gesamtkosten |\n|---|---|---|",

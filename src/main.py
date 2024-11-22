@@ -4,7 +4,7 @@ import json
 import customtkinter
 from customtkinter import CTk
 from time import sleep
-from mattermost.mattermost_manager import initialize_mattermost_controller
+from src.mattermost.mattermost_manager import initialize_mattermost_controller
 from src.localization import initialize_translations
 from src.localization.translator import get_translations
 from src.sounds.sound_manager import initialize_sound_controller, stop_sound_controller

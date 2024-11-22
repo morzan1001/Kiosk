@@ -2,7 +2,7 @@ import os
 import json
 import locale
 
-from logmgr import logger
+from src.logmgr import logger
 
 translations = None  # Initialize translations variable
 

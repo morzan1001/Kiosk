@@ -1,25 +1,24 @@
 from typing import List
 from customtkinter import *
-from lock.lock import GPIOController
 from src.localization.translator import get_translations
 from src.ui.components.Message import ShowMessage
 from PIL import Image, ImageTk
 from src.ui.screens.AdminMain import AdminMainFrame
 from src.ui.screens.UserMain import UserMainPage
-from database import get_db, User, Item
-from lock.gpio_manager import get_gpio_controller
-from nfc_reader import NFCReader
-from logmgr import logger
-from sounds.sound_manager import sound_controller
+from src.database import get_db, User, Item
+from src.lock.gpio_manager import get_gpio_controller
+from src.nfc_reader import NFCReader
+from src.logmgr import logger
+from src.sounds.sound_manager import sound_controller
 
 class KioskMainFrame(CTkFrame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
         self.translations = get_translations()
-        self.nfc_reader: NFCReader = NFCReader()
+        self.nfc_reader = NFCReader()
         self.session = get_db()
-        self.gpio_controller: GPIOController = get_gpio_controller()
+        self.gpio_controller= get_gpio_controller()
 
         self.parent = parent
         self.parent.title(self.translations["general"]["kiosk_title"])
