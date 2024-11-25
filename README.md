@@ -156,3 +156,29 @@ I myself use an official Raspberry Pi display. The resolution of the software is
 <a name="contributing"></a>
 
 Contribution are very welcome, my software is not perfect and I am happy about everyone who wants to contribute something.
+
+### Dev hints
+
+I kept adding new features to this project and changing others. To make my life a little easier, especially with the database, I used [alembic](https://alembic.sqlalchemy.org/en/latest/). Alembic is not necessary to run the program or to develop for it but to make changes on an existing dataset it is great. 
+
+To use alembic, `alembic init alembic` must be called once. This creates a directory with the name “almenic” in which the database revisions and configs are stored. In addition, an `alembic.ini` is placed in the root directory. In this ini, the database location can be specified as follows:
+
+```ini
+sqlalchemy.url = sqlite:///src/database/kiosk.db
+```
+
+The `env.py` must also be adapted in the alembic directory. I have saved an example of what this `env.py` can look like under [assets](/assets/alembic_env_example.py). I think the alembic folder does not belong in the repo and therefore this file is located there separately. 
+
+The following command can be used to create an Alembic revision: 
+
+```bash
+alembic revision --autogenerate -m "Sync existing schema"
+```
+
+And then to carry out the database migration: 
+
+```bash
+alembic upgrade head
+```
+
+By the way, if you've messed something up with your migrations, `alembic stamp head` is worth its weight in gold. :bowtie:
