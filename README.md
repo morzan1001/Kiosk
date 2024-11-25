@@ -161,7 +161,7 @@ Contribution are very welcome, my software is not perfect and I am happy about e
 
 I kept adding new features to this project and changing others. To make my life a little easier, especially with the database, I used [alembic](https://alembic.sqlalchemy.org/en/latest/). Alembic is not necessary to run the program or to develop for it but to make changes on an existing dataset it is great. 
 
-To use alembic, `alembic init alembic` must be called once. This creates a directory with the name “almenic” in which the database revisions and configs are stored. In addition, an `alembic.ini` is placed in the root directory. In this ini, the database location can be specified as follows:
+To use alembic, `alembic init alembic` must be called once. This creates a directory with the name “alembic” in which the database revisions and configs are stored. In addition, an `alembic.ini` is placed in the root directory. In this ini, the database location can be specified as follows:
 
 ```ini
 sqlalchemy.url = sqlite:///src/database/kiosk.db
