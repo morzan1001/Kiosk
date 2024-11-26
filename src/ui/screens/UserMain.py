@@ -333,7 +333,7 @@ class UserMainPage(CTkFrame):
         )
         self.root.after(5000, self.message.destroy)
 
-    def _handle_insufficient_quantity(self, item, requested_quantity):
+    def _handle_insufficient_quantity(self, item):
         if self.sound_controller:
             logger.debug("Playing negative sound due to insufficient product quantity")
             self.sound_controller.play_sound('negative')
@@ -361,7 +361,7 @@ class UserMainPage(CTkFrame):
             )
         if user_instance.mattermost_username:
             self.mattermost_controller.notify_low_balance(
-                username=user_instance.mattermost_username,
+                user=user_instance,
                 balance=credit
             )
 
