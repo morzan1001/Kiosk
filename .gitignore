@@ -81,3 +81,5 @@ src/sounds/positive/*
 
 alembic/
 alembic.ini
+
+.scannerwork/

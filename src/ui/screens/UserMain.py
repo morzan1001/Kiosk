@@ -350,7 +350,7 @@ class UserMainPage(CTkFrame):
         )
         self.root.after(5000, self.message.destroy)
 
-    def _handle_insufficient_quantity(self, item):
+    def _handle_insufficient_quantity(self, item, requested_quantity):
         if self.sound_controller:
             logger.debug("Playing negative sound due to insufficient product quantity")
             self.sound_controller.play_sound('negative')
@@ -360,7 +360,7 @@ class UserMainPage(CTkFrame):
             image="unsuccessful",
             heading=self.translations["user"]["checkout_unsuccessful"],
             text=self.translations["items"]["item_quantity_message"].format(
-                item_quantity=item.quantity, 
+                item_quantity=requested_quantity, 
                 name=item.name
             ),
         )
