@@ -29,7 +29,8 @@
         "checkout_successful": "Checkout successful",
         "amount_debited": "{total:.2f}€ has been deducted from your account",
         "insufficient_credit_message": "You do not have enough credit in your account",
-        "account_not_detected": "Your account was not found"
+        "account_not_detected": "Your account was not found",
+        "checkout_error_message": "An error occurred during checkout"
     },
     "admin": {
         "welcome_admin": "Welcome to the admin area",

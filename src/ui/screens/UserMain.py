@@ -251,6 +251,7 @@ class UserMainPage(CTkFrame):
         self.main_menu(self.root).grid(row=0, column=0, sticky="nsew")
 
     def checkout(self):
+        logger.debug("Starting checkout process")
         if self.total_price == 0:
             return
 
@@ -269,23 +270,29 @@ class UserMainPage(CTkFrame):
         # If validation passed, process the checkout
         try:
             self._process_checkout(user_credit)
+            logger.debug("Checkout process completed successfully")
         except Exception as e:
             logger.error(f"Checkout failed: {str(e)}")
             self._handle_checkout_error()
 
     def _process_checkout(self, user_credit):
         current_datetime = datetime.now()
-        
+        logger.debug(f"Processing checkout at {current_datetime}")
+
         # Process all items in one loop
         for quantity, item in self.shopping_cart:
             requested_quantity = int(quantity.get())
+            logger.debug(f"Processing item {item.id} with requested quantity {requested_quantity}")
+
             if requested_quantity <= 0:
+                logger.debug(f"Skipping item {item.id} due to non-positive quantity")
                 continue
 
             # Update item quantity
             item_instance = Item.get_by_id(self.session, item.id)
             if item_instance:
                 new_quantity = item.quantity - requested_quantity
+                logger.debug(f"Updating item {item.id} quantity to {new_quantity}")
                 item_instance.update(self.session, quantity=new_quantity)
 
             # Create transaction
@@ -296,6 +303,7 @@ class UserMainPage(CTkFrame):
                 cost=str(item.price * requested_quantity),
                 category=item.category
             )
+            logger.debug(f"Creating transaction for item {item.id}")
             new_transaction.create(self.session)
 
             # Check stock levels
@@ -330,6 +338,15 @@ class UserMainPage(CTkFrame):
             image="unsuccessful",
             heading=self.translations["user"]["checkout_unsuccessful"],
             text=self.translations["user"]["insufficient_credit_message"],
+        )
+        self.root.after(5000, self.message.destroy)
+
+    def _handle_checkout_error(self):
+        self.message = ShowMessage(
+            self.root,
+            image="unsuccessful",
+            heading=self.translations["user"]["checkout_unsuccessful"],
+            text=self.translations["user"]["checkout_error_message"],
         )
         self.root.after(5000, self.message.destroy)
 
@@ -387,7 +404,8 @@ class UserMainPage(CTkFrame):
             self.barcode += event.char
 
     def check_product_stock_and_notify(self, item: Item):
-        critical_stock_level = 2  # Define threshold
+        logger.debug(f"Checking stock levels for item {item.id}")
+        critical_stock_level = 3  # Define threshold
         
         if item.quantity < critical_stock_level:  # Assuming available_quantity is part of item
             admins: List[User] = User.get_admins(self.session)

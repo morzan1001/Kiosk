@@ -29,7 +29,8 @@
         "checkout_successful": "Checkout erfolgreich",
         "amount_debited": "Es wurden {total:.2f} € von Ihrem Konto abgezogen",
         "insufficient_credit_message": "Sie haben nicht genug Guthaben in Ihrem Konto",
-        "account_not_detected": "Ihr Konto wurde nicht gefunden"
+        "account_not_detected": "Ihr Konto wurde nicht gefunden",
+        "checkout_error_message": "Beim Checkout ist ein Fehler aufgetreten"
     },
     "admin": {
         "welcome_admin": "Willkommen im Admin-Bereich",
