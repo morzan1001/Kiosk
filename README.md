@@ -20,7 +20,7 @@ Kiosk is a small software project that is intended to be a cash register system 
 
 Kiosk is a Python application and uses [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter) as UI. I used [poetry](https://github.com/python-poetry/poetry) as a dependency manager. To start the application you can simply run `poetry install` and then `poetry run python3 src/main.py`.
 
-Normally the logging of the application is set to `INFO`, but if something should fail at startup or during runtime, the logging can be set a little more finely in the log manager. To do this, the corresponding code must be adjusted in the [logmgr.py: Line 19](https://github.com/morzan1001/Kiosk/blob/main/src/logmgr/logmgr.py#L19).
+Normally the logging of the application is set to `INFO`, but if something should fail at startup or during runtime, the logging can be set a little more finely. To do this, just change the loglevel in [config.json](https://github.com/morzan1001/Kiosk/blob/main/config_example.json).
 
 In order for the application to start, the [config_example.json](https://github.com/morzan1001/Kiosk/blob/main/config_example.json) must be renamed to `config.json`, it is not absolutely necessary to specify a mailserver, so the program should also start with the values from the [config_example.json](https://github.com/morzan1001/Kiosk/blob/main/config_example.json). However, any adjustments can of course be made here. 
 

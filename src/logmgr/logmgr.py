@@ -1,6 +1,8 @@
 """Provides basic logging functionality"""
+import json
 import logging
 from datetime import datetime
+import os
 
 
 class LogMgr:
@@ -16,7 +18,18 @@ class LogMgr:
     def __init__(self):
         """Class constructor"""
         self.logger = logging.getLogger("Kiosk")
-        self.logger.setLevel(logging.INFO)
+
+        # Default to INFO if no config present
+        log_level = "INFO"
+        try:
+            config_path = os.path.join(os.path.dirname(__file__), "../../config.json")
+            with open(config_path, 'r', encoding='utf-8') as config_file:
+                config = json.load(config_file)
+                log_level = config.get("logging", {}).get("level", "INFO")
+        except Exception as e:
+            print(f"Could not load logging config, defaulting to INFO: {e}")
+
+        self.logger.setLevel(getattr(logging, log_level))
         self.logger.propagate = False
 
         if not self.logger.handlers:

@@ -24,5 +24,8 @@
         "enabled": true,
         "positive_directory": "src/sounds/positive/",
         "negative_directory": "src/sounds/negative/"
+    },
+    "logging": {
+        "level": "INFO"
     }
 }
