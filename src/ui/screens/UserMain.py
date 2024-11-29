@@ -251,12 +251,17 @@ class UserMainPage(CTkFrame):
         self.main_menu(self.root).grid(row=0, column=0, sticky="nsew")
 
     def checkout(self):
+        """
+        Handles the checkout process.
+        """
         logger.debug("Starting checkout process")
         if self.total_price == 0:
+            logger.debug("No items in the shopping cart")
             return
 
         user_credit = self.user.credit
         if self.total_price > float(user_credit):
+            logger.debug("Insufficient credit for checkout. Total price: %s, User credit: %s", self.total_price, user_credit)
             self._handle_insufficient_credit()
             return
 
@@ -264,7 +269,8 @@ class UserMainPage(CTkFrame):
         for quantity, item in self.shopping_cart:
             requested_quantity = int(quantity.get())
             if requested_quantity > item.quantity:
-                self._handle_insufficient_quantity(item, requested_quantity)
+                logger.debug(f"Insufficient quantity for item {item.id}. Requested: {requested_quantity}, Available: {item.quantity}")
+                self._handle_insufficient_quantity(item)
                 return
 
         # If validation passed, process the checkout
@@ -350,7 +356,7 @@ class UserMainPage(CTkFrame):
         )
         self.root.after(5000, self.message.destroy)
 
-    def _handle_insufficient_quantity(self, item, requested_quantity):
+    def _handle_insufficient_quantity(self, item):
         if self.sound_controller:
             logger.debug("Playing negative sound due to insufficient product quantity")
             self.sound_controller.play_sound('negative')
@@ -360,10 +366,11 @@ class UserMainPage(CTkFrame):
             image="unsuccessful",
             heading=self.translations["user"]["checkout_unsuccessful"],
             text=self.translations["items"]["item_quantity_message"].format(
-                item_quantity=requested_quantity, 
+                item_quantity=item.quantity, 
                 name=item.name
             ),
         )
+        logger.debug(f"Showing insufficient quantity message for item {item.id}")
         self.root.after(5000, self.message.destroy)
 
     def _check_low_balance(self, user_instance, credit):
