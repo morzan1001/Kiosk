@@ -261,7 +261,7 @@ class UserMainPage(CTkFrame):
 
         user_credit = self.user.credit
         if self.total_price > float(user_credit):
-            logger.debug("Insufficient credit for checkout. Total price: %s, User credit: %s", self.total_price, user_credit)
+            logger.debug(f"Insufficient credit for checkout. Total price: {self.total_price}, User credit: {user_credit}")
             self._handle_insufficient_credit()
             return
 
