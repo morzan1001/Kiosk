@@ -436,7 +436,9 @@ class UserMainPage(CTkFrame):
 
         if item:
             self.add_item_to_list(item)
+            logger.debug(f"Item with barcode {barcode_value} found. {item.name} added to shopping cart")
         else:
+            logger.debug(f"Item with barcode {barcode_value} not found")
             self.message = ShowMessage(
                 self.root,
                 image="unsuccessful",
