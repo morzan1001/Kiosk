@@ -227,7 +227,7 @@ class UpdateUserFrame(CTkFrame):
 
         filtered_transactions = []
         for transaction in transactions:
-            date_transaction = transaction[1]  # Assuming transaction[1] is already a datetime object
+            date_transaction = transaction.date  # Assuming transaction[1] is already a datetime object
             if start_date <= date_transaction <= current_date:
                 filtered_transactions.append(transaction)
 
@@ -237,13 +237,13 @@ class UpdateUserFrame(CTkFrame):
     def calculate_category_percentage(self, transactions):
         logger.debug("Calculating category percentages")
         category_totals = {}
-        total_amount = sum(float(transaction[2]) for transaction in transactions)
+        total_amount = sum(float(transaction.cost) for transaction in transactions)
 
         logger.debug("Total transaction amount: %f", total_amount)
 
         for transaction in transactions:
-            category = transaction[3]
-            amount = float(transaction[2])
+            category = transaction.category
+            amount = float(transaction.cost)
 
             if category in category_totals:
                 category_totals[category] += amount
