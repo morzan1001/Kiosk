@@ -61,6 +61,7 @@
         "update_barcode": "Update barcode",
         "enter_price": "Enter price",
         "error_updating_item": "Error updating the item",
+        "error_adding_item": "Error adding the item",
         "purchase_items": "Purchase items",
         "quantity_limit_reached": "Quantity limit reached",
         "item_not_found": "Item not found",

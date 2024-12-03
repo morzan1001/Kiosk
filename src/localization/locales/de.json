@@ -61,6 +61,7 @@
         "update_barcode": "Barcode aktualisieren",
         "enter_price": "Preis eingeben",
         "error_updating_item": "Fehler beim Aktualisieren des Artikels",
+        "error_adding_item": "Fehler beim Hinzufügen des Artikels",
         "purchase_items": "Artikel kaufen",
         "quantity_limit_reached": "Maximale Menge erreicht",
         "item_not_found": "Artikel nicht gefunden",
