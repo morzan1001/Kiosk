@@ -7,6 +7,7 @@ from src.ui.screens.UserMain import UserMainPage
 from src.ui.components.AdminPurchaseItems import AdminPurchaseItemsFrame
 from src.ui.components.CountFrame import CountFrame
 from src.database import get_db, User, Item
+from src.logmgr import logger
 
 
 class AdminMainFrame(CTkFrame):
@@ -116,13 +117,15 @@ class AdminMainFrame(CTkFrame):
         )
 
     def user_count_clicked(self, event):
+        logger.debug("User count clicked")
         self.destroy()
         users = User.read_all(self.session)
         UserListFrame(
-            self.parent, self.translations["user"]["user_list"], self.back_button_pressed, data=users
+            self.parent, self.translations["user"]["user_list"], self.back_button_pressed, users=users
         ).grid(row=0, column=0, sticky="ns", ipadx=50, ipady=20)
 
     def item_count_clicked(self, event):
+        logger.debug("Item count clicked")
         self.destroy()
         items = Item.read_all(self.session)
         ItemListFrame(
@@ -130,13 +133,12 @@ class AdminMainFrame(CTkFrame):
         ).grid(row=0, column=0, sticky="ns", ipadx=50, ipady=20)
 
     def item_purchase_clicked(self, event):
+        logger.debug("Item purchase clicked")
         self.destroy()
         items = Item.read_all(self.session)
         UserMainPage(
             self.parent,
             main_menu=self.main_menu,
-            user_id=self.user.id,
-            user_name=self.user.name,
-            user_credit=self.user.credit,
+            user=self.user,
             items=items
         )

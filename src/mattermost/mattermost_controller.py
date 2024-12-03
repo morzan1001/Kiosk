@@ -115,7 +115,7 @@ class MattermostController:
                 username=user.mattermost_username,
                 message=message
             )
-            logger.info(f"Low balance notification sent to user {user.name} ({user.mattermost_user_id})")
+            logger.info(f"Low balance notification sent to user {user.name} ({user.mattermost_username})")
         else:
             logger.warning(f"User {user.name} does not have a Mattermost user ID or notifications are disabled, skipping low balance notification.")
 
@@ -128,6 +128,6 @@ class MattermostController:
                 username=admin.mattermost_username,
                 message=message
             )
-            logger.info(f"Low stock notification sent to admin {admin.name} ({admin.mattermost_user_id})")
+            logger.info(f"Low stock notification sent to admin {admin.name} ({admin.mattermost_username})")
         else:
             logger.warning(f"Admin {admin.name} does not have a Mattermost user ID or notifications are disabled, skipping low stock notification.")
