@@ -426,7 +426,7 @@ class UserMainPage(CTkFrame):
                     )
                 if admin.mattermost_username:
                     self.mattermost_controller.notify_low_stock(
-                        admin=admin.mattermost_username,
+                        admin=admin,
                         product_name=item.name,  
                         available_quantity=item.quantity
                     )
