@@ -9,7 +9,7 @@ packages = [{include = "src"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 customtkinter = "^5.2.2"
-sqlalchemy = "^2.0.36"
+sqlalchemy = "^2.0.37"
 py532lib = { git = "https://github.com/Liam-Deacon/py532lib.git" }
 gpiod = "^2.2.3"
 APScheduler = "^3.11.0"
