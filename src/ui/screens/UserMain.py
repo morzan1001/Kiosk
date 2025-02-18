@@ -295,11 +295,9 @@ class UserMainPage(CTkFrame):
                 continue
 
             # Update item quantity
-            item_instance = Item.get_by_id(self.session, item.id)
-            if item_instance:
-                new_quantity = item.quantity - requested_quantity
-                logger.debug(f"Updating item {item.id} quantity to {new_quantity}")
-                item_instance.update(self.session, quantity=new_quantity)
+            new_quantity = item.quantity - requested_quantity
+            logger.debug(f"Updating item {item.id} quantity to {new_quantity}")
+            item.quantity = new_quantity
 
             # Create transaction
             new_transaction = Transaction(

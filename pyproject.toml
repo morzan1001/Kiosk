@@ -2,7 +2,7 @@
 name = "kiosk"
 version = "0.1.0"
 description = "Sofware for a raspberry pi to work as a custom cash register system"
-authors = ["Morzan <morzan1001@gmail.com>"]
+authors = ["Matthias Duve <morzan1001@gmail.com>"]
 readme = "README.md"
 packages = [{include = "src"}]
 
