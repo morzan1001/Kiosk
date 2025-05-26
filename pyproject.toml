@@ -22,7 +22,7 @@ scipy = "^1.15.3"
 requests = "^2.32.3" 
 
 [tool.poetry.group.dev.dependencies]
-alembic = "^1.15.2" 
+alembic = "^1.16.1" 
 
 [build-system]
 requires = ["poetry-core"]
