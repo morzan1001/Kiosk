@@ -61,15 +61,15 @@ Here are a few ideas on how to expand the software:
 
 ### 🎵 Sounds
 
-As no gag I have implemented that the kiosk can play sounds when a product is purchased or when a purchase fails. For this purpose, sound files can be specified in two folders. Once positive sounds and once negative sounds. the whole thing can be switched on and off in [config.json](https://github.com/morzan1001/Kiosk/blob/55f6aa53e813dca5f23ecad09443a982eb1d9212/config_example.json#L22).
+As no gag I have implemented that the kiosk can play sounds when a product is purchased or when a purchase fails. For this purpose, sound files can be specified in two folders. Once positive sounds and once negative sounds. the whole thing can be switched on and off in [config.json](https://github.com/morzan1001/Kiosk/blob/main/config_example.json#L37).
 
 ### 📧 E-Mail
 
-The kiosk can notify users when their account balance gets low, or administrators when a product stock is running low. In addition, the kiosk can send monthly statistics to users about their purchasing behavior. A corresponding SMTP server can be configured in [config.json](https://github.com/morzan1001/Kiosk/blob/55f6aa53e813dca5f23ecad09443a982eb1d9212/config_example.json#L2). If a user does not have a stored e-mail address in the database, he simply does not receive any e-mails, the field is not mandatory.
+The kiosk can notify users when their account balance gets low, or administrators when a product stock is running low. In addition, the kiosk can send monthly statistics to users about their purchasing behavior. A corresponding SMTP server can be configured in [config.json](https://github.com/morzan1001/Kiosk/blob/main/config_example.json#L15). If a user does not have a stored e-mail address in the database, he simply does not receive any e-mails, the field is not mandatory.
 
 ### 🎺 Mattermost
 
-the kiosk can also notify users via a mattermost bot account. On the one hand, standard messages such as “low account balance” or for admins “low stock” are possible. On the other hand, short-term marketing messages can also be sent. The idea is that the kiosk regularly evaluates which users have bought little, on this basis individual users are offered a discount via mattermost that is valid for a certain time. the entire mattermost integration can be configured in [config.json](https://github.com/morzan1001/Kiosk/blob/55f6aa53e813dca5f23ecad09443a982eb1d9212/config_example.json#L8).
+the kiosk can also notify users via a mattermost bot account. On the one hand, standard messages such as “low account balance” or for admins “low stock” are possible. On the other hand, short-term marketing messages can also be sent. The idea is that the kiosk regularly evaluates which users have bought little, on this basis individual users are offered a discount via mattermost that is valid for a certain time. the entire mattermost integration can be configured in [config.json](https://github.com/morzan1001/Kiosk/blob/main/config_example.json#L21).
 
 ## 🛠️ Service
 <a name="service"></a>
@@ -97,7 +97,7 @@ I have stored this file under `/etc/systemd/system/`. As soon as the graphical u
 ## 🏢 Database
 <a name="database"></a>
 
-Thanks to [sqlalchemy](https://www.sqlalchemy.org/), Kiosk gives you the freedom to choose which database you want to use. I started using a [sqlite](https://sqlite.org/) database, but have since switched to a [postgresql](https://www.postgresql.org/) database. In the [config.json](https://github.com/morzan1001/Kiosk/config_example.json) you can select which database you want to use. [pgloader](https://pgloader.io/) can be used to perform a migration from sqlite to postgres. however, it is advisable to perform an alembic migration afterwards so that all settings (such as `autoincrement`) are also adopted. 
+Thanks to [sqlalchemy](https://www.sqlalchemy.org/), Kiosk gives you the freedom to choose which database you want to use. I started using a [sqlite](https://sqlite.org/) database, but have since switched to a [postgresql](https://www.postgresql.org/) database. In the [config.json](https://github.com/morzan1001/Kiosk/blob/main/config_example.json) you can select which database you want to use. [pgloader](https://pgloader.io/) can be used to perform a migration from sqlite to postgres. however, it is advisable to perform an alembic migration afterwards so that all settings (such as `autoincrement`) are also adopted. 
 
 ```bash
 pgloader sqlite://src/database/kiosk.db  postgresql://kiosk:your_password_here@localhost/kiosk
@@ -108,7 +108,7 @@ pgloader sqlite://src/database/kiosk.db  postgresql://kiosk:your_password_here@l
 
 As i have already painfully discovered, it makes sense to back up the database. 
 
-I provide a script under [utils/db_backup.sh](https://github.com/morzan1001/Kiosk/utils/db_backup.sh) with the name db_backup.sh which can be used to create database backups. The script creates a directory, checks whether a sqlite or a postgres database is used and then executes the corresponding backup routine. 
+I provide a script under [utils/db_backup.sh](https://github.com/morzan1001/Kiosk/blob/main/utils/db_backup.sh) with the name db_backup.sh which can be used to create database backups. The script creates a directory, checks whether a sqlite or a postgres database is used and then executes the corresponding backup routine. 
 
 I call the script via cronjob to create a backup every day.
 
