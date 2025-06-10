@@ -83,3 +83,6 @@ alembic/
 alembic.ini
 
 .scannerwork/
+
+# Dockerfiles
+docker-compose.yaml

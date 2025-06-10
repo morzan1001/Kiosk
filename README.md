@@ -11,6 +11,7 @@ Kiosk is a small software project that is intended to be a cash register system 
 - [🚀 Quick Start](#quick-start)
 - [✨ Features](#features)
 - [🛠️ Service](#service)
+- [🏢 Database](#database)
 - [💾 Backup](#backup)
 - [🔧 Components](#components)
 - [🤝 Contributing](#contributing)
@@ -93,43 +94,29 @@ WantedBy=graphical.target
 
 I have stored this file under `/etc/systemd/system/`. As soon as the graphical user interface of Raspberry Pi OS has finished loading, the kiosk application starts.
 
+## 🏢 Database
+<a name="database"></a>
+
+Thanks to [sqlalchemy](https://www.sqlalchemy.org/), Kiosk gives you the freedom to choose which database you want to use. I started using a [sqlite](https://sqlite.org/) database, but have since switched to a [postgresql](https://www.postgresql.org/) database. In the [config.json](https://github.com/morzan1001/Kiosk/config_example.json) you can select which database you want to use. [pgloader](https://pgloader.io/) can be used to perform a migration from sqlite to postgres. however, it is advisable to perform an alembic migration afterwards so that all settings (such as `autoincrement`) are also adopted. 
+
+```bash
+pgloader sqlite://src/database/kiosk.db  postgresql://kiosk:your_password_here@localhost/kiosk
+```
+
 ## 💾 Backup
 <a name="backup"></a>
 
-As i have already painfully discovered, it makes sense to back up the database. If you decide to use a Postgres, MariaDB or other SQL database, I recommend using the respective program such as `pg_dump`. 
+As i have already painfully discovered, it makes sense to back up the database. 
 
-In my case I use a SQLite database. This is simply backed up via a cronjob. The script for this looks like this:
+I provide a script under [utils/db_backup.sh](https://github.com/morzan1001/Kiosk/utils/db_backup.sh) with the name db_backup.sh which can be used to create database backups. The script creates a directory, checks whether a sqlite or a postgres database is used and then executes the corresponding backup routine. 
 
-```bash
-#!/bin/bash
+I call the script via cronjob to create a backup every day.
 
-# Path to the SQLite database file
-DB_FILE="/home/<user>/Kiosk/src/database/kiosk.db"
-BACKUP_DIR="/home/<user>/DB-Backup/"
-
-# Create the backup directory if it doesn't exist
-mkdir -p ${BACKUP_DIR}
-
-# Set the filename for the backup
-BACKUP_FILE="${BACKUP_DIR}/database_$(date +\%Y-\%m-\%d).db"
-
-# Copy the database file
-cp ${DB_FILE} ${BACKUP_FILE}
+```crontab
+0 2 * * * /home/<user>/backup_script.sh >> /home/<user>/backup.log 2>&1
 ```
 
-I call this script via cronjob once a day. Another script then takes care of deleting old backups. This script runs about an hour after the first one and looks like this: 
-
-```bash
-#!/bin/bash
-
-# Backup directory
-BACKUP_DIR="/home/<user>/DB-Backup/"
-
-# Find and delete backups older than 30 days
-find ${BACKUP_DIR} -type f -name "*.db" -mtime +30 -exec rm {} \;
-```
-
-This ensures that I always have backups of the last 30 days and can simply restore them if the worst comes to the worst. 
+The script ensures that I always have backups of the last 7 days and can simply restore them if the worst comes to the worst. 
 
 ## 🔧 Components
 <a name="components"></a>
@@ -166,6 +153,10 @@ To use alembic, `alembic init alembic` must be called once. This creates a direc
 ```ini
 sqlalchemy.url = sqlite:///src/database/kiosk.db
 ```
+or 
+```ini
+sqlalchemy.url = postgresql://kiosk:your_password_here@localhost:5432/kiosk
+``` 
 
 The `env.py` must also be adapted in the alembic directory. I have saved an example of what this `env.py` can look like under [assets](/assets/alembic_env_example.py). I think the alembic folder does not belong in the repo and therefore this file is located there separately. 
 

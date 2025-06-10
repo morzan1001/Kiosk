@@ -14,13 +14,39 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from src.ui.screens.WelcomePage import *
 from src.lock import initialize_gpio, cleanup_gpio
 from src.logmgr import logger
-from src.database.connection import session_manager
+from src.database.connection import initialize_database, session_manager
 from src.custom_email.email_manager import initialize_email_controller, shutdown_scheduler
 
 def load_config():
     config_path = os.path.join(os.path.dirname(__file__), "../config.json")
     with open(config_path, 'r', encoding='utf-8') as config_file:
         return json.load(config_file)
+
+def validate_database_config(config):
+    """Validate database configuration."""
+    db_config = config.get('database', {})
+    db_type = db_config.get('type', '').lower()
+    
+    if not db_type:
+        raise ValueError("Database type not specified in configuration")
+    
+    if db_type == 'sqlite':
+        sqlite_config = db_config.get('sqlite', {})
+        if not sqlite_config.get('path'):
+            logger.warning("SQLite database path not specified, using default")
+    
+    elif db_type == 'postgresql':
+        pg_config = db_config.get('postgresql', {})
+        required_fields = ['host', 'database', 'username', 'password']
+        
+        for field in required_fields:
+            if not pg_config.get(field):
+                raise ValueError(f"PostgreSQL {field} not specified in configuration")
+    
+    else:
+        raise ValueError(f"Unsupported database type: {db_type}")
+    
+    logger.info(f"Database configuration validated for {db_type.upper()}")
 
 class KioskCTK(CTk):
     def __init__(self, config):
@@ -44,6 +70,15 @@ def main():
     try:
         logger.debug("Starting application initialization")
         config = load_config()  # Load configuration
+
+        # Validate and initialize database
+        logger.debug("Validating database configuration")
+        validate_database_config(config)
+
+        # Initialize database connection
+        logger.debug("Initializing database connection")
+        initialize_database(config)
+        logger.info("Database connection initialized")
 
         # Initialize translations
         logger.debug("Initializing translations")
