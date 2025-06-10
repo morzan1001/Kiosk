@@ -87,7 +87,7 @@ with open('$CONFIG_FILE', 'r') as f:
         exit 1
     fi
     
-     Delete the password environment variable
+    # Delete the password environment variable
     unset PGPASSWORD
 }
 
