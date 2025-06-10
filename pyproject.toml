@@ -19,7 +19,7 @@ sounddevice = "^0.5.2"
 soundfile = "^0.13.1"
 numpy = "^2.2.6"
 scipy = "^1.15.3" 
-requests = "^2.32.3" 
+requests = "^2.32.4" 
 
 [tool.poetry.group.dev.dependencies]
 alembic = "^1.16.1" 
