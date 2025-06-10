@@ -1,0 +1,13 @@
+[Unit]
+Description=Kiosk
+After=graphical.target
+
+[Service]
+ExecStart=/home/<user>/.local/bin/poetry run python3 /home/<user>/Kiosk/src/main.py
+WorkingDirectory=/home/<user>/Kiosk
+User=<user>
+Environment=DISPLAY=:0
+Restart=always
+
+[Install]
+WantedBy=graphical.target

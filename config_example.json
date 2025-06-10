@@ -1,4 +1,17 @@
 {
+    "database": {
+        "type": "sqlite",
+        "sqlite": {
+            "path": "src/database/kiosk.db"
+        },
+        "postgresql": {
+            "host": "localhost",
+            "port": 5432,
+            "database": "kiosk",
+            "username": "kiosk_user",
+            "password": "your_password"
+        }
+    },
     "email": {
         "smtp_server": "<server>",
         "smtp_port": 587,

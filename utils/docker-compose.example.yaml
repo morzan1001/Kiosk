@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    container_name: kiosk_db
+    environment:
+      POSTGRES_USER: kiosk
+      POSTGRES_PASSWORD: your_password_here
+      POSTGRES_DB: kiosk
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kiosk -d kiosk"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  db_data:
