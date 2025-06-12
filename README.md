@@ -103,7 +103,7 @@ Thanks to [sqlalchemy](https://www.sqlalchemy.org/), Kiosk gives you the freedom
 pgloader sqlite://src/database/kiosk.db  postgresql://kiosk:your_password_here@localhost/kiosk
 ```
 
-If you decide to use a Postgres database, it might also be worth taking a look at my [dashboard repo](https://github.com/morzan1001/Kiosk-Data-Frontend) for data analysis :grin:.
+If you decide to use a [postgresql](https://www.postgresql.org/) database, it might also be worth taking a look at my [dashboard repository](https://github.com/morzan1001/Kiosk-Data-Frontend) for data analysis :grin:.
 
 ## 💾 Backup
 <a name="backup"></a>
