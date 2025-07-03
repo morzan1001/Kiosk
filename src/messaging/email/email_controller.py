@@ -5,12 +5,12 @@ from email.mime.image import MIMEImage
 from datetime import datetime
 from src.logmgr import logger
 from src.localization.translator import get_translations
+from src.messaging.base_messaging_controller import BaseMessagingController
 from jinja2 import Environment, FileSystemLoader
 import os
-import threading
-from queue import Queue
 
-class EmailController:
+
+class EmailController(BaseMessagingController):
     """Manages email notifications by sending dynamic, template-based emails via SMTP."""
     
     def __init__(self, smtp_server, smtp_port, login, password):
@@ -26,28 +26,44 @@ class EmailController:
         self.jinja_env = Environment(loader=FileSystemLoader(template_dir))
         logger.debug("Jinja2 environment set up")
 
-        # Set up threading and queue
-        self.queue = Queue()
-        self._stop_event = threading.Event()
-        self.thread = threading.Thread(target=self._process_queue)
-        self.thread.start()
+        # Initialize the base class (threading and queue)
+        super().__init__()
     
-    def _process_queue(self):
-        while not self._stop_event.is_set():
-            try:
-                task = self.queue.get()  # Blocks until an item is available
-                if task is None:
-                    break
-                self._send_email(*task)
-                self.queue.task_done()
-            except Exception as e:
-                logger.error(f"Failed to process email task: {e}")
-
-    def send_email(self, recipient_email, subject, body, is_html=False):
-        logger.debug(f"Queueing email to {recipient_email} with subject '{subject}'")
-        self.queue.put((recipient_email, subject, body, is_html))
+    def get_channel_type(self):
+        """Returns the message channel type."""
+        return 'email'
+    
+    def _send_message_internal(self, recipient, message, subject=None, **kwargs):
+        """Internal implementation for sending an email."""
+        is_html = kwargs.get('is_html', False)
+        self._send_email(recipient, subject or "Nachricht", message, is_html)
+    
+    def _notify_low_balance_internal(self, recipient, balance, language='en'):
+        """Internal implementation for low-balance notifications."""
+        translated_subject = self.translations["email"]["low_balance_subject"]
+        template_file = f"low_balance_{language}.html"
+        body = self.load_template(template_file, {"balance": balance})
+        self._send_email(recipient, translated_subject, body, is_html=True)
+    
+    def _notify_low_stock_internal(self, recipient, product_name, available_quantity, language='en'):
+        """Internal implementation for low stock notifications."""
+        translated_subject = self.translations["email"]["low_stock_subject"]
+        template_file = f"product_low_stock_{language}.html"
+        body = self.load_template(template_file, {
+            "product_name": product_name, 
+            "available_quantity": available_quantity
+        })
+        self._send_email(recipient, translated_subject, body, is_html=True)
+    
+    def _send_monthly_summary_internal(self, recipient, summary, language='en'):
+        """Internal implementation for monthly summaries."""
+        translated_subject = self.translations["email"]["monthly_summary_subject"]
+        template_file = f"monthly_summary_{language}.html"
+        body = self.load_template(template_file, {"summary": summary})
+        self._send_email(recipient, translated_subject, body, is_html=True)
     
     def _send_email(self, recipient_email, subject, body, is_html):
+        """Internal method for actually sending the email."""
         try:
             logger.debug(f"Sending email to {recipient_email} with subject '{subject}'")
             msg = MIMEMultipart('related')
@@ -81,6 +97,7 @@ class EmailController:
             logger.error(f"Failed to send email: {e}")
 
     def load_template(self, template_name, context):
+        """Loads and renders an email template."""
         try:
             logger.debug(f"Loading email template '{template_name}'")
             footer_text = self.translations['email']['footer']
@@ -98,28 +115,3 @@ class EmailController:
         except Exception as e:
             logger.error(f"Failed to load template {template_name}: {e}")
             return ""
-
-    def notify_low_balance(self, recipient_email, balance, language='en'):
-        translated_subject = self.translations["email"]["low_balance_subject"]
-        template_file = f"low_balance_{language}.html"
-        body = self.load_template(template_file, {"balance": balance})
-        self.send_email(recipient_email, translated_subject, body, is_html=True)
-
-    def send_monthly_summary(self, recipient_email, summary, language='en'):
-        translated_subject = self.translations["email"]["monthly_summary_subject"]
-        template_file = f"monthly_summary_{language}.html"
-        body = self.load_template(template_file, {"summary": summary})
-        self.send_email(recipient_email, translated_subject, body, is_html=True)
-
-    def notify_low_stock(self, recipient_email, product_name, available_quantity, language='en', subject=None):
-        translated_subject = subject or self.translations["email"]["low_stock_subject"]
-        template_file = f"product_low_stock_{language}.html"
-        body = self.load_template(template_file, {"product_name": product_name, "available_quantity": available_quantity})
-        self.send_email(recipient_email, translated_subject, body, is_html=True)
-
-    def stop(self):
-        logger.debug("Stopping email sender thread")
-        self._stop_event.set()
-        self.queue.put(None)  # To unblock the queue if it's waiting
-        if threading.current_thread() != self.thread:
-            self.thread.join()

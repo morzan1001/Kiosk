@@ -1,4 +1,4 @@
-from src.mattermost.mattermost_controller import MattermostController
+from .mattermost_controller import MattermostController
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from src.logmgr import logger
@@ -46,8 +46,8 @@ def send_monthly_summaries():
         summary = get_monthly_summary(user, session)
         # Send the message if the user has a Mattermost username
         if user.mattermost_username:
-            mattermost_controller.send_direct_message(
-                username=user.mattermost_username,
+            mattermost_controller.send_message(
+                recipient=user.mattermost_username,
                 message=summary
             )
             logger.info(f"Monthly summary sent to user {user.name} ({user.mattermost_username})")

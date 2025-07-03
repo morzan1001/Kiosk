@@ -1,4 +1,4 @@
-from customtkinter import *
+from customtkinter import CTkFrame, CTkLabel, CTkButton
 from PIL import Image, ImageTk
 
 class HeadingFrame(CTkFrame):

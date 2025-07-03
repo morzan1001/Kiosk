@@ -1,5 +1,5 @@
 from typing import List
-from customtkinter import *
+from customtkinter import CTkFrame, CTkScrollableFrame, CTkButton
 from src.localization.translator import get_translations
 from src.ui.components.HeadingFrame import HeadingFrame
 from src.ui.screens.NewItem import AddNewItemFrame

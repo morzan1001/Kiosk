@@ -1,5 +1,4 @@
-from customtkinter import *
-from tkinter import *
+from customtkinter import CTkFrame, CTkLabel
 from PIL import Image, ImageTk
 
 

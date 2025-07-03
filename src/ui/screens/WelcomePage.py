@@ -1,5 +1,5 @@
 from typing import List
-from customtkinter import *
+from customtkinter import CTkFrame, CTkLabel
 from src.localization.translator import get_translations
 from src.ui.components.Message import ShowMessage
 from PIL import Image, ImageTk
