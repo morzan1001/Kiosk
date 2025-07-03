@@ -1,6 +1,5 @@
-from customtkinter import *
+from customtkinter import CTkFrame, CTkLabel, CTkEntry, CTkButton
 from PIL import Image, ImageTk
-
 
 class CreditFrame(CTkFrame):
     def __init__(self, parent, *args, **kwargs):

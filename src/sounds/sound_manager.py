@@ -7,7 +7,7 @@ def initialize_sound_controller(pos_dir: str, neg_dir: str):
     global sound_controller
     sound_controller = SoundController(pos_dir, neg_dir)
     sound_controller.start()  # Start the thread
-    logger.debug(f"SoundController thread started")
+    logger.debug("SoundController thread started")
 
 def get_sound_controller():
     global sound_controller

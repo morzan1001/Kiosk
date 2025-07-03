@@ -1,4 +1,4 @@
-from customtkinter import *
+from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkOptionMenu
 from src.localization.translator import get_translations
 from src.database import get_db, User
 from src.ui.components.HeadingFrame import HeadingFrame

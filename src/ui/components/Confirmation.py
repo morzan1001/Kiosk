@@ -1,4 +1,4 @@
-from customtkinter import *
+from customtkinter import CTkToplevel, CTkFrame, CTkLabel, CTkButton
 from PIL import Image, ImageTk
 
 from src.localization.translator import get_translations

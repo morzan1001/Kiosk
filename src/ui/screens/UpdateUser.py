@@ -1,6 +1,6 @@
 import logging
 import customtkinter
-from customtkinter import *
+from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkOptionMenu
 from src.localization.translator import get_translations
 from src.ui.components.ctkchart import CTkPieChart
 from src.ui.components.HeadingFrame import HeadingFrame

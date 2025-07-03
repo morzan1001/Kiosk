@@ -1,5 +1,5 @@
-from customtkinter import *
-from tkinter import *
+from customtkinter import CTkFrame, CTkLabel
+from tkinter import StringVar
 from PIL import Image, ImageTk
 
 

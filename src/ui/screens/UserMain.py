@@ -1,4 +1,4 @@
-from customtkinter import *
+from customtkinter import CTkFrame, CTkScrollableFrame, CTkButton
 from typing import List
 from tkinter import IntVar
 from PIL import Image, ImageTk

@@ -1,7 +1,7 @@
 from src.localization.translator import get_translations
 from src.nfc_reader import NFCReader
 from src.logmgr import logger
-from customtkinter import *
+from customtkinter import CTkFrame, CTkButton, CTkLabel
 from PIL import Image, ImageTk
 from src.ui.components.HeadingFrame import HeadingFrame
 

@@ -1,4 +1,4 @@
-from customtkinter import *
+from customtkinter import CTkFrame, CTkEntry, CTkButton
 from PIL import Image, ImageTk
 
 class QuantityFrame(CTkFrame):
@@ -83,9 +83,7 @@ class QuantityFrame(CTkFrame):
             self.update_total_price()
 
     def validate_entry(self, new_value):
-        if new_value == "":
-            return False
-        elif int(new_value) > 999:
+        if new_value == "" or int(new_value) > 999:
             return False
         
         # Check if the new value is a digit

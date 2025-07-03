@@ -1,4 +1,4 @@
-from customtkinter import *
+from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkOptionMenu, filedialog
 from PIL import Image, ImageTk
 from src.localization.translator import get_translations
 from src.ui.components.HeadingFrame import HeadingFrame

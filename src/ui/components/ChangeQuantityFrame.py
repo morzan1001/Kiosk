@@ -1,4 +1,4 @@
-from customtkinter import *
+from customtkinter import CTkFrame, 
 from PIL import Image, ImageTk
 import tkinter as tk  # Import tkinter to use the StringVar
 
