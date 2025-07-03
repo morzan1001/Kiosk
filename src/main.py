@@ -4,7 +4,7 @@ import json
 import customtkinter
 from customtkinter import CTk
 from time import sleep
-from src.mattermost.mattermost_manager import initialize_mattermost_controller
+from src.messaging.mattermost import initialize_mattermost_controller
 from src.localization import initialize_translations
 from src.localization.translator import get_translations
 from src.sounds.sound_manager import initialize_sound_controller, stop_sound_controller
@@ -15,7 +15,8 @@ from src.ui.screens.WelcomePage import *
 from src.lock import initialize_gpio, cleanup_gpio
 from src.logmgr import logger
 from src.database.connection import initialize_database, session_manager
-from src.custom_email.email_manager import initialize_email_controller, shutdown_scheduler
+from src.messaging.email import initialize_email_controller
+from src.messaging.email.email_manager import shutdown_scheduler
 
 def load_config():
     config_path = os.path.join(os.path.dirname(__file__), "../config.json")

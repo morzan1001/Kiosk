@@ -1,4 +1,4 @@
-from customtkinter import CTkFrame, CTkLabel, CTkEntry, CTkButton
+from customtkinter import CTkFrame, CTkLabel, CTkEntry, CTkButton, StringVar
 from PIL import Image, ImageTk
 
 class CreditFrame(CTkFrame):

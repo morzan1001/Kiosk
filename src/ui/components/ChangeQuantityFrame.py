@@ -1,6 +1,5 @@
-from customtkinter import CTkFrame, 
+from customtkinter import CTkFrame, CTkButton, CTkEntry, StringVar
 from PIL import Image, ImageTk
-import tkinter as tk  # Import tkinter to use the StringVar
 
 class ChangeQuantityFrame(CTkFrame):
     def __init__(self, parent, *args, **kwargs):
@@ -17,7 +16,7 @@ class ChangeQuantityFrame(CTkFrame):
         self.add_image = ImageTk.PhotoImage(self.add_image)
 
         vcmd = (self.register(self.validate_entry), "%P")  # Validation command
-        self.data = tk.StringVar(value="0")
+        self.data = StringVar(value="0")
 
         # Entry field
         self.entry = CTkEntry(

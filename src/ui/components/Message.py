@@ -1,5 +1,4 @@
 from customtkinter import CTkFrame, CTkLabel
-from tkinter import StringVar
 from PIL import Image, ImageTk
 
 
