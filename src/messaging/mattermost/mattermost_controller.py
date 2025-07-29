@@ -49,7 +49,7 @@ class MattermostController(BaseMessagingController):
         except Exception as e:
             logger.error(f"Error accessing translations: {e}")
             # Fallback message
-            message = f"Ihr Guthaben ist niedrig: {balance:.2f}€"
+            message = f"Your credit balance is low: {balance:.2f}€"
 
         # If recipient is a User object, use mattermost_username
         username = getattr(recipient, 'mattermost_username', recipient)
@@ -70,7 +70,7 @@ class MattermostController(BaseMessagingController):
         except Exception as e:
             logger.error(f"Error accessing translations: {e}")
             # Fallback message
-            message = f"Niedriger Lagerbestand: {product_name} - nur noch {available_quantity} verfügbar"
+            message = f"Low stock levels: {product_name} - only {available_quantity} available"
 
         # If recipient is a User object, use mattermost_username
         username = getattr(recipient, 'mattermost_username', recipient)
