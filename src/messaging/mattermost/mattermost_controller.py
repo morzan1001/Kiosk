@@ -12,22 +12,22 @@ class MattermostController(BaseMessagingController):
         self.bot_token = bot_token
         self.translations = get_translations()
         
-        # Initialisiere die Basisklasse (Threading und Queue)
+        # Initialize the base class (threading and queue)
         super().__init__()
     
     def get_channel_type(self):
-        """Gibt den Nachrichtenkanal-Typ zurück."""
+        """Returns the message channel type."""
         return 'mattermost'
     
     def _send_message_internal(self, recipient, message, subject=None, **kwargs):
         """
-        Interne Implementierung zum Senden einer Mattermost-Nachricht.
+        Internal implementation for sending a Mattermost message.
         
         Args:
-            recipient: Username oder Channel-ID
-            message: Nachrichteninhalt
-            subject: Wird bei Mattermost ignoriert (kein Betreff-Konzept)
-            **kwargs: Kann 'channel_id' enthalten für Public-Messages
+            recipient: Username or channel ID
+            message: Message content
+            subject: Ignored by Mattermost (no subject concept)
+            **kwargs: Can contain ‘channel_id’ for public messages
         """
         channel_id = kwargs.get('channel_id')
         
@@ -39,13 +39,27 @@ class MattermostController(BaseMessagingController):
             self._send_direct_message(recipient, message)
     
     def _notify_low_balance_internal(self, recipient, balance, language='en'):
-        """Interne Implementierung für Low-Balance-Benachrichtigungen."""
-        message = self.translations["mattermost"]["low_balance"].format(
-            name=getattr(recipient, 'name', str(recipient)), 
-            balance=balance
-        )
+        """Internal implementation for low-balance notifications."""
+        # Ensure language exists in translations, fallback to 'de'
+        lang = language if language in self.translations else 'de'
         
-        # Wenn recipient ein User-Objekt ist, verwende mattermost_username
+        # Check if the translation exists with proper structure
+        try:
+            if 'mattermost' in self.translations.get(lang, {}) and 'low_balance' in self.translations[lang]['mattermost']:
+                message = self.translations[lang]["mattermost"]["low_balance"].format(
+                    name=getattr(recipient, 'name', str(recipient)), 
+                    balance=balance
+                )
+            else:
+                # Fallback message
+                logger.warning(f"Translation missing for language '{lang}' in mattermost.low_balance, using fallback")
+                message = f"Ihr Guthaben ist niedrig: {balance}€"
+        except KeyError as e:
+            logger.error(f"KeyError accessing translations: {e}")
+            # Fallback message
+            message = f"Ihr Guthaben ist niedrig: {balance}€"
+
+        # If recipient is a User object, use mattermost_username
         username = getattr(recipient, 'mattermost_username', recipient)
         if username:
             self._send_direct_message(username, message)
@@ -54,22 +68,36 @@ class MattermostController(BaseMessagingController):
             logger.warning(f"No Mattermost username available for recipient {recipient}")
     
     def _notify_low_stock_internal(self, recipient, product_name, available_quantity, language='en'):
-        """Interne Implementierung für Low-Stock-Benachrichtigungen."""
-        message = self.translations["mattermost"]["low_stock"].format(
-            product_name=product_name, 
-            available_quantity=available_quantity
-        )
+        """Internal implementation for low-stock notifications."""
+        # Ensure language exists in translations, fallback to 'de'
+        lang = language if language in self.translations else 'de'
         
-        # Wenn recipient ein User-Objekt ist, verwende mattermost_username
+        # Check if the translation exists with proper structure
+        try:
+            if 'mattermost' in self.translations.get(lang, {}) and 'low_stock' in self.translations[lang]['mattermost']:
+                message = self.translations[lang]["mattermost"]["low_stock"].format(
+                    product_name=product_name, 
+                    available_quantity=available_quantity
+                )
+            else:
+                # Fallback message
+                logger.warning(f"Translation missing for language '{lang}' in mattermost.low_stock, using fallback")
+                message = f"Niedriger Lagerbestand: {product_name} - nur noch {available_quantity} verfügbar"
+        except KeyError as e:
+            logger.error(f"KeyError accessing translations: {e}")
+            # Fallback message
+            message = f"Niedriger Lagerbestand: {product_name} - nur noch {available_quantity} verfügbar"
+
+        # If recipient is a User object, use mattermost_username
         username = getattr(recipient, 'mattermost_username', recipient)
         if username:
             self._send_direct_message(username, message)
             logger.info(f"Low stock notification sent via Mattermost to {username}")
         else:
             logger.warning(f"No Mattermost username available for recipient {recipient}")
-    
+
     def _send_public_message(self, channel_id, message):
-        """Sendet eine öffentliche Nachricht an einen Mattermost-Channel."""
+        """Sends a public message to a Mattermost channel."""
         url = f"{self.base_url}/api/v4/posts"
         headers = {
             "Authorization": f"Bearer {self.bot_token}",
@@ -86,7 +114,7 @@ class MattermostController(BaseMessagingController):
             logger.info(f"Public message sent to Mattermost channel {channel_id}")
 
     def _send_direct_message(self, username: str, message: str):
-        """Sendet eine direkte Nachricht an einen Mattermost-User."""
+        """Sends a direct message to a Mattermost user."""
         user_id = self._get_user_id(username)
         if not user_id:
             logger.error(f"Failed to find user ID for username: {username}")
@@ -118,8 +146,8 @@ class MattermostController(BaseMessagingController):
             logger.info(f"Direct message sent to Mattermost user {user_id}")
 
     def _get_user_id(self, username: str):
-        """Ermittelt die User-ID für einen gegebenen Username."""
-        # Entferne das '@'-Symbol, falls vorhanden
+        """Retrieves the user ID for a given username."""
+        # Remove the '@' symbol if present
         if username.startswith('@'):
             username = username[1:]
 

@@ -1,5 +1,5 @@
-from customtkinter import CTkFrame, CTkLabel, CTkEntry, CTkButton, StringVar
-from PIL import Image, ImageTk
+from customtkinter import CTkFrame, CTkLabel, CTkEntry, CTkButton, StringVar, CTkImage
+from PIL import Image
 
 class CreditFrame(CTkFrame):
     def __init__(self, parent, *args, **kwargs):
@@ -8,15 +8,15 @@ class CreditFrame(CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure((0, 1, 2, 3), weight=1)
 
-        # Load images for buttons
-        self.credit_image = Image.open("src/images/credit.png")
-        self.credit_image = ImageTk.PhotoImage(self.credit_image)
+        # Load images for buttons using CTkImage
+        credit_img = Image.open("src/images/credit.png")
+        self.credit_image = CTkImage(light_image=credit_img, dark_image=credit_img, size=(40, 40))
 
-        self.minus_image = Image.open("src/images/minus.png")
-        self.minus_image = ImageTk.PhotoImage(self.minus_image)
+        minus_img = Image.open("src/images/minus.png")
+        self.minus_image = CTkImage(light_image=minus_img, dark_image=minus_img, size=(30, 30))
 
-        self.add_image = Image.open("src/images/add.png")
-        self.add_image = ImageTk.PhotoImage(self.add_image)
+        add_img = Image.open("src/images/add.png")
+        self.add_image = CTkImage(light_image=add_img, dark_image=add_img, size=(30, 30))
 
         self.credit_label = CTkLabel(
             self, text="", width=40, height=40, image=self.credit_image

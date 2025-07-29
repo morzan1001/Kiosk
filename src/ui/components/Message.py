@@ -1,5 +1,5 @@
-from customtkinter import CTkFrame, CTkLabel
-from PIL import Image, ImageTk
+from customtkinter import CTkFrame, CTkLabel, CTkImage
+from PIL import Image
 
 
 class ShowMessage(CTkFrame):
@@ -15,12 +15,10 @@ class ShowMessage(CTkFrame):
         self.main_frame.grid_columnconfigure(0, weight=1)
 
         # Load the image
-        self.image = Image.open(f"src/images/{image}.png")
-        self.image = self.image.resize((80, 80), Image.Resampling.LANCZOS)
-        self.image = ImageTk.PhotoImage(self.image)
-
-        # Image Label
-        self.image_label = CTkLabel(self.main_frame, image=self.image, text="")
+        img = Image.open(f"src/images/{image}.png")
+        ctk_image = CTkImage(light_image=img, dark_image=img, size=(80, 80))
+        
+        self.image_label = CTkLabel(self.main_frame, image=ctk_image, text="")
         self.image_label.grid(row=2, column=0, pady=10, padx=10, sticky="s")
 
         # Warning text

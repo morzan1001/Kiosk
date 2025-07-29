@@ -5,8 +5,8 @@ from src.messaging.base_messaging_controller import BaseMessagingController
 
 class MessagingManager:
     """
-    Manager-Klasse zur Verwaltung mehrerer Nachrichtenkanäle.
-    Ermöglicht das gleichzeitige Versenden von Nachrichten über verschiedene Kanäle.
+    Manager class for managing multiple message channels.
+    Enables messages to be sent simultaneously via different channels.
     """
     
     def __init__(self):
@@ -15,11 +15,11 @@ class MessagingManager:
     
     def add_controller(self, controller: BaseMessagingController, name: Optional[str] = None):
         """
-        Fügt einen Nachrichtenkanal-Controller hinzu.
-        
+        Adds a message channel controller.
+
         Args:
-            controller: Instance eines BaseMessagingController
-            name: Optionaler Name für den Controller (falls nicht angegeben, wird channel_type verwendet)
+            controller: Instance of a BaseMessagingController
+            name: Optional name for the controller (if not provided, channel_type is used)
         """
         controller_name = name or controller.get_channel_type()
         self.controllers[controller_name] = controller
@@ -27,10 +27,10 @@ class MessagingManager:
     
     def remove_controller(self, name: str):
         """
-        Entfernt einen Nachrichtenkanal-Controller.
-        
+        Removes a message channel controller.
+
         Args:
-            name: Name des zu entfernenden Controllers
+            name: Name of the controller to remove
         """
         if name in self.controllers:
             controller = self.controllers[name]
@@ -42,34 +42,34 @@ class MessagingManager:
     
     def get_controller(self, name: str) -> Optional[BaseMessagingController]:
         """
-        Gibt einen spezifischen Controller zurück.
+        Returns a specific controller.
         
         Args:
-            name: Name des Controllers
-            
+            name: Name of the controller
+
         Returns:
-            Controller-Instance oder None falls nicht gefunden
+            Controller instance or None if not found
         """
         return self.controllers.get(name)
     
     def get_available_channels(self) -> List[str]:
         """
-        Gibt eine Liste aller verfügbaren Nachrichtenkanäle zurück.
-        
+        Returns a list of all available message channels.
+
         Returns:
-            Liste der verfügbaren Kanal-Namen
+            List of available channel names
         """
         return list(self.controllers.keys())
     
     def send_message_to_all(self, recipient, message, subject=None, **kwargs):
         """
-        Sendet eine Nachricht über alle verfügbaren Kanäle.
-        
+        Sends a message via all available channels.
+
         Args:
-            recipient: Empfänger der Nachricht
-            message: Nachrichteninhalt
-            subject: Betreff (optional)
-            **kwargs: Zusätzliche Parameter
+            recipient: Recipient of the message
+            message: Message content
+            subject: Subject (optional)
+            **kwargs: Additional parameters
         """
         for name, controller in self.controllers.items():
             try:
@@ -80,14 +80,14 @@ class MessagingManager:
     
     def send_message_to_channels(self, channels: List[str], recipient, message, subject=None, **kwargs):
         """
-        Sendet eine Nachricht über spezifische Kanäle.
-        
+        Sends a message via specific channels.
+
         Args:
-            channels: Liste der Kanal-Namen
-            recipient: Empfänger der Nachricht
-            message: Nachrichteninhalt
-            subject: Betreff (optional)
-            **kwargs: Zusätzliche Parameter
+            channels: List of channel names
+            recipient: Recipient of the message
+            message: Message content
+            subject: Subject (optional)
+            **kwargs: Additional parameters
         """
         for channel in channels:
             if channel in self.controllers:
@@ -101,12 +101,12 @@ class MessagingManager:
     
     def notify_low_balance_all(self, recipient, balance, language='en'):
         """
-        Sendet Low-Balance-Benachrichtigung über alle Kanäle.
-        
+        Sends low-balance notification via all channels.
+
         Args:
-            recipient: Empfänger der Benachrichtigung
-            balance: Aktueller Kontostand
-            language: Sprache für die Nachricht
+            recipient: Recipient of the notification
+            balance: Current balance
+            language: Language for the message
         """
         for name, controller in self.controllers.items():
             try:
@@ -117,13 +117,13 @@ class MessagingManager:
     
     def notify_low_stock_all(self, recipient, product_name, available_quantity, language='en'):
         """
-        Sendet Low-Stock-Benachrichtigung über alle Kanäle.
-        
+        Sends low-stock notification via all channels.
+
         Args:
-            recipient: Empfänger der Benachrichtigung
-            product_name: Name des Produkts
-            available_quantity: Verfügbare Menge
-            language: Sprache für die Nachricht
+            recipient: Recipient of the notification
+            product_name: Name of the product
+            available_quantity: Available quantity
+            language: Language for the message
         """
         for name, controller in self.controllers.items():
             try:
@@ -134,12 +134,12 @@ class MessagingManager:
     
     def send_monthly_summary_all(self, recipient, summary, language='en'):
         """
-        Sendet monatliche Zusammenfassung über alle unterstützten Kanäle.
-        
+        Sends monthly summary via all supported channels.
+
         Args:
-            recipient: Empfänger der Zusammenfassung
-            summary: Zusammenfassungsdaten
-            language: Sprache für die Nachricht
+            recipient: Recipient of the summary
+            summary: Summary data
+            language: Language for the message
         """
         for name, controller in self.controllers.items():
             try:
@@ -149,7 +149,7 @@ class MessagingManager:
                 logger.error(f"Failed to queue monthly summary for {name}: {e}")
     
     def stop_all(self):
-        """Stoppt alle Controller."""
+        """Stops all controllers."""
         logger.info("Stopping all messaging controllers")
         for name, controller in self.controllers.items():
             try:
@@ -158,6 +158,11 @@ class MessagingManager:
             except Exception as e:
                 logger.error(f"Failed to stop controller {name}: {e}")
     
-    def __del__(self):
-        """Cleanup beim Zerstören des Managers."""
+    def __enter__(self):
+        """Enter the runtime context for the messaging manager."""
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Exit the runtime context and ensure cleanup."""
         self.stop_all()
+        return False

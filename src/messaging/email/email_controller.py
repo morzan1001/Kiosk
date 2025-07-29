@@ -78,7 +78,7 @@ class EmailController(BaseMessagingController):
             # Add logo as inline image
             try:
                 logger.debug("Adding logo as inline image")
-                logo_path = os.path.join(os.path.dirname(__file__), '../images/logo.png')
+                logo_path = os.path.join(os.path.dirname(__file__), '../../images/logo.png')
                 with open(logo_path, 'rb') as img_file:
                     img_data = img_file.read()
                 image = MIMEImage(img_data, name='logo.png')

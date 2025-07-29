@@ -1,39 +1,43 @@
-from abc import ABC, abstractmethod
 import threading
-from queue import Queue
+import queue
+from abc import ABC, abstractmethod
 from src.logmgr import logger
+from src.localization.translator import get_translations
 
 
 class BaseMessagingController(ABC):
     """
-    Abstrakte Basisklasse für alle Nachrichtenkanäle.
-    Stellt ein einheitliches Interface für verschiedene Messaging-Services bereit.
+    Abstract base class for all message channels.
+    Provides a uniform interface for different messaging services.
     """
     
     def __init__(self):
-        """Initialisiert die gemeinsamen Threading- und Queue-Komponenten."""
+        """Initializes the common threading and queue components."""
         logger.debug(f"Initializing {self.__class__.__name__}")
-        self.queue = Queue()
+        self.queue = queue.Queue()  
         self._stop_event = threading.Event()
         self.thread = threading.Thread(target=self._process_queue)
         self.thread.daemon = True
         self.thread.start()
+        self.translations = get_translations()  
         
     def _process_queue(self):
-        """Verarbeitet die Nachrichten-Queue in einem separaten Thread."""
+        """Processes the message queue in a separate thread."""
         while not self._stop_event.is_set():
             try:
-                task = self.queue.get(timeout=1)  # Timeout um regelmäßig zu prüfen ob gestoppt werden soll
+                task = self.queue.get(timeout=1)  # Timeout to regularly check if it should stop
                 if task is None:
                     break
                 self._execute_task(task)
                 self.queue.task_done()
+            except queue.Empty:
+                continue
             except Exception as e:
                 if not self._stop_event.is_set():
-                    logger.error(f"Failed to process message task in {self.__class__.__name__}: {e}")
+                    logger.error(f"Failed to process message task in {self.__class__.__name__}: {str(e)}")
     
     def _execute_task(self, task):
-        """Führt eine spezifische Aufgabe aus der Queue aus."""
+        """Executes a specific task from the queue."""
         task_type = task.get('type')
         try:
             if task_type == 'send_message':
@@ -47,36 +51,36 @@ class BaseMessagingController(ABC):
                 self._notify_low_balance_internal(
                     recipient=task['recipient'],
                     balance=task['balance'],
-                    language=task.get('language', 'en')
+                    language=task.get('language', 'de')  
                 )
             elif task_type == 'low_stock':
                 self._notify_low_stock_internal(
                     recipient=task['recipient'],
                     product_name=task['product_name'],
                     available_quantity=task['available_quantity'],
-                    language=task.get('language', 'en')
+                    language=task.get('language', 'de') 
                 )
             elif task_type == 'monthly_summary':
                 self._send_monthly_summary_internal(
                     recipient=task['recipient'],
                     summary=task['summary'],
-                    language=task.get('language', 'en')
+                    language=task.get('language', 'de')  
                 )
             else:
                 logger.warning(f"Unknown task type: {task_type}")
         except Exception as e:
-            logger.error(f"Failed to execute task {task_type}: {e}")
-    
-    # Öffentliche Interface-Methoden
+            logger.error(f"Failed to execute task {task_type}: {str(e)}")
+            
+    # Public interface methods
     def send_message(self, recipient, message, subject=None, **kwargs):
         """
-        Sendet eine allgemeine Nachricht.
+        Sends a general message.
         
         Args:
-            recipient: Empfänger der Nachricht (Email-Adresse, Username, etc.)
-            message: Nachrichteninhalt
-            subject: Betreff (optional, für Email relevant)
-            **kwargs: Zusätzliche Parameter je nach Implementation
+            recipient: Recipient of the message (email address, username, etc.)
+            message: Message content
+            subject: Subject (optional, relevant for email)
+            **kwargs: Additional parameters depending on implementation
         """
         task = {
             'type': 'send_message',
@@ -89,12 +93,12 @@ class BaseMessagingController(ABC):
     
     def notify_low_balance(self, recipient, balance, language='en'):
         """
-        Benachrichtigt über niedrigen Kontostand.
+        Notifies about low balance.
         
         Args:
-            recipient: Empfänger der Benachrichtigung
-            balance: Aktueller Kontostand
-            language: Sprache für die Nachricht
+            recipient: Recipient of the notification
+            balance: Current balance
+            language: Language for the message
         """
         task = {
             'type': 'low_balance',
@@ -106,13 +110,13 @@ class BaseMessagingController(ABC):
     
     def notify_low_stock(self, recipient, product_name, available_quantity, language='en'):
         """
-        Benachrichtigt über niedrigen Lagerbestand.
+        Notifies you when stock levels are low.
         
         Args:
-            recipient: Empfänger der Benachrichtigung
-            product_name: Name des Produkts
-            available_quantity: Verfügbare Menge
-            language: Sprache für die Nachricht
+            recipient: Recipient of the notification
+            product_name: Name of the product
+            available_quantity: Available quantity
+            language: Language for the message
         """
         task = {
             'type': 'low_stock',
@@ -125,12 +129,12 @@ class BaseMessagingController(ABC):
     
     def send_monthly_summary(self, recipient, summary, language='en'):
         """
-        Sendet eine monatliche Zusammenfassung.
-        
+        Sends a monthly summary.
+
         Args:
-            recipient: Empfänger der Zusammenfassung
-            summary: Zusammenfassungsdaten
-            language: Sprache für die Nachricht
+            recipient: Recipient of the summary
+            summary: Summary data
+            language: Language for the message
         """
         task = {
             'type': 'monthly_summary',
@@ -141,49 +145,49 @@ class BaseMessagingController(ABC):
         self.queue.put(task)
     
     def stop(self):
-        """Stoppt den Message-Verarbeitungsthread."""
+        """Stops the message processing thread."""
         logger.debug(f"Stopping {self.__class__.__name__} thread")
         self._stop_event.set()
-        self.queue.put(None)  # Signal zum Beenden der Queue-Verarbeitung
+        self.queue.put(None)  # Signal to stop the queue processing
         if threading.current_thread() != self.thread:
             self.thread.join()
-    
-    # Abstrakte Methoden, die von Subklassen implementiert werden müssen
+
+    # Abstract methods that must be implemented by subclasses
     @abstractmethod
     def _send_message_internal(self, recipient, message, subject=None, **kwargs):
         """
-        Interne Implementierung zum Senden einer Nachricht.
-        Muss von jeder Subklasse implementiert werden.
+        Internal implementation for sending a message.
+        Must be implemented by each subclass.
         """
         pass
     
     @abstractmethod
     def _notify_low_balance_internal(self, recipient, balance, language='en'):
         """
-        Interne Implementierung für Low-Balance-Benachrichtigungen.
-        Muss von jeder Subklasse implementiert werden.
+        Internal implementation for low-balance notifications.
+        Must be implemented by each subclass.
         """
         pass
     
     @abstractmethod
     def _notify_low_stock_internal(self, recipient, product_name, available_quantity, language='en'):
         """
-        Interne Implementierung für Low-Stock-Benachrichtigungen.
-        Muss von jeder Subklasse implementiert werden.
+        Internal implementation for low-stock notifications.
+        Must be implemented by each subclass.
         """
         pass
     
     def _send_monthly_summary_internal(self, recipient, summary, language='en'):
         """
-        Interne Implementierung für monatliche Zusammenfassungen.
-        Standard-Implementation - kann von Subklassen überschrieben werden.
+        Internal implementation for sending monthly summaries.
+        Standard implementation - can be overridden by subclasses.
         """
         logger.warning(f"{self.__class__.__name__} does not support monthly summaries")
     
     @abstractmethod
     def get_channel_type(self):
         """
-        Gibt den Typ des Nachrichtenkanals zurück (z.B. 'email', 'mattermost').
-        Muss von jeder Subklasse implementiert werden.
+        Returns the type of message channel (e.g., ‘email’, ‘mattermost’).
+        Must be implemented by every subclass.
         """
         pass

@@ -1,5 +1,5 @@
-from customtkinter import CTkFrame, CTkLabel
-from PIL import Image, ImageTk
+from customtkinter import CTkFrame, CTkLabel, CTkImage
+from PIL import Image
 
 from src.localization.translator import get_translations
 
@@ -11,13 +11,11 @@ class UserFrame(CTkFrame):
         user_id, user_name, user_credit = data
 
         self.translations = get_translations()
-        # Load and display the image
+        # Load and display the image using CTkImage
         image = Image.open("src/images/user-big.png")
-        image = image.resize((60, 60), Image.Resampling.LANCZOS)
-        photo = ImageTk.PhotoImage(image)
+        ctk_image = CTkImage(light_image=image, dark_image=image, size=(60, 60))
 
-        image_label = CTkLabel(self, image=photo, text="")
-        image_label.image = photo
+        image_label = CTkLabel(self, image=ctk_image, text="")
         image_label.grid(row=0, column=0, rowspan=2, padx=10, pady=10)
 
         # Display user name and price

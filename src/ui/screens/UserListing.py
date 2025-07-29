@@ -91,17 +91,12 @@ class UserListFrame(CTkFrame):
         )
         self.add_new_user_button.grid(row=2, column=0, pady=10)
 
-    def update_user(self, event, user_id: int):
+    def update_user(self, event, user_id):
         self.destroy()
         self.update_user_frame = UpdateUserFrame(
-            self.parent,
-            back_button_function=self.return_to_user_listing,
-            user_id=user_id,
-            width=800,
-            height=480,
-            fg_color="transparent",
+            self.parent, self.return_to_user_listing, user_id
         )
-        self.update_user_frame.grid(row=0, column=0, sticky="ns")
+        self.update_user_frame.grid(row=0, column=0, sticky="nsew")
 
     def return_to_user_listing(self):
         users: List[User] = User.read_all(self.session)

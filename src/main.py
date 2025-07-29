@@ -2,7 +2,7 @@ import sys
 import os
 import json
 import customtkinter
-from customtkinter import CTk
+from customtkinter import CTk, set_appearance_mode
 from time import sleep
 from src.messaging.mattermost import initialize_mattermost_controller
 from src.localization import initialize_translations
@@ -11,7 +11,7 @@ from src.sounds.sound_manager import initialize_sound_controller, stop_sound_con
 
 # Add the root directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from src.ui.screens.WelcomePage import *
+from src.ui.screens.WelcomePage import KioskMainFrame
 from src.lock import initialize_gpio, cleanup_gpio
 from src.logmgr import logger
 from src.database.connection import initialize_database, session_manager

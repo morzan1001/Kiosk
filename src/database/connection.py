@@ -68,7 +68,7 @@ def initialize_database(app_config):
         logger.info("Successfully created database connection", f"{db_type} -> {DATABASE_URL}")
         
         # Test the connection
-        with engine.connect() as conn:
+        with engine.connect():
             logger.info("Database connection test successful")
             
     except sqlalchemy.exc.SQLAlchemyError as ex:

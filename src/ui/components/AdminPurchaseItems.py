@@ -1,5 +1,5 @@
-from customtkinter import CTkFrame, CTkLabel
-from PIL import Image, ImageTk
+from customtkinter import CTkFrame, CTkLabel, CTkImage
+from PIL import Image
 
 class AdminPurchaseItemsFrame(CTkFrame):
     def __init__(self, master, image, heading: str, data, *args, **kwargs):
@@ -9,13 +9,11 @@ class AdminPurchaseItemsFrame(CTkFrame):
         self.grid_rowconfigure((0, 1), weight=1)
 
         # Load and display the image
-        image = Image.open(f"src/images/{image}.png")
-        image = image.resize((80, 80), Image.Resampling.LANCZOS)
-        photo = ImageTk.PhotoImage(image)
-
-        image_label = CTkLabel(self, image=photo, text="")
-        image_label.image = photo
-        image_label.grid(row=0, column=0, rowspan=2, padx=10, pady=10)
+        img = Image.open(f"src/images/{image}.png")
+        ctk_image = CTkImage(light_image=img, dark_image=img, size=(80, 80))
+        
+        image_label = CTkLabel(self, image=ctk_image, text="")
+        image_label.grid(row=0, column=0, rowspan=2, padx=10, pady=10, sticky="nsew")
 
         # Display item name and quantity
         heading_label = CTkLabel(

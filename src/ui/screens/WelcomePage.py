@@ -1,8 +1,8 @@
 from typing import List
-from customtkinter import CTkFrame, CTkLabel
+from customtkinter import CTkFrame, CTkLabel, CTkImage
 from src.localization.translator import get_translations
 from src.ui.components.Message import ShowMessage
-from PIL import Image, ImageTk
+from PIL import Image
 from src.ui.screens.AdminMain import AdminMainFrame
 from src.ui.screens.UserMain import UserMainPage
 from src.database import get_db, User, Item
@@ -22,21 +22,19 @@ class KioskMainFrame(CTkFrame):
 
         self.parent = parent
         self.parent.title(self.translations["general"]["kiosk_title"])
-        self.parent.geometry("800x500")
-
-        self.configure(width=800, height=480, fg_color="transparent")
+        self.parent.geometry("800x480")
+        self.configure(fg_color="transparent")
 
         # Configure the grid to center items in the main window
         self.grid_rowconfigure((0, 1, 2, 3, 4, 5), weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        # Load images
-        self.top_image = Image.open("src/images/logo.png")
-        self.top_image = self.top_image.resize((80, 80), Image.Resampling.LANCZOS)
-        self.top_image = ImageTk.PhotoImage(self.top_image)
+        # Load images using CTkImage
+        top_img = Image.open("src/images/logo.png")
+        self.top_image = CTkImage(light_image=top_img, dark_image=top_img, size=(80, 80))
 
-        self.bottom_image = Image.open("src/images/arrow.png")
-        self.bottom_image = ImageTk.PhotoImage(self.bottom_image)
+        bottom_img = Image.open("src/images/arrow.png")
+        self.bottom_image = CTkImage(light_image=bottom_img, dark_image=bottom_img, size=(60, 60))
 
         # Create and place the top image
         self.top_image_label = CTkLabel(self, image=self.top_image, text="")
@@ -46,10 +44,9 @@ class KioskMainFrame(CTkFrame):
         self.welcome_label = CTkLabel(self, text=self.translations["general"]["welcome_message"], font=("Inter", 24))
         self.welcome_label.grid(row=2, column=0)
 
-        # Load icon for the label
-        button_icon = Image.open("src/images/Card.png")
-        button_icon = button_icon.resize((105, 90), Image.Resampling.LANCZOS)
-        self.button_icon = ImageTk.PhotoImage(button_icon)
+        # Load icon for the label using CTkImage
+        button_icon_img = Image.open("src/images/Card.png")
+        self.button_icon = CTkImage(light_image=button_icon_img, dark_image=button_icon_img, size=(105, 90))
 
         # Create and place the scan card label with rounded corners
         self.scan_card_label = CTkLabel(

@@ -1,7 +1,7 @@
-from customtkinter import CTkFrame, CTkScrollableFrame, CTkButton
+from customtkinter import CTkFrame, CTkScrollableFrame, CTkButton, CTkImage
 from typing import List
 from tkinter import IntVar
-from PIL import Image, ImageTk
+from PIL import Image
 from datetime import datetime
 from src.logmgr import logger
 from src.ui.components.Message import ShowMessage
@@ -52,8 +52,12 @@ class UserMainPage(CTkFrame):
 
         self.session = get_db()
 
-        user_image = ImageTk.PhotoImage(Image.open("src/images/user.png"))
-        credit_image = ImageTk.PhotoImage(Image.open("src/images/credit.png"))
+        # Load images using CTkImage
+        user_img = Image.open("src/images/user.png")
+        user_image = CTkImage(light_image=user_img, dark_image=user_img)
+
+        credit_img = Image.open("src/images/credit.png")
+        credit_image = CTkImage(light_image=credit_img, dark_image=credit_img)
 
         # Item list
         self.item_frame = CTkScrollableFrame(
