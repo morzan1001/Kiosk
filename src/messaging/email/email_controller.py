@@ -42,7 +42,7 @@ class EmailController(BaseMessagingController):
         """Internal implementation for low-balance notifications."""
         translated_subject = self.translations["email"]["low_balance_subject"]
         template_file = f"low_balance_{language}.html"
-        body = self.load_template(template_file, {"balance": balance})
+        body = self.load_template(template_file, {"balance": f"{balance:.2f}"})
         self._send_email(recipient, translated_subject, body, is_html=True)
     
     def _notify_low_stock_internal(self, recipient, product_name, available_quantity, language='en'):

@@ -24,9 +24,13 @@ class AddUserFrame(CTkFrame):
         self.grid_rowconfigure((0, 1, 2, 3, 4, 5, 6), weight=1)
 
         heading_frame = HeadingFrame(
-            self, self.translations["admin"]["add_new_user"], back_button_function=back_button_function
+            self, 
+            heading_text=self.translations["admin"]["add_new_user"], 
+            back_button_function=back_button_function,
+            width=600,
+            fg_color="transparent",
         )
-        heading_frame.grid(row=0, column=0, columnspan=2, padx=40, sticky="new")
+        heading_frame.grid(row=0, column=0, columnspan=2, padx=10, sticky="new")
 
         # Inventory label
         credits_label = CTkLabel(

@@ -28,13 +28,15 @@ class UpdateItemFrame(CTkFrame):
         self.grid_rowconfigure((0, 1, 2, 3, 4, 5), weight=1)
 
         # Heading Frame
-        self.heading_frame = HeadingFrame(
+        heading_frame = HeadingFrame(
             self,
-            self.translations["items"]["update_item"],
-            back_button_function=self.back_button_function,
+            heading_text=self.translations["items"]["update_item"],
+            back_button_function=back_button_function,
             delete_button_function=self.delete_item,
+            width=600, 
+            fg_color="transparent", 
         )
-        self.heading_frame.grid(row=0, column=0, columnspan=2, padx=40)
+        heading_frame.grid(row=0, column=0, columnspan=2, padx=90, sticky="new")
 
         # Load the image using CTkImage
         upload_image = Image.open("src/images/upload.png")

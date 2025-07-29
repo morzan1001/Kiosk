@@ -53,4 +53,4 @@ class HeadingFrame(CTkFrame):
                 hover=False, 
                 command=delete_button_function
             )
-            self.delete_button.grid(row=0, column=3, sticky="w")
+            self.delete_button.grid(row=0, column=2, sticky="e")

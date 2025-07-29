@@ -36,13 +36,16 @@ class UpdateUserFrame(CTkFrame):
         self.grid_columnconfigure((0, 1), weight=1)
         self.grid_rowconfigure((0, 1, 2, 3, 4, 5, 6), weight=1)
 
+        # Heading Frame
         heading_frame = HeadingFrame(
             self,
             heading_text=self.translations["admin"]["update_user"],
             back_button_function=back_button_function,
-            delete_button_function=self.delete_user
+            delete_button_function=self.delete_user,
+            width=600,  
+            fg_color="transparent",
         )
-        heading_frame.grid(row=0, column=0, columnspan=2, padx=40, sticky="new")
+        heading_frame.grid(row=0, column=0, columnspan=2, padx=90, sticky="new")   
 
         # Credits label
         credits_label = CTkLabel(
@@ -67,7 +70,7 @@ class UpdateUserFrame(CTkFrame):
             text_color="white",
             font=("Inter", 18, "bold"),
         )
-        self.name_entry.grid(row=2, column=0, padx=(20, 10), sticky="e")  # Added sticky="e" to align right
+        self.name_entry.grid(row=2, column=0, padx=(20, 10), sticky="e")
 
         # Credits frame
         self.credits_frame = CreditFrame(
@@ -85,7 +88,7 @@ class UpdateUserFrame(CTkFrame):
         self.type = CTkOptionMenu(
             self,
             values=[self.translations["user"]["user"], self.translations["admin"]["admin"]],
-            width=600,  # Reduced from 620 to 600
+            width=620,
             height=50,
             fg_color="#202020",
             button_color="#202020",
@@ -97,11 +100,11 @@ class UpdateUserFrame(CTkFrame):
             dropdown_hover_color="#575757",
             dropdown_font=("Inter", 18, "bold"),
         )
-        self.type.grid(row=3, column=0, columnspan=2, pady=(10, 10), padx=(30, 30), sticky="ew")  # Increased padx from (20, 20) to (30, 30)
+        self.type.grid(row=3, column=0, columnspan=2, pady=(10, 10), padx=(20, 20), sticky="n")
 
-        # Graph frame - same width as dropdown
-        self.graph_frame = CTkFrame(self, width=600, height=120, fg_color="#1C1C1C", corner_radius=10)  # Reduced from 620 to 600
-        self.graph_frame.grid(row=4, column=0, columnspan=2, padx=(30, 30), pady=(10, 10), sticky="ew")  # Increased padx from (20, 20) to (30, 30)
+        # Graph frame - update to match dropdown positioning
+        self.graph_frame = CTkFrame(self, width=620, height=120, fg_color="#1C1C1C", corner_radius=10)
+        self.graph_frame.grid(row=4, column=0, columnspan=2, padx=(20, 20), pady=(10, 10), sticky="n")
         self.graph_frame.grid_propagate(False)
 
         # Update NFCID button
@@ -152,9 +155,9 @@ class UpdateUserFrame(CTkFrame):
             empty_label.place(relx=0.5, rely=0.5, anchor="center")
             return
 
-        # Create main container
+        # Create main container - centered
         container = CTkFrame(self.graph_frame, fg_color="transparent")
-        container.pack(fill="both", expand=True, padx=10, pady=10)
+        container.place(relx=0.5, rely=0.5, anchor="center")
 
         # Create canvas for pie chart
         canvas = CTkCanvas(container, width=100, height=100, bg="#1C1C1C", highlightthickness=0)

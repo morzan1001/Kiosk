@@ -25,9 +25,13 @@ class AddNewItemFrame(CTkFrame):
 
         # Heading Frame
         self.heading_frame = HeadingFrame(
-            self, self.translations["items"]["add_new_item"], back_button_function=self.back_button_function
+            self, 
+            heading_text=self.translations["items"]["add_new_item"], 
+            back_button_function=self.back_button_function,
+            width=600, 
+            fg_color="transparent",
         )
-        self.heading_frame.grid(row=0, column=0, columnspan=2, padx=40)
+        self.heading_frame.grid(row=0, column=0, columnspan=2, padx=10, sticky="new")
 
         self.configure(width=800, height=480, fg_color="transparent")
 
