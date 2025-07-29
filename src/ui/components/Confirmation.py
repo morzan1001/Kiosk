@@ -1,5 +1,5 @@
-from customtkinter import *
-from PIL import Image, ImageTk
+from customtkinter import CTkToplevel, CTkFrame, CTkLabel, CTkButton, CTkImage
+from PIL import Image
 
 from src.localization.translator import get_translations
 
@@ -36,9 +36,8 @@ class DeleteConfirmation(CTkToplevel):
         main_frame.grid_rowconfigure((0, 1, 2, 3), weight=1)
 
         # Load the delete icon
-        delete_image = Image.open("src/images/delete.png")  # Update path if needed
-        delete_image = delete_image.resize((70, 80), Image.Resampling.LANCZOS)
-        self.delete_image = ImageTk.PhotoImage(delete_image)
+        delete_img = Image.open("src/images/delete.png")  # Update path if needed
+        self.delete_image = CTkImage(light_image=delete_img, dark_image=delete_img, size=(70, 80))
 
         # Delete icon label
         icon_label = CTkLabel(

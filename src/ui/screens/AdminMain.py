@@ -1,5 +1,5 @@
-from customtkinter import *
-from PIL import Image, ImageTk
+from customtkinter import CTkFrame, CTkLabel, CTkImage
+from PIL import Image
 from src.localization.translator import get_translations
 from src.ui.screens.UserListing import UserListFrame
 from src.ui.screens.ItemListing import ItemListFrame
@@ -30,10 +30,9 @@ class AdminMainFrame(CTkFrame):
 
         self.configure(width=800, height=480, fg_color="transparent")
 
-        # Load and display the logo image
-        self.logo_image = Image.open("src/images/logo.png")
-        self.logo_image = self.logo_image.resize((90, 90), Image.Resampling.LANCZOS)
-        self.logo_image = ImageTk.PhotoImage(self.logo_image)
+        # Load and display the logo image using CTkImage
+        logo_image = Image.open("src/images/logo.png")
+        self.logo_image = CTkImage(light_image=logo_image, dark_image=logo_image, size=(90, 90))
         self.logo_label = CTkLabel(self, text="", image=self.logo_image)
         self.logo_label.grid(row=2, column=0, columnspan=3)
 

@@ -56,11 +56,19 @@ class SoundController(threading.Thread):
 
         try:
             data, fs = sf.read(sound_path)
-            valid_fs = self.find_valid_samplerate(fs)
-            if valid_fs != fs:
+            
+            # Get the default sample rate without logging warnings
+            device_info = sd.query_devices(sd.default.device['output'])
+            default_fs = int(device_info['default_samplerate'])
+            
+            # Only resample if necessary and significantly different
+            if abs(fs - default_fs) > 100:
+                logger.debug(f"Resampling from {fs}Hz to {default_fs}Hz")
                 from scipy import signal
-                data = signal.resample(data, int(len(data) * valid_fs / fs))
-                fs = valid_fs
+                data = signal.resample(data, int(len(data) * default_fs / fs))
+                fs = default_fs
+            else:
+                fs = default_fs
             
             sd.play(data, fs)
             sd.wait()

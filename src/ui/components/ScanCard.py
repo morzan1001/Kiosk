@@ -1,8 +1,8 @@
 from src.localization.translator import get_translations
 from src.nfc_reader import NFCReader
 from src.logmgr import logger
-from customtkinter import *
-from PIL import Image, ImageTk
+from customtkinter import CTkFrame, CTkButton, CTkLabel, CTkImage
+from PIL import Image
 from src.ui.components.HeadingFrame import HeadingFrame
 
 class ScanCardFrame(CTkFrame):
@@ -30,14 +30,13 @@ class ScanCardFrame(CTkFrame):
             self, heading_text=heading_text, back_button_function=back_button_function
         )
 
-        # Load images
-        self.bottom_image = Image.open("src/images/arrow.png")
-        self.bottom_image = ImageTk.PhotoImage(self.bottom_image)
+        # Load images using CTkImage
+        arrow_image = Image.open("src/images/arrow.png")
+        self.bottom_image = CTkImage(light_image=arrow_image, dark_image=arrow_image)
 
-        # Load icon for the button
-        button_icon = Image.open("src/images/Card.png")
-        button_icon = button_icon.resize((105, 90), Image.Resampling.LANCZOS)
-        self.button_icon = ImageTk.PhotoImage(button_icon)
+        # Load icon for the button using CTkImage
+        button_icon_image = Image.open("src/images/Card.png")
+        self.button_icon = CTkImage(light_image=button_icon_image, dark_image=button_icon_image, size=(105, 90))
 
         # Create and place the scan card button
         self.scan_card_button = CTkButton(

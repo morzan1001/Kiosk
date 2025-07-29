@@ -1,7 +1,7 @@
-from customtkinter import *
+from customtkinter import CTkFrame, CTkScrollableFrame, CTkButton, CTkImage
 from typing import List
 from tkinter import IntVar
-from PIL import Image, ImageTk
+from PIL import Image
 from datetime import datetime
 from src.logmgr import logger
 from src.ui.components.Message import ShowMessage
@@ -10,10 +10,10 @@ from src.ui.components.QuantityFrame import QuantityFrame
 from src.database import get_db, User, Item
 from src.database.models.transaction import Transaction
 from src.lock.gpio_manager import get_gpio_controller
-from src.custom_email.email_manager import get_email_controller
+from src.messaging.email import get_email_controller
 from src.localization.translator import get_system_language, get_translations
 from src.sounds.sound_manager import get_sound_controller
-from src.mattermost.mattermost_manager import get_mattermost_controller
+from src.messaging.mattermost import get_mattermost_controller
 
 class UserMainPage(CTkFrame):
     def __init__(
@@ -52,8 +52,12 @@ class UserMainPage(CTkFrame):
 
         self.session = get_db()
 
-        user_image = ImageTk.PhotoImage(Image.open("src/images/user.png"))
-        credit_image = ImageTk.PhotoImage(Image.open("src/images/credit.png"))
+        # Load images using CTkImage
+        user_img = Image.open("src/images/user.png")
+        user_image = CTkImage(light_image=user_img, dark_image=user_img)
+
+        credit_img = Image.open("src/images/credit.png")
+        credit_image = CTkImage(light_image=credit_img, dark_image=credit_img)
 
         # Item list
         self.item_frame = CTkScrollableFrame(
@@ -377,13 +381,13 @@ class UserMainPage(CTkFrame):
             
         if user_instance.email:
             self.email_controller.notify_low_balance(
-                recipient_email=user_instance.email,
+                recipient=user_instance.email,
                 balance=credit,
                 language=get_system_language()
             )
         if user_instance.mattermost_username:
             self.mattermost_controller.notify_low_balance(
-                user=user_instance,
+                recipient=user_instance,
                 balance=credit
             )
 
@@ -417,14 +421,14 @@ class UserMainPage(CTkFrame):
             for admin in admins:
                 if admin.email:
                     self.email_controller.notify_low_stock(
-                        recipient_email=admin.email,
+                        recipient=admin.email,
                         product_name=item.name,  
                         available_quantity=item.quantity,
                         language=get_system_language()
                     )
                 if admin.mattermost_username:
                     self.mattermost_controller.notify_low_stock(
-                        admin=admin,
+                        recipient=admin,
                         product_name=item.name,  
                         available_quantity=item.quantity
                     )

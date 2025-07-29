@@ -1,5 +1,5 @@
-from customtkinter import *
-from PIL import Image, ImageTk
+from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkImage
+from PIL import Image
 
 class HeadingFrame(CTkFrame):
     def __init__(self, parent, heading_text: str, back_button_function, delete_button_function=None, *args, **kwargs):
@@ -11,10 +11,9 @@ class HeadingFrame(CTkFrame):
         self.grid_columnconfigure((0, 1, 2), weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        # Load the back button image
+        # Load the back button image using CTkImage
         back_image = Image.open("src/images/back.png")
-        back_image = back_image.resize((42, 32), Image.Resampling.LANCZOS)
-        self.back_image = ImageTk.PhotoImage(back_image)
+        self.back_image = CTkImage(light_image=back_image, dark_image=back_image, size=(42, 32))
 
         # Create the back button
         self.back_button = CTkButton(
@@ -39,10 +38,9 @@ class HeadingFrame(CTkFrame):
         self.heading_label.grid(row=0, column=1)
 
         if delete_button_function:    
-            # Load the delete button image
+            # Load the delete button image using CTkImage
             delete_image = Image.open("src/images/delete.png")
-            delete_image = delete_image.resize((30, 35), Image.Resampling.LANCZOS)
-            self.delete_image = ImageTk.PhotoImage(delete_image)
+            self.delete_image = CTkImage(light_image=delete_image, dark_image=delete_image, size=(30, 35))
                 
             # Create the delete button
             self.delete_button = CTkButton(
@@ -55,4 +53,4 @@ class HeadingFrame(CTkFrame):
                 hover=False, 
                 command=delete_button_function
             )
-            self.delete_button.grid(row=0, column=3, sticky="w")
+            self.delete_button.grid(row=0, column=2, sticky="e")

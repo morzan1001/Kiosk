@@ -1,6 +1,5 @@
-from customtkinter import *
-from PIL import Image, ImageTk
-import tkinter as tk  # Import tkinter to use the StringVar
+from customtkinter import CTkFrame, CTkButton, CTkEntry, StringVar, CTkImage
+from PIL import Image
 
 class ChangeQuantityFrame(CTkFrame):
     def __init__(self, parent, *args, **kwargs):
@@ -9,15 +8,15 @@ class ChangeQuantityFrame(CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure((0, 1, 2), weight=1)
 
-        # Load images for buttons
-        self.minus_image = Image.open("src/images/minus.png")
-        self.minus_image = ImageTk.PhotoImage(self.minus_image)
+        # Load images for buttons using CTkImage
+        minus_img = Image.open("src/images/minus.png")
+        self.minus_image = CTkImage(light_image=minus_img, dark_image=minus_img, size=(20, 20))
 
-        self.add_image = Image.open("src/images/add.png")
-        self.add_image = ImageTk.PhotoImage(self.add_image)
+        add_img = Image.open("src/images/add.png")
+        self.add_image = CTkImage(light_image=add_img, dark_image=add_img, size=(20, 20))
 
-        vcmd = (self.register(self.validate_entry), "%P")  # Validation command
-        self.data = tk.StringVar(value="0")
+        vcmd = (self.register(self.validate_entry), "%P")
+        self.data = StringVar(value="0")
 
         # Entry field
         self.entry = CTkEntry(

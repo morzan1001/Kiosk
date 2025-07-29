@@ -1,4 +1,4 @@
-from customtkinter import *
+from customtkinter import CTkToplevel, CTkFrame, CTkLabel, CTkEntry, CTkButton
 
 from src.localization.translator import get_translations
 
@@ -11,7 +11,6 @@ class AddBarcodeFrame(CTkToplevel):
         self.confirm_function = confirm_function
         self.translations = get_translations()
 
-        # Bind the event for handling barcode input (keypress events)
         self.bind("<Key>", self.on_barcode_scan)
 
         # Get screen width and height

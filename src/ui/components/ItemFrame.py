@@ -1,5 +1,5 @@
-from customtkinter import *
-from PIL import Image, ImageTk
+from customtkinter import CTkFrame, CTkLabel, CTkImage
+from PIL import Image
 from io import BytesIO
 
 class ItemFrame(CTkFrame):
@@ -17,11 +17,11 @@ class ItemFrame(CTkFrame):
 
             # Open the image using Image.open
             image_pil = Image.open(image_bytes)
-            image_pil = image_pil.resize((60, 60), Image.Resampling.LANCZOS)
-            photo = ImageTk.PhotoImage(image_pil)
+            
+            # Create CTkImage with the same size as before (60x60)
+            ctk_image = CTkImage(light_image=image_pil, dark_image=image_pil, size=(60, 60))
 
-            image_label = CTkLabel(self, image=photo, text="")
-            image_label.image = photo
+            image_label = CTkLabel(self, image=ctk_image, text="")
             image_label.grid(row=0, column=0, rowspan=2, padx=10, pady=10)
         else:
             image_label = CTkLabel(self, text="")

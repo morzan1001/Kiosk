@@ -1,5 +1,5 @@
-from customtkinter import *
-from PIL import Image, ImageTk
+from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkOptionMenu, filedialog, CTkImage
+from PIL import Image
 from src.localization.translator import get_translations
 from src.ui.components.HeadingFrame import HeadingFrame
 from src.ui.components.Confirmation import DeleteConfirmation
@@ -28,18 +28,19 @@ class UpdateItemFrame(CTkFrame):
         self.grid_rowconfigure((0, 1, 2, 3, 4, 5), weight=1)
 
         # Heading Frame
-        self.heading_frame = HeadingFrame(
+        heading_frame = HeadingFrame(
             self,
-            self.translations["items"]["update_item"],
-            back_button_function=self.back_button_function,
+            heading_text=self.translations["items"]["update_item"],
+            back_button_function=back_button_function,
             delete_button_function=self.delete_item,
+            width=600, 
+            fg_color="transparent", 
         )
-        self.heading_frame.grid(row=0, column=0, columnspan=2, padx=40)
+        heading_frame.grid(row=0, column=0, columnspan=2, padx=90, sticky="new")
 
-        # Load the image
-        self.upload_image = Image.open("src/images/upload.png")
-        self.upload_image = self.upload_image.resize((80, 80), Image.Resampling.LANCZOS)
-        self.upload_image = ImageTk.PhotoImage(self.upload_image)
+        # Load the image using CTkImage
+        upload_image = Image.open("src/images/upload.png")
+        self.upload_image = CTkImage(light_image=upload_image, dark_image=upload_image, size=(80, 80))
 
         # Image Button
         self.update_button = CTkButton(
@@ -106,6 +107,7 @@ class UpdateItemFrame(CTkFrame):
             font=("Inter", 18, "bold"),
         )
         self.price_entry.grid(row=4, column=0, padx=(20, 10), pady=(10, 10))
+        self.price_entry.bind('<KeyRelease>', self.validate_price_input)
 
         # Category Dropdown
         self.category_dropdown = CTkOptionMenu(
@@ -175,9 +177,8 @@ class UpdateItemFrame(CTkFrame):
 
             # Open the image using Image.open
             image_pil = Image.open(image_bytes)
-            image_pil = image_pil.resize((100, 100), Image.Resampling.LANCZOS)
-            photo = ImageTk.PhotoImage(image_pil)
-            self.update_button.image = photo
+            # Create CTkImage with the loaded image at size 100x100
+            photo = CTkImage(light_image=image_pil, dark_image=image_pil, size=(100, 100))
             self.update_button.configure(image=photo)
 
     def upload_image_button_pressed(self):
@@ -187,11 +188,9 @@ class UpdateItemFrame(CTkFrame):
         if file_path:
             self.upload_image_tk = Image.open(file_path)
             self.file_path = file_path
-            self.upload_image = self.upload_image_tk.resize(
-                (100, 100), Image.Resampling.LANCZOS
-            )
-            self.upload_image = ImageTk.PhotoImage(self.upload_image)
-            self.update_button.configure(image=self.upload_image)
+            # Create CTkImage with the uploaded image at size 100x100
+            uploaded_image = CTkImage(light_image=self.upload_image_tk, dark_image=self.upload_image_tk, size=(100, 100))
+            self.update_button.configure(image=uploaded_image)
 
     def confirm_barcode(self):
         self.barcode = self.barcode_frame.get()
@@ -203,6 +202,32 @@ class UpdateItemFrame(CTkFrame):
     def show_barcode(self):
         self.barcode_frame = AddBarcodeFrame(self.parent, self.confirm_barcode)
         self.after(100, self.barcode_frame.grab_set)  # Call grab_set after a short delay
+
+    def validate_price_input(self, event=None):
+        """Validate price input to ensure it's a valid number"""
+        current_value = self.price_entry.get()
+        
+        # Allow empty field
+        if not current_value:
+            return True
+        
+        # Check if it's a valid price format (e.g., 1.99, 10, 0.50)
+        try:
+            price = float(current_value)
+            if price < 0:
+                self.price_entry.delete(0, 'end')
+                return False
+            # Limit to 2 decimal places
+            formatted_price = f"{price:.2f}"
+            if current_value != formatted_price:
+                self.price_entry.delete(0, 'end')
+                self.price_entry.insert(0, formatted_price)
+        except ValueError:
+            # Remove invalid character
+            self.price_entry.delete(0, 'end')
+            return False
+        
+        return True
 
     def update_item(self):
         # Get data from entries and option menu

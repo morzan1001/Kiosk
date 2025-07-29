@@ -1,4 +1,4 @@
-from src.custom_email.email_controller import EmailController
+from .email_controller import EmailController
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from src.logmgr import logger
@@ -51,7 +51,7 @@ def send_monthly_summaries():
         summary = get_monthly_summary(user, session)
         # Send the email if the user has an email address
         if user.email:
-            email_controller.send_monthly_summary(recipient_email=user.email, summary=summary, language=get_system_language())
+            email_controller.send_monthly_summary(recipient=user.email, summary=summary, language=get_system_language())
             logger.info(f"Monthly summary sent to user {user.name} ({user.email})")
         else:
             logger.warning(f"User {user.name} does not have an email address, skipping.")

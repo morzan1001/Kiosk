@@ -1,5 +1,5 @@
-from customtkinter import *
-from PIL import Image, ImageTk
+from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkOptionMenu, filedialog, CTkImage
+from PIL import Image
 from src.localization.translator import get_translations
 from src.ui.components.HeadingFrame import HeadingFrame
 from src.ui.components.Barcode import AddBarcodeFrame
@@ -25,16 +25,19 @@ class AddNewItemFrame(CTkFrame):
 
         # Heading Frame
         self.heading_frame = HeadingFrame(
-            self, self.translations["items"]["add_new_item"], back_button_function=self.back_button_function
+            self, 
+            heading_text=self.translations["items"]["add_new_item"], 
+            back_button_function=self.back_button_function,
+            width=600, 
+            fg_color="transparent",
         )
-        self.heading_frame.grid(row=0, column=0, columnspan=2, padx=40)
+        self.heading_frame.grid(row=0, column=0, columnspan=2, padx=10, sticky="new")
 
         self.configure(width=800, height=480, fg_color="transparent")
 
-        # Load the image
-        self.upload_image = Image.open("src/images/upload.png")
-        self.upload_image = self.upload_image.resize((80, 80), Image.Resampling.LANCZOS)
-        self.upload_image = ImageTk.PhotoImage(self.upload_image)
+        # Load the image using CTkImage
+        upload_image = Image.open("src/images/upload.png")
+        self.upload_image = CTkImage(light_image=upload_image, dark_image=upload_image, size=(80, 80))
 
         # Image Button
         self.update_button = CTkButton(
@@ -158,11 +161,9 @@ class AddNewItemFrame(CTkFrame):
         if file_path:
             self.upload_image_tk = Image.open(file_path)
             self.file_path = file_path
-            self.upload_image = self.upload_image_tk.resize(
-                (100, 100), Image.Resampling.LANCZOS
-            )
-            self.upload_image = ImageTk.PhotoImage(self.upload_image)
-            self.update_button.configure(image=self.upload_image)
+            # Create CTkImage with the uploaded image at size 100x100
+            uploaded_image = CTkImage(light_image=self.upload_image_tk, dark_image=self.upload_image_tk, size=(100, 100))
+            self.update_button.configure(image=uploaded_image)
 
     def confirm_barcode(self):
         self.barcode = self.barcode_frame.get()

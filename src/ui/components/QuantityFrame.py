@@ -1,5 +1,5 @@
-from customtkinter import *
-from PIL import Image, ImageTk
+from customtkinter import CTkFrame, CTkEntry, CTkButton, CTkImage
+from PIL import Image
 
 class QuantityFrame(CTkFrame):
     def __init__(self, master, data, update_total_price, item_price: float, *args, **kwargs):
@@ -13,14 +13,12 @@ class QuantityFrame(CTkFrame):
         self.grid_columnconfigure((0, 1, 2), weight=1)
         self.grid_rowconfigure((0), weight=1)
 
-        # Load images for buttons
+        # Load images for buttons using CTkImage
         add_image = Image.open("src/images/add.png")
-        add_image = add_image.resize((30, 30), Image.Resampling.LANCZOS)
-        self.add_photo = ImageTk.PhotoImage(add_image)
+        self.add_photo = CTkImage(light_image=add_image, dark_image=add_image, size=(30, 30))
 
         minus_image = Image.open("src/images/minus.png")
-        minus_image = minus_image.resize((30, 30), Image.Resampling.LANCZOS)
-        self.minus_photo = ImageTk.PhotoImage(minus_image)
+        self.minus_photo = CTkImage(light_image=minus_image, dark_image=minus_image, size=(30, 30))
 
         # Create and place the decrement button
         self.decrement_button = CTkButton(
@@ -83,9 +81,7 @@ class QuantityFrame(CTkFrame):
             self.update_total_price()
 
     def validate_entry(self, new_value):
-        if new_value == "":
-            return False
-        elif int(new_value) > 999:
+        if new_value == "" or int(new_value) > 999:
             return False
         
         # Check if the new value is a digit
