@@ -40,24 +40,16 @@ class MattermostController(BaseMessagingController):
     
     def _notify_low_balance_internal(self, recipient, balance, language='en'):
         """Internal implementation for low-balance notifications."""
-        # Ensure language exists in translations, fallback to 'de'
-        lang = language if language in self.translations else 'de'
-        
-        # Check if the translation exists with proper structure
         try:
-            if 'mattermost' in self.translations.get(lang, {}) and 'low_balance' in self.translations[lang]['mattermost']:
-                message = self.translations[lang]["mattermost"]["low_balance"].format(
-                    name=getattr(recipient, 'name', str(recipient)), 
-                    balance=balance
-                )
-            else:
-                # Fallback message
-                logger.warning(f"Translation missing for language '{lang}' in mattermost.low_balance, using fallback")
-                message = f"Ihr Guthaben ist niedrig: {balance}€"
-        except KeyError as e:
-            logger.error(f"KeyError accessing translations: {e}")
+            # Use the system translations (ignore language parameter)
+            message = self.translations["mattermost"]["low_balance"].format(
+                name=getattr(recipient, 'name', str(recipient)), 
+                balance=f"{balance:.2f}"
+            )
+        except Exception as e:
+            logger.error(f"Error accessing translations: {e}")
             # Fallback message
-            message = f"Ihr Guthaben ist niedrig: {balance}€"
+            message = f"Ihr Guthaben ist niedrig: {balance:.2f}€"
 
         # If recipient is a User object, use mattermost_username
         username = getattr(recipient, 'mattermost_username', recipient)
@@ -69,22 +61,14 @@ class MattermostController(BaseMessagingController):
     
     def _notify_low_stock_internal(self, recipient, product_name, available_quantity, language='en'):
         """Internal implementation for low-stock notifications."""
-        # Ensure language exists in translations, fallback to 'de'
-        lang = language if language in self.translations else 'de'
-        
-        # Check if the translation exists with proper structure
         try:
-            if 'mattermost' in self.translations.get(lang, {}) and 'low_stock' in self.translations[lang]['mattermost']:
-                message = self.translations[lang]["mattermost"]["low_stock"].format(
-                    product_name=product_name, 
-                    available_quantity=available_quantity
-                )
-            else:
-                # Fallback message
-                logger.warning(f"Translation missing for language '{lang}' in mattermost.low_stock, using fallback")
-                message = f"Niedriger Lagerbestand: {product_name} - nur noch {available_quantity} verfügbar"
-        except KeyError as e:
-            logger.error(f"KeyError accessing translations: {e}")
+            # Use the system translations (ignore language parameter)
+            message = self.translations["mattermost"]["low_stock"].format(
+                product_name=product_name, 
+                available_quantity=available_quantity
+            )
+        except Exception as e:
+            logger.error(f"Error accessing translations: {e}")
             # Fallback message
             message = f"Niedriger Lagerbestand: {product_name} - nur noch {available_quantity} verfügbar"
 
