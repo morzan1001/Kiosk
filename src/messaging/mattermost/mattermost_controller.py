@@ -41,15 +41,18 @@ class MattermostController(BaseMessagingController):
     def _notify_low_balance_internal(self, recipient, balance, language='en'):
         """Internal implementation for low-balance notifications."""
         try:
+            # Ensure balance is a float for formatting
+            balance_float = float(balance) if not isinstance(balance, float) else balance
+            
             # Use the system translations (ignore language parameter)
             message = self.translations["mattermost"]["low_balance"].format(
                 name=getattr(recipient, 'name', str(recipient)), 
-                balance=f"{balance:.2f}"
+                balance=balance_float
             )
         except Exception as e:
             logger.error(f"Error accessing translations: {e}")
             # Fallback message
-            message = f"Your credit balance is low: {balance:.2f}€"
+            message = f"Your credit balance is low: {float(balance):.2f}€"
 
         # If recipient is a User object, use mattermost_username
         username = getattr(recipient, 'mattermost_username', recipient)

@@ -98,7 +98,8 @@ def get_monthly_summary(user, session):
         start_date=first_day_of_last_month.strftime('%d.%m.%Y'),
         end_date=last_day_of_last_month.strftime('%d.%m.%Y')
     ) + "\n"
-    summary += translations["monthly_summary"]["total_spent"].format(total_amount=total_amount) + "\n"
+    # Ensure total_amount is a float for formatting
+    summary += translations["monthly_summary"]["total_spent"].format(total_amount=float(total_amount)) + "\n"
     summary += translations["monthly_summary"]["transaction_count"].format(transaction_count=len(transactions_in_last_month)) + "\n\n"
     summary += translations["monthly_summary"]["product_table_header"] + "\n"
 
@@ -106,7 +107,7 @@ def get_monthly_summary(user, session):
         summary += translations["monthly_summary"]["product_table_row"].format(
             product_name=product_name,
             quantity=details['quantity'],
-            total_cost=details['total_cost']
+            total_cost=float(details['total_cost'])  # Ensure it's a float
         ) + "\n"
 
     summary += "\n" + translations["monthly_summary"]["footer"]
