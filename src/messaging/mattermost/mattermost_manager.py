@@ -78,18 +78,18 @@ def get_monthly_summary(user, session):
     product_purchases = {}
 
     for t in transactions_in_last_month:
-        total_amount += t.cost
+        total_amount += float(t.cost)  # Ensure cost is converted to float
 
         item = Item.get_by_id(session, item_id=t.item_id) if t.item_id else None
         product_name = item.name if item else "Unknown Product"
 
         if product_name in product_purchases:
             product_purchases[product_name]["quantity"] += 1
-            product_purchases[product_name]["total_cost"] += t.cost
+            product_purchases[product_name]["total_cost"] += float(t.cost)  # Ensure cost is converted to float
         else:
             product_purchases[product_name] = {
                 "quantity": 1,
-                "total_cost": t.cost
+                "total_cost": float(t.cost)  # Ensure cost is converted to float
             }
 
     # Prepare the summary
