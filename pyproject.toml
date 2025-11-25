@@ -23,7 +23,7 @@ requests = "^2.32.5"
 psycopg2-binary = "^2.9.11"
 
 [tool.poetry.group.dev.dependencies]
-alembic = "^1.17.1" 
+alembic = "^1.17.2" 
 
 [build-system]
 requires = ["poetry-core"]
