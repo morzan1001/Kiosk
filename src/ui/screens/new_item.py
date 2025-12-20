@@ -1,5 +1,12 @@
-from customtkinter import (CTkButton, CTkEntry, CTkFrame, CTkImage, CTkLabel,
-                           CTkOptionMenu, filedialog)
+from customtkinter import (
+    CTkButton,
+    CTkEntry,
+    CTkFrame,
+    CTkImage,
+    CTkLabel,
+    CTkOptionMenu,
+    filedialog,
+)
 from PIL import Image
 
 from src.database import Item, get_db
@@ -83,9 +90,7 @@ class AddNewItemFrame(CTkFrame):
             corner_radius=10,
             border_width=2,
         )
-        self.inventory_frame.grid(
-            row=3, column=1, padx=(10, 20), pady=(10, 10), sticky="w"
-        )
+        self.inventory_frame.grid(row=3, column=1, padx=(10, 20), pady=(10, 10), sticky="w")
 
         # Price Entry
         self.price_entry = CTkEntry(
@@ -110,9 +115,7 @@ class AddNewItemFrame(CTkFrame):
             font=("Inter", 18, "bold"),
             dropdown_font=("Inter", 18, "bold"),
         )
-        self.category_dropdown.grid(
-            row=4, column=1, padx=(20, 10), pady=(10, 10), sticky="w"
-        )
+        self.category_dropdown.grid(row=4, column=1, padx=(20, 10), pady=(10, 10), sticky="w")
 
         # Add Barcode Button
         self.add_barcode_button = CTkButton(
@@ -160,9 +163,7 @@ class AddNewItemFrame(CTkFrame):
 
     def show_barcode(self):
         self.barcode_frame = AddBarcodeFrame(self.parent, self.confirm_barcode)
-        self.barcode_frame.grid(
-            row=0, column=0, padx=20, pady=20
-        )  # Ensure it is rendered fully
+        self.barcode_frame.grid(row=0, column=0, padx=20, pady=20)  # Ensure it is rendered fully
         self.barcode_frame.update_idletasks()  # Force the frame to update its layout
         self.barcode_frame.grab_set()
 

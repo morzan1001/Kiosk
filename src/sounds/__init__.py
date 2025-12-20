@@ -6,6 +6,7 @@ and a utility function to initialize the sound system.
 
 # Import the SoundController class from the sound_controller module
 from .sound_controller import SoundController
+
 # Import the utility function from the sound_manager module
 from .sound_manager import SOUND_CONTROLLER, initialize_sound_controller
 

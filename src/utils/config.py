@@ -1,6 +1,7 @@
 import json
 from typing import Any, Dict
 
+from src.logmgr import logger
 from src.utils.paths import get_config_path
 
 
@@ -20,7 +21,7 @@ class Config:
             with open(config_path, "r", encoding="utf-8") as f:
                 self._config_data = json.load(f)
         except Exception as e:
-            print(f"Error loading config from {config_path}: {e}")
+            logger.error(f"Error loading config from {config_path}", error=e)
             # Fallback or re-raise depending on severity
             self._config_data = {}
 

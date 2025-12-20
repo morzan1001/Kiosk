@@ -2,6 +2,7 @@
 Main module for the Kiosk application.
 Initializes the application, database, and UI.
 """
+
 import os
 import sys
 from time import sleep
@@ -20,10 +21,11 @@ from src.lock import cleanup_gpio, initialize_gpio  # noqa: E402
 from src.logmgr import logger  # noqa: E402
 from src.messaging.email import initialize_email_controller  # noqa: E402
 from src.messaging.email.email_manager import shutdown_scheduler  # noqa: E402
-from src.messaging.mattermost import \
-    initialize_mattermost_controller  # noqa: E402
+from src.messaging.mattermost import initialize_mattermost_controller  # noqa: E402
 from src.sounds.sound_manager import (  # noqa: E402
-    initialize_sound_controller, stop_sound_controller)
+    initialize_sound_controller,
+    stop_sound_controller,
+)
 from src.ui.screens.welcome_page import KioskMainFrame  # noqa: E402
 from src.utils.config import config  # noqa: E402
 from src.utils.paths import PROJECT_ROOT  # noqa: E402
@@ -56,6 +58,7 @@ def validate_database_config():
 
 class KioskCTK(CTk):
     """Main Kiosk Application Class inheriting from CTk."""
+
     def __init__(self):
         super().__init__()
         self.translations = get_translations()
@@ -104,9 +107,7 @@ def main():
         logger.info("Database session initialized")
 
         logger.debug("Initializing GPIO")
-        initialize_gpio(
-            chip=config.get("gpio.chip"), line_number=config.get("gpio.line_number")
-        )
+        initialize_gpio(chip=config.get("gpio.chip"), line_number=config.get("gpio.line_number"))
         logger.info("GPIO initialized")
 
         logger.debug("Initializing Email Controller")
@@ -153,9 +154,7 @@ def main():
         root.after(500, lambda: root.wm_attributes("-fullscreen", True))
         logger.debug("Set application to fullscreen mode")
 
-        set_appearance_mode(
-            config.get("appearance.mode", "light")
-        )
+        set_appearance_mode(config.get("appearance.mode", "light"))
 
         logger.debug("Setting up main kiosk frame")
         kiosk_frame = KioskMainFrame(root)

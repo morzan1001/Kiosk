@@ -6,10 +6,12 @@ für verschiedene Nachrichtenkanäle bereit.
 """
 
 from .base_messaging_controller import BaseMessagingController
-from .email import (EmailController, get_email_controller,
-                    initialize_email_controller)
-from .mattermost import (MattermostController, get_mattermost_controller,
-                         initialize_mattermost_controller)
+from .email import EmailController, get_email_controller, initialize_email_controller
+from .mattermost import (
+    MattermostController,
+    get_mattermost_controller,
+    initialize_mattermost_controller,
+)
 from .messaging_manager import MessagingManager
 
 __all__ = [

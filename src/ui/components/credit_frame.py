@@ -1,5 +1,4 @@
-from customtkinter import (CTkButton, CTkEntry, CTkFrame, CTkImage, CTkLabel,
-                           StringVar)
+from customtkinter import CTkButton, CTkEntry, CTkFrame, CTkImage, CTkLabel, StringVar
 from PIL import Image
 
 
@@ -12,23 +11,15 @@ class CreditFrame(CTkFrame):
 
         # Load images for buttons using CTkImage
         credit_img = Image.open("src/images/credit.png")
-        self.credit_image = CTkImage(
-            light_image=credit_img, dark_image=credit_img, size=(40, 40)
-        )
+        self.credit_image = CTkImage(light_image=credit_img, dark_image=credit_img, size=(40, 40))
 
         minus_img = Image.open("src/images/minus.png")
-        self.minus_image = CTkImage(
-            light_image=minus_img, dark_image=minus_img, size=(30, 30)
-        )
+        self.minus_image = CTkImage(light_image=minus_img, dark_image=minus_img, size=(30, 30))
 
         add_img = Image.open("src/images/add.png")
-        self.add_image = CTkImage(
-            light_image=add_img, dark_image=add_img, size=(30, 30)
-        )
+        self.add_image = CTkImage(light_image=add_img, dark_image=add_img, size=(30, 30))
 
-        self.credit_label = CTkLabel(
-            self, text="", width=40, height=40, image=self.credit_image
-        )
+        self.credit_label = CTkLabel(self, text="", width=40, height=40, image=self.credit_image)
         self.credit_label.grid(row=0, column=0, padx=(10, 0))
 
         vcmd = (self.register(self.validate_entry), "%P")  # Validation command

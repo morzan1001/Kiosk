@@ -1,7 +1,14 @@
 from io import BytesIO
 
-from customtkinter import (CTkButton, CTkEntry, CTkFrame, CTkImage, CTkLabel,
-                           CTkOptionMenu, filedialog)
+from customtkinter import (
+    CTkButton,
+    CTkEntry,
+    CTkFrame,
+    CTkImage,
+    CTkLabel,
+    CTkOptionMenu,
+    filedialog,
+)
 from PIL import Image
 
 from src.database import Item, get_db
@@ -88,9 +95,7 @@ class UpdateItemFrame(CTkFrame):
             corner_radius=10,
             border_width=2,
         )
-        self.inventory_frame.grid(
-            row=3, column=1, padx=(10, 20), pady=(10, 10), sticky="w"
-        )
+        self.inventory_frame.grid(row=3, column=1, padx=(10, 20), pady=(10, 10), sticky="w")
 
         # Price Entry
         self.price_entry = CTkEntry(
@@ -116,9 +121,7 @@ class UpdateItemFrame(CTkFrame):
             font=("Inter", 18, "bold"),
             dropdown_font=("Inter", 18, "bold"),
         )
-        self.category_dropdown.grid(
-            row=4, column=1, padx=(10, 20), pady=(10, 10), sticky="w"
-        )
+        self.category_dropdown.grid(row=4, column=1, padx=(10, 20), pady=(10, 10), sticky="w")
 
         # Update Barcode Button
         self.update_barcode_button = CTkButton(
@@ -162,9 +165,7 @@ class UpdateItemFrame(CTkFrame):
             # Open the image using Image.open
             image_pil = Image.open(image_bytes)
             # Create CTkImage with the loaded image at size 100x100
-            photo = CTkImage(
-                light_image=image_pil, dark_image=image_pil, size=(100, 100)
-            )
+            photo = CTkImage(light_image=image_pil, dark_image=image_pil, size=(100, 100))
             self.update_button.configure(image=photo)
 
     def upload_image_button_pressed(self):
@@ -191,9 +192,7 @@ class UpdateItemFrame(CTkFrame):
 
     def show_barcode(self):
         self.barcode_frame = AddBarcodeFrame(self.parent, self.confirm_barcode)
-        self.after(
-            100, self.barcode_frame.grab_set
-        )  # Call grab_set after a short delay
+        self.after(100, self.barcode_frame.grab_set)  # Call grab_set after a short delay
 
     def validate_price_input(self, event=None):
         """Validate price input to ensure it's a valid number"""

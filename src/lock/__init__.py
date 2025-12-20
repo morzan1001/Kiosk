@@ -6,6 +6,7 @@ and utility functions to initialize and clean up the GPIO resources.
 
 # Import the utility functions from the gpio_manager module
 from .gpio_manager import cleanup_gpio, initialize_gpio
+
 # Import the GPIOController class from the lock module
 from .lock import GPIOController
 

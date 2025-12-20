@@ -2,8 +2,7 @@ import logging
 import math
 from datetime import datetime, timedelta
 
-from customtkinter import (CTkButton, CTkCanvas, CTkEntry, CTkFrame, CTkLabel,
-                           CTkOptionMenu)
+from customtkinter import CTkButton, CTkCanvas, CTkEntry, CTkFrame, CTkLabel, CTkOptionMenu
 
 from src.database import Transaction, User, get_db
 from src.localization.translator import get_translations
@@ -80,9 +79,7 @@ class UpdateUserFrame(CTkFrame):
             corner_radius=10,
             border_width=2,
         )
-        self.credits_frame.grid(
-            row=2, column=1, padx=(10, 20), pady=(10, 10), sticky="w"
-        )
+        self.credits_frame.grid(row=2, column=1, padx=(10, 20), pady=(10, 10), sticky="w")
 
         # Type dropdown
         self.type = CTkOptionMenu(
@@ -96,9 +93,7 @@ class UpdateUserFrame(CTkFrame):
             font=("Inter", 18, "bold"),
             dropdown_font=("Inter", 18, "bold"),
         )
-        self.type.grid(
-            row=3, column=0, columnspan=2, pady=(10, 10), padx=(20, 20), sticky="n"
-        )
+        self.type.grid(row=3, column=0, columnspan=2, pady=(10, 10), padx=(20, 20), sticky="n")
 
         # Graph frame - update to match dropdown positioning
         self.graph_frame = CTkFrame(self, width=620, height=120, corner_radius=10)
@@ -145,9 +140,7 @@ class UpdateUserFrame(CTkFrame):
             # Show empty state
             empty_label = CTkLabel(
                 self.graph_frame,
-                text=self.translations.get("user", {}).get(
-                    "no_transactions", "No transactions"
-                ),
+                text=self.translations.get("user", {}).get("no_transactions", "No transactions"),
                 text_color="#888888",
                 font=("Arial", 14),
             )
@@ -159,9 +152,7 @@ class UpdateUserFrame(CTkFrame):
         container.place(relx=0.5, rely=0.5, anchor="center")
 
         # Create canvas for pie chart
-        canvas = CTkCanvas(
-            container, width=100, height=100, bg="#1C1C1C", highlightthickness=0
-        )
+        canvas = CTkCanvas(container, width=100, height=100, bg="#1C1C1C", highlightthickness=0)
         canvas.pack(side="left", padx=(0, 20))
 
         # Pie chart parameters
@@ -233,9 +224,7 @@ class UpdateUserFrame(CTkFrame):
             color = self.chartColors[i % len(self.chartColors)]
 
             # Color indicator
-            color_box = CTkFrame(
-                item_frame, width=10, height=10, fg_color=color, corner_radius=5
-            )
+            color_box = CTkFrame(item_frame, width=10, height=10, fg_color=color, corner_radius=5)
             color_box.pack(side="left", padx=(0, 5), pady=(5, 0))
 
             # Category label
@@ -278,9 +267,7 @@ class UpdateUserFrame(CTkFrame):
                 len(last_month_transactions),
             )
 
-            category_percentages = self.calculate_category_percentage(
-                last_month_transactions
-            )
+            category_percentages = self.calculate_category_percentage(last_month_transactions)
             logger.debug("Calculated category percentages: %s", category_percentages)
 
             # Draw the pie chart
@@ -377,9 +364,7 @@ class UpdateUserFrame(CTkFrame):
         logger.debug("Checking existing_user with nfcid='%s': %s", nfcid, existing_user)
 
         if existing_user and existing_user.id != self.user_id:
-            logger.debug(
-                "NFCID '%s' is already used by user_id '%s'", nfcid, existing_user.id
-            )
+            logger.debug("NFCID '%s' is already used by user_id '%s'", nfcid, existing_user.id)
             self.message = ShowMessage(
                 self.parent,
                 image="unsuccessful",
@@ -430,6 +415,4 @@ class UpdateUserFrame(CTkFrame):
 
     def delete_user(self):
         logger.debug("Delete confirmation for user with user_id=%s", self.user_id)
-        DeleteConfirmation(
-            self.parent, self.confirm_delete, self.translations["user"]["user"]
-        )
+        DeleteConfirmation(self.parent, self.confirm_delete, self.translations["user"]["user"])

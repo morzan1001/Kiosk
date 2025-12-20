@@ -1,5 +1,4 @@
-from customtkinter import (CTkButton, CTkEntry, CTkFrame, CTkLabel,
-                           CTkOptionMenu)
+from customtkinter import CTkButton, CTkEntry, CTkFrame, CTkLabel, CTkOptionMenu
 
 from src.database import User, get_db
 from src.localization.translator import get_translations
@@ -63,9 +62,7 @@ class AddUserFrame(CTkFrame):
             corner_radius=10,
             border_width=2,
         )
-        self.credits_frame.grid(
-            row=3, column=1, padx=(10, 20), pady=(10, 10), sticky="w"
-        )
+        self.credits_frame.grid(row=3, column=1, padx=(10, 20), pady=(10, 10), sticky="w")
 
         self.type = CTkOptionMenu(
             self,
@@ -78,9 +75,7 @@ class AddUserFrame(CTkFrame):
             font=("Inter", 18, "bold"),
             dropdown_font=("Inter", 18, "bold"),
         )
-        self.type.grid(
-            row=4, column=0, columnspan=2, pady=(10, 10), padx=(20, 20), sticky="n"
-        )
+        self.type.grid(row=4, column=0, columnspan=2, pady=(10, 10), padx=(20, 20), sticky="n")
 
         # Update NFCID button
         self.update_nfcid_button = CTkButton(

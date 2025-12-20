@@ -21,26 +21,28 @@ class LogMgr:
     def __init__(self):
         """Class constructor"""
         self.logger = logging.getLogger("Kiosk")
+        self.logger.propagate = False
+
+        # Setup basic stream handler first so we can log errors during config loading
+        if not self.logger.handlers:
+            stream_handler = logging.StreamHandler()
+            stream_formatter = logging.Formatter(self.MESSAGE_PREFIX_FORMAT)
+            stream_handler.setFormatter(stream_formatter)
+            self.logger.addHandler(stream_handler)
 
         # Default to INFO if no config present
         log_level = "INFO"
+        self.logger.setLevel(logging.INFO)
+
         try:
             config_path = get_config_path()
             with open(config_path, "r", encoding="utf-8") as config_file:
                 config = json.load(config_file)
                 log_level = config.get("logging", {}).get("level", "INFO")
         except Exception as e:
-            print(f"Could not load logging config, defaulting to INFO: {e}")
+            self.logger.warning(f"Could not load logging config, defaulting to INFO: {e}")
 
         self.logger.setLevel(getattr(logging, log_level))
-        self.logger.propagate = False
-
-        if not self.logger.handlers:
-            # Stream handler for console output
-            stream_handler = logging.StreamHandler()
-            stream_formatter = logging.Formatter(self.MESSAGE_PREFIX_FORMAT)
-            stream_handler.setFormatter(stream_formatter)
-            self.logger.addHandler(stream_handler)  # Log to the screen
 
         self.update_prefix()  # Make sure the file handler is created/updated
 
@@ -54,9 +56,7 @@ class LogMgr:
         if self.current_prefix != self.log_prefix():
             self.current_prefix = self.log_prefix()
 
-            file_handler = logging.FileHandler(
-                f"kiosk_{self.current_prefix}.log", encoding="utf-8"
-            )
+            file_handler = logging.FileHandler(f"kiosk_{self.current_prefix}.log", encoding="utf-8")
             formatter = logging.Formatter(self.MESSAGE_PREFIX_FORMAT)
             file_handler.setFormatter(formatter)
 
