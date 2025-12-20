@@ -78,18 +78,5 @@ class SoundController(threading.Thread):
             sd.play(data, fs)
             sd.wait()
             logger.debug("Sound playback finished")
-        except Exception as e:
-            logger.error(f"Error playing sound: {str(e)}")
-
-    def find_valid_samplerate(self, desired_samplerate):
-        device_info = sd.query_devices(sd.default.device[1])
-        supported_samplerates = device_info["default_samplerate"]
-        logger.debug(f"Device supports samplerate: {supported_samplerates}")
-
-        if abs(desired_samplerate - supported_samplerates) < 100:
-            return int(supported_samplerates)
-
-        logger.warning(
-            f"Desired samplerate {desired_samplerate} not supported. Using default {supported_samplerates}"
-        )
-        return int(supported_samplerates)
+        except (IOError, ValueError, RuntimeError) as e:
+            logger.error(f"Error playing sound: {e!s}")

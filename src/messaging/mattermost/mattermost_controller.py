@@ -149,7 +149,7 @@ class MattermostController(BaseMessagingController):
         return response.json().get("id")
 
     def _get_bot_user_id(self):
-        """Ermittelt die User-ID des Bots."""
+        """Returns the bot user's ID."""
         url = f"{self.base_url}/api/v4/users/me"
         headers = self._get_headers()
         response = requests.get(url, headers=headers, timeout=self.TIMEOUT)

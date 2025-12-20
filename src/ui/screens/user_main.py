@@ -235,48 +235,75 @@ class UserMainPage(CTkFrame):
 
         try:
             # Process all items in one loop
-            for quantity, item in self.shopping_cart:
+            for quantity, item_in_cart in self.shopping_cart:
                 requested_quantity = int(quantity.get())
                 logger.debug(
-                    f"Processing item {item.id} with requested quantity {requested_quantity}"
+                    f"Processing item {item_in_cart.id} with requested quantity {requested_quantity}"
                 )
 
                 if requested_quantity <= 0:
-                    logger.debug(f"Skipping item {item.id} due to non-positive quantity")
+                    logger.debug(f"Skipping item {item_in_cart.id} due to non-positive quantity")
                     continue
 
+                # Re-fetch item with row lock to prevent race conditions
+                locked_item = (
+                    self.session.query(Item).filter_by(id=item_in_cart.id).with_for_update().first()
+                )
+
+                if not locked_item:
+                    raise ValueError(f"Item {item_in_cart.name} not found")
+
+                # Validate quantity against the locked row
+                if locked_item.quantity < requested_quantity:
+                    raise ValueError(
+                        f"Insufficient stock for {locked_item.name}. "
+                        f"Available: {locked_item.quantity}, Requested: {requested_quantity}"
+                    )
+
                 # Update item quantity - NO COMMIT YET
-                new_quantity = item.quantity - requested_quantity
-                logger.debug(f"Updating item {item.id} quantity to {new_quantity}")
-                item.update(self.session, commit=False, quantity=new_quantity)
+                new_quantity = locked_item.quantity - requested_quantity
+                logger.debug(f"Updating item {locked_item.id} quantity to {new_quantity}")
+                locked_item.update(self.session, commit=False, quantity=new_quantity)
 
                 # Create transaction - NO COMMIT YET
                 new_transaction = Transaction(
-                    item_id=item.id,
+                    item_id=locked_item.id,
                     user_id=self.user.id,
                     date=current_datetime,
-                    cost=str(item.price * requested_quantity),
-                    category=item.category,
+                    cost=str(locked_item.price * requested_quantity),
+                    category=locked_item.category,
                 )
-                logger.debug(f"Creating transaction for item {item.id}")
+                logger.debug(f"Creating transaction for item {locked_item.id}")
                 new_transaction.create(self.session, commit=False)
 
             # Update user credit - NO COMMIT YET
-            new_credit = float(user_credit) - self.total_price
-            user_instance = User.get_by_id(self.session, self.user.id)
-            if user_instance:
-                user_instance.update(self.session, commit=False, credit=new_credit)
+            # Lock user row to prevent race conditions on credit
+            locked_user = (
+                self.session.query(User).filter_by(id=self.user.id).with_for_update().first()
+            )
+
+            if not locked_user:
+                raise ValueError("User not found")
+
+            if locked_user.credit < self.total_price:
+                raise ValueError("Insufficient credit")
+
+            new_credit = float(locked_user.credit) - self.total_price
+            locked_user.update(self.session, commit=False, credit=new_credit)
 
             # COMMIT EVERYTHING AT ONCE
             self.session.commit()
             logger.info("Checkout transaction committed successfully")
 
             # Post-commit actions (Notifications)
-            if user_instance:
-                self._check_low_balance(user_instance, new_credit)
+            if locked_user:
+                self._check_low_balance(locked_user, new_credit)
 
-            for quantity, item in self.shopping_cart:
-                self.check_product_stock_and_notify(item)
+            for quantity, item_in_cart in self.shopping_cart:
+                # Re-fetch to get the updated quantity for notification check
+                updated_item = Item.get_by_id(self.session, item_in_cart.id)
+                if updated_item:
+                    self.check_product_stock_and_notify(updated_item)
 
             self._show_success_message()
             self.credits_label.configure(

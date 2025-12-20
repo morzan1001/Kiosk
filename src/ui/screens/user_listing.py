@@ -103,16 +103,18 @@ class UserListFrame(CTkFrame):
         self.update_user_frame.grid(row=0, column=0, sticky="nsew")
 
     def return_to_user_listing(self):
-        users: List[User] = User.read_all(self.session)
-        UserListFrame(self.parent, self.heading_text, self.back_button_function, users).grid(
-            row=0, column=0, sticky="ns", ipadx=50, ipady=20
-        )
-
         if hasattr(self, "new_user_frame"):
             self.new_user_frame.destroy()
 
         if hasattr(self, "update_user_frame"):
             self.update_user_frame.destroy()
+
+        self.destroy()
+
+        users: List[User] = User.read_all(self.session)
+        UserListFrame(self.parent, self.heading_text, self.back_button_function, users).grid(
+            row=0, column=0, sticky="ns", ipadx=50, ipady=20
+        )
 
     def add_new_user(self):
         self.destroy()
