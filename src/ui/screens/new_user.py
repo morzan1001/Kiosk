@@ -1,28 +1,32 @@
-from customtkinter import CTkButton, CTkEntry, CTkFrame, CTkLabel, CTkOptionMenu
+import logging
+
+from customtkinter import CTkButton, CTkFrame
 
 from src.database import User, get_db
 from src.localization.translator import get_translations
-from src.ui.components.credit_frame import CreditFrame
 from src.ui.components.heading_frame import HeadingFrame
 from src.ui.components.message import ShowMessage
-from src.ui.components.scan_card import ScanCardFrame
+from src.ui.components.user_form import UserForm
+
+logger = logging.getLogger(__name__)
 
 
 class AddUserFrame(CTkFrame):
     def __init__(self, parent, back_button_function, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
+        logger.debug("Initializing AddUserFrame")
+
         self.parent = parent
         self.back_button_function = back_button_function
         self.translations = get_translations()
-        self.nfcid: str = ""
 
         self.session = get_db()
 
         self.configure(width=800, height=480, fg_color="transparent")
 
         self.grid_columnconfigure((0, 1), weight=1)
-        self.grid_rowconfigure((0, 1, 2, 3, 4, 5, 6), weight=1)
+        self.grid_rowconfigure((0, 1, 2), weight=1)
 
         heading_frame = HeadingFrame(
             self,
@@ -33,99 +37,31 @@ class AddUserFrame(CTkFrame):
         )
         heading_frame.grid(row=0, column=0, columnspan=2, padx=10, sticky="new")
 
-        # Inventory label
-        credits_label = CTkLabel(
-            self,
-            text=self.translations["user"]["credits_label"],
-            width=290,
-            anchor="w",
-            font=("Arial", 18, "bold"),
-        )
-        credits_label.grid(row=2, column=1, pady=(10, 0), sticky="s")
+        # User Form
+        self.user_form = UserForm(self, parent_screen=self.parent)
+        self.user_form.grid(row=1, column=0, columnspan=2, sticky="nsew")
 
-        # Name entry
-        self.name_entry = CTkEntry(
-            self,
-            placeholder_text=self.translations["user"]["enter_name"],
-            width=290,
-            height=50,
-            corner_radius=10,
-            font=("Inter", 18, "bold"),
-        )
-        self.name_entry.grid(row=3, column=0, padx=(20, 10))
-
-        # Inventory entry with buttons
-        self.credits_frame = CreditFrame(
-            self,
-            width=290,
-            height=60,
-            corner_radius=10,
-            border_width=2,
-        )
-        self.credits_frame.grid(row=3, column=1, padx=(10, 20), pady=(10, 10), sticky="w")
-
-        self.user_type_menu = CTkOptionMenu(
-            self,
-            values=[
-                self.translations["user"]["user"],
-                self.translations["admin"]["admin"],
-            ],
-            width=620,
-            height=50,
-            font=("Inter", 18, "bold"),
-            dropdown_font=("Inter", 18, "bold"),
-        )
-        self.user_type_menu.grid(
-            row=4, column=0, columnspan=2, pady=(10, 10), padx=(20, 20), sticky="n"
-        )
-
-        # Update NFCID button
-        self.update_nfcid_button = CTkButton(
-            self,
-            text=self.translations["nfc"]["add_nfcid"],
-            width=290,
-            height=50,
-            font=("Inter", 18, "bold"),
-            command=self.show_scan_card,
-        )
-        self.update_nfcid_button.grid(row=5, column=0, padx=(20, 10), pady=(20, 10))
-
-        # Update Details button
-        self.add_item_button = CTkButton(
-            self,
+        # Add User Button
+        self.add_user_button = CTkButton(
+            self.user_form,
             text=self.translations["admin"]["add_new_user"],
             width=290,
             height=50,
             font=("Inter", 18, "bold"),
-            state="disabled",
             command=self.add_user,
         )
-        self.add_item_button.grid(row=5, column=1, padx=(10, 10), pady=(20, 10))
-        self.enable_add_user_button()
-
-    def show_scan_card(self):
-        # Create and place the main frame
-        self.scan_card_frame = ScanCardFrame(
-            parent=self.parent,
-            heading_text=self.translations["nfc"]["add_nfcid"],
-            set_nfcid_id=self.set_nfcid,
-            back_button_function=self.remove_scan_card,
-        )
-        self.scan_card_frame.grid(row=0, column=0, sticky="nsew")
-
-    def remove_scan_card(self):
-        self.scan_card_frame.destroy()
-
-    def enable_add_user_button(self):
-        self.add_item_button.configure(state="normal")
+        self.add_user_button.grid(row=3, column=1, padx=(10, 10), pady=(20, 10), sticky="w")
 
     def add_user(self):
-        name = self.name_entry.get()
-        user_credits = self.credits_frame.get()
-        user_type = self.user_type_menu.get()
-        nfcid = self.nfcid
+        logger.debug("Attempting to add new user")
+        data = self.user_form.get_data()
+        name = data["name"]
+        user_credits = data["credit"]
+        user_type = data["type"]
+        nfcid = data["nfcid"]
 
         if not (name and nfcid):
+            logger.warning("Name or NFCID missing")
             self.message = ShowMessage(
                 self.parent,
                 image="unsuccessful",
@@ -139,6 +75,7 @@ class AddUserFrame(CTkFrame):
         # Check if a user with the same NFC ID already exists
         existing_user = User.get_by_nfcid(self.session, nfcid)
         if existing_user:
+            logger.warning("User with NFCID %s already exists", nfcid)
             # Show message if user already exists
             self.message = ShowMessage(
                 self.parent,
@@ -149,12 +86,11 @@ class AddUserFrame(CTkFrame):
             self.parent.after(5000, self.message.destroy)
         else:
             # Create a new User instance
+            logger.info("Creating new user: %s", name)
             new_user = User(nfcid=nfcid, name=name, type=user_type, credit=user_credits)
 
         # Save the new user to the database
         new_user.create(self.session)
+        logger.info("User created successfully")
 
         self.back_button_function()
-
-    def set_nfcid(self, new_nfcid):
-        self.nfcid = new_nfcid

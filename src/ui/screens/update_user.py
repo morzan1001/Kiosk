@@ -2,15 +2,14 @@ import logging
 import math
 from datetime import datetime, timedelta
 
-from customtkinter import CTkButton, CTkCanvas, CTkEntry, CTkFrame, CTkLabel, CTkOptionMenu
+from customtkinter import CTkButton, CTkCanvas, CTkFrame, CTkLabel
 
 from src.database import Transaction, User, get_db
 from src.localization.translator import get_translations
 from src.ui.components.confirmation import DeleteConfirmation
-from src.ui.components.credit_frame import CreditFrame
 from src.ui.components.heading_frame import HeadingFrame
 from src.ui.components.message import ShowMessage
-from src.ui.components.scan_card import ScanCardFrame
+from src.ui.components.user_form import UserForm
 
 # Initialize the logger
 logger = logging.getLogger(__name__)
@@ -29,7 +28,6 @@ class UpdateUserFrame(CTkFrame):
         self.back_button_function = back_button_function
         self.user_id: int = user_id
         self.translations = get_translations()
-        self.nfcid: str = ""
 
         self.session = get_db()
 
@@ -37,7 +35,7 @@ class UpdateUserFrame(CTkFrame):
 
         # Configure the grid for the frame
         self.grid_columnconfigure((0, 1), weight=1)
-        self.grid_rowconfigure((0, 1, 2, 3, 4, 5, 6), weight=1)
+        self.grid_rowconfigure((0, 1, 2, 3), weight=1)
 
         # Heading Frame
         heading_frame = HeadingFrame(
@@ -50,85 +48,28 @@ class UpdateUserFrame(CTkFrame):
         )
         heading_frame.grid(row=0, column=0, columnspan=2, padx=90, sticky="new")
 
-        # Credits label
-        credits_label = CTkLabel(
-            self,
-            text=self.translations["user"]["credits_label"],
-            width=290,
-            anchor="w",
-            font=("Arial", 18, "bold"),
-        )
-        credits_label.grid(row=1, column=1, pady=(10, 0), sticky="s")
+        # User Form
+        self.user_form = UserForm(self, parent_screen=self.parent)
+        self.user_form.grid(row=1, column=0, columnspan=2, sticky="nsew")
+        self.user_form.nfcid_button.configure(text=self.translations["nfc"]["update_nfcid"])
 
-        # Name entry
-        self.name_entry = CTkEntry(
-            self,
-            placeholder_text=self.translations["user"]["enter_name"],
-            width=290,
-            height=50,
-            corner_radius=10,
-            font=("Inter", 18, "bold"),
-        )
-        self.name_entry.grid(row=2, column=0, padx=(20, 10), sticky="e")
-
-        # Credits frame
-        self.credits_frame = CreditFrame(
-            self,
-            width=290,
-            height=60,
-            corner_radius=10,
-            border_width=2,
-        )
-        self.credits_frame.grid(row=2, column=1, padx=(10, 20), pady=(10, 10), sticky="w")
-
-        # Type dropdown
-        self.user_type_menu = CTkOptionMenu(
-            self,
-            values=[
-                self.translations["user"]["user"],
-                self.translations["admin"]["admin"],
-            ],
-            width=620,
-            height=50,
-            font=("Inter", 18, "bold"),
-            dropdown_font=("Inter", 18, "bold"),
-        )
-        self.user_type_menu.grid(
-            row=3, column=0, columnspan=2, pady=(10, 10), padx=(20, 20), sticky="n"
-        )
-
-        # Graph frame - update to match dropdown positioning
+        # Graph frame
         self.graph_frame = CTkFrame(self, width=620, height=120, corner_radius=10)
         self.graph_frame.grid(
-            row=4, column=0, columnspan=2, padx=(20, 20), pady=(10, 10), sticky="n"
+            row=2, column=0, columnspan=2, padx=(20, 20), pady=(10, 10), sticky="n"
         )
         self.graph_frame.grid_propagate(False)
 
-        # Update NFCID button
-        self.update_nfcid_button = CTkButton(
-            self,
-            text=self.translations["nfc"]["update_nfcid"],
-            width=290,
-            height=50,
-            font=("Inter", 18, "bold"),
-            command=self.show_scan_card,
-        )
-        self.update_nfcid_button.grid(
-            row=5, column=0, padx=(20, 10), pady=(20, 10), sticky="e"
-        )  # Added sticky="e"
-
         # Update user button
         self.update_user_button = CTkButton(
-            self,
+            self.user_form,
             text=self.translations["admin"]["update_user"],
             width=290,
             height=50,
             font=("Inter", 18, "bold"),
             command=self.update_user,
         )
-        self.update_user_button.grid(
-            row=5, column=1, padx=(10, 20), pady=(20, 10), sticky="w"
-        )  # Added sticky="w"
+        self.update_user_button.grid(row=3, column=1, padx=(10, 20), pady=(20, 10), sticky="w")
 
         self.initialize_user()
 
@@ -244,21 +185,19 @@ class UpdateUserFrame(CTkFrame):
         user = User.get_by_id(self.session, self.user_id)
         if user:
             name = user.name
-            self.nfcid = user.nfcid
+            nfcid = user.nfcid
             credit = user.credit
             user_type = user.type
 
             logger.debug(
                 "User data loaded: name=%s, nfcid=%s, credit=%s, type=%s",
                 name,
-                self.nfcid,
+                nfcid,
                 credit,
                 user_type,
             )
 
-            self.name_entry.insert(0, name)
-            self.credits_frame.set_entry_text(credit)
-            self.user_type_menu.set(user_type)
+            self.user_form.set_data(name=name, credit=credit, user_type=user_type, nfcid=nfcid)
 
             transactions = Transaction.read_all_for_user(self.session, self.user_id)
             logger.debug("Number of transactions found: %d", len(transactions))
@@ -321,27 +260,13 @@ class UpdateUserFrame(CTkFrame):
         logger.debug("Calculated category percentages: %s", category_percentages)
         return category_percentages
 
-    def show_scan_card(self):
-        logger.debug("Displaying ScanCardFrame to update NFCID")
-        self.nfcid = ""
-        self.scan_card_frame = ScanCardFrame(
-            parent=self.parent,
-            heading_text=self.translations["nfc"]["update_nfcid"],
-            set_nfcid_id=self.set_nfcid_id,
-            back_button_function=self.remove_scan_card,
-        )
-        self.scan_card_frame.grid(row=0, column=0, sticky="nsew")
-
-    def remove_scan_card(self):
-        logger.debug("Removing ScanCardFrame")
-        self.scan_card_frame.destroy()
-
     def update_user(self):
         logger.debug("Starting update_user")
-        name = self.name_entry.get().strip()
-        user_credits = self.credits_frame.get()
-        user_type = self.user_type_menu.get()
-        nfcid = self.nfcid.strip()
+        data = self.user_form.get_data()
+        name = data["name"].strip()
+        user_credits = data["credit"]
+        user_type = data["type"]
+        nfcid = data["nfcid"].strip()
 
         logger.debug(
             "Input data: name='%s', nfcid='%s', user_credits='%s', type='%s'",
@@ -400,10 +325,6 @@ class UpdateUserFrame(CTkFrame):
             else:
                 logger.debug("User with user_id=%s not found", self.user_id)
             self.back_button_function()
-
-    def set_nfcid_id(self, new_nfcid):
-        logger.debug("Setting new NFCID: %s", new_nfcid)
-        self.nfcid = new_nfcid
 
     def confirm_delete(self):
         logger.debug("Confirming deletion of user with user_id=%s", self.user_id)
