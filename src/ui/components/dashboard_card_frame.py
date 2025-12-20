@@ -38,9 +38,7 @@ class DashboardCardFrame(CTkFrame):
             ctk_image = CTkImage(light_image=img, dark_image=img, size=(80, 80))
 
             image_label = CTkLabel(self, image=ctk_image, text="")
-            image_label.grid(
-                row=0, column=0, rowspan=2, padx=10, pady=10, sticky="nsew"
-            )
+            image_label.grid(row=0, column=0, rowspan=2, padx=10, pady=10, sticky="nsew")
         except Exception as e:
             logger.error(f"Error loading image {image_filename}: {e}")
             image_label = CTkLabel(self, text="[IMG]")
@@ -54,7 +52,7 @@ class DashboardCardFrame(CTkFrame):
             anchor="s",
         )
         # If there is a value, title goes to top-right (row 0), else it centers or stays there
-        title_row = 0 if value else 0
+        title_row = 0
         title_sticky = "sw" if value else "w"
 
         title_label.grid(row=title_row, column=1, sticky=title_sticky, padx=10, pady=5)
