@@ -8,6 +8,8 @@ from src.messaging.base_messaging_controller import BaseMessagingController
 class MattermostController(BaseMessagingController):
     """Controller for Mattermost messages based on the standardized messaging interface."""
 
+    TIMEOUT = 10
+
     def __init__(self, base_url, bot_token):
         self.base_url = base_url
         self.bot_token = bot_token
@@ -15,6 +17,13 @@ class MattermostController(BaseMessagingController):
 
         # Initialize the base class (threading and queue)
         super().__init__()
+
+    def _get_headers(self):
+        """Returns the standard headers for Mattermost API requests."""
+        return {
+            "Authorization": f"Bearer {self.bot_token}",
+            "Content-Type": "application/json",
+        }
 
     def get_channel_type(self):
         """Returns the message channel type."""
@@ -43,9 +52,7 @@ class MattermostController(BaseMessagingController):
         """Internal implementation for low-balance notifications."""
         try:
             # Ensure balance is a float for formatting
-            balance_float = (
-                float(balance) if not isinstance(balance, float) else balance
-            )
+            balance_float = float(balance) if not isinstance(balance, float) else balance
 
             # Use the system translations (ignore language parameter)
             message = self.translations["mattermost"]["low_balance"].format(
@@ -62,9 +69,7 @@ class MattermostController(BaseMessagingController):
             self._send_direct_message(username, message)
             logger.info(f"Low balance notification sent via Mattermost to {username}")
         else:
-            logger.warning(
-                f"No Mattermost username available for recipient {recipient}"
-            )
+            logger.warning(f"No Mattermost username available for recipient {recipient}")
 
     def _notify_low_stock_internal(
         self, recipient, product_name, available_quantity, language="en"
@@ -86,23 +91,16 @@ class MattermostController(BaseMessagingController):
             self._send_direct_message(username, message)
             logger.info(f"Low stock notification sent via Mattermost to {username}")
         else:
-            logger.warning(
-                f"No Mattermost username available for recipient {recipient}"
-            )
+            logger.warning(f"No Mattermost username available for recipient {recipient}")
 
     def _send_public_message(self, channel_id, message):
         """Sends a public message to a Mattermost channel."""
         url = f"{self.base_url}/api/v4/posts"
-        headers = {
-            "Authorization": f"Bearer {self.bot_token}",
-            "Content-Type": "application/json",
-        }
+        headers = self._get_headers()
         payload = {"channel_id": channel_id, "message": message}
-        response = requests.post(url, json=payload, headers=headers, timeout=10)
+        response = requests.post(url, json=payload, headers=headers, timeout=self.TIMEOUT)
         if response.status_code != 201:
-            logger.error(
-                f"Failed to send public message to Mattermost: {response.text}"
-            )
+            logger.error(f"Failed to send public message to Mattermost: {response.text}")
         else:
             logger.info(f"Public message sent to Mattermost channel {channel_id}")
 
@@ -114,26 +112,21 @@ class MattermostController(BaseMessagingController):
             return
 
         url = f"{self.base_url}/api/v4/posts"
-        headers = {
-            "Authorization": f"Bearer {self.bot_token}",
-            "Content-Type": "application/json",
-        }
+        headers = self._get_headers()
         # Create a direct message channel
         channel_url = f"{self.base_url}/api/v4/channels/direct"
         channel_payload = [self._get_bot_user_id(), user_id]
         channel_response = requests.post(
-            channel_url, json=channel_payload, headers=headers, timeout=10
+            channel_url, json=channel_payload, headers=headers, timeout=self.TIMEOUT
         )
         if channel_response.status_code != 201:
-            logger.error(
-                f"Failed to create direct message channel: {channel_response.text}"
-            )
+            logger.error(f"Failed to create direct message channel: {channel_response.text}")
             return
         channel_id = channel_response.json()["id"]
 
         # Send the message
         payload = {"channel_id": channel_id, "message": message}
-        response = requests.post(url, json=payload, headers=headers, timeout=10)
+        response = requests.post(url, json=payload, headers=headers, timeout=self.TIMEOUT)
         if response.status_code != 201:
             logger.error(
                 f"Failed to send direct message to Mattermost user {user_id}: {response.text}"
@@ -148,26 +141,18 @@ class MattermostController(BaseMessagingController):
             username = username[1:]
 
         url = f"{self.base_url}/api/v4/users/username/{username}"
-        headers = {
-            "Authorization": f"Bearer {self.bot_token}",
-            "Content-Type": "application/json",
-        }
-        response = requests.get(url, headers=headers, timeout=10)
+        headers = self._get_headers()
+        response = requests.get(url, headers=headers, timeout=self.TIMEOUT)
         if response.status_code != 200:
-            logger.error(
-                f"Failed to get user ID for username {username}: {response.text}"
-            )
+            logger.error(f"Failed to get user ID for username {username}: {response.text}")
             return None
         return response.json().get("id")
 
     def _get_bot_user_id(self):
         """Ermittelt die User-ID des Bots."""
         url = f"{self.base_url}/api/v4/users/me"
-        headers = {
-            "Authorization": f"Bearer {self.bot_token}",
-            "Content-Type": "application/json",
-        }
-        response = requests.get(url, headers=headers, timeout=10)
+        headers = self._get_headers()
+        response = requests.get(url, headers=headers, timeout=self.TIMEOUT)
         if response.status_code != 200:
             logger.error(f"Failed to get bot user ID: {response.text}")
             return None

@@ -25,9 +25,7 @@ class UserMainPage(CTkFrame):
 
         self.barcode: str = ""
         self.items: List[Item] = items
-        self.displayed_items = (
-            {}
-        )
+        self.displayed_items = {}
 
         root.bind("<Key>", self.on_barcode_scan)
 
@@ -58,9 +56,7 @@ class UserMainPage(CTkFrame):
         credit_img = Image.open(get_image_path("credit.png"))
         credit_image = CTkImage(light_image=credit_img, dark_image=credit_img)
 
-        self.item_frame = CTkScrollableFrame(
-            self, fg_color="white", width=580, height=260
-        )
+        self.item_frame = CTkScrollableFrame(self, fg_color="white", width=580, height=260)
         self.item_frame.grid(row=1, rowspan=2, column=0, columnspan=4)
         self.item_frame.grid_columnconfigure(0, weight=1)
 
@@ -69,51 +65,11 @@ class UserMainPage(CTkFrame):
 
         self.shopping_cart = []
 
-        """
-        This part of the code is commented out, as a specific decision can be made here. 
-        On the one hand, all products can be displayed and selected. If you wish to do this, 
-        the code should be commented in. However, if you only want the products that are 
-        actually scanned to be displayed in the shopping cart, the code should be commented out. 
-        the first is practical, for example, if you do not want to use a barcode scanner. 
-        """
-        # Add frames for items
-        # for indx, item in enumerate(self.items):
-        #    sub_frame = CTkFrame(
-        #        self.item_frame, fg_color="white", width=580, height=60
-        #    )
-        #    sub_frame.grid(row=indx, column=0, padx=10, pady=10, sticky="nsew")
-
-        #    sub_frame.grid_rowconfigure(0, weight=1)
-        #    sub_frame.grid_columnconfigure(0, weight=1)
-        #    sub_frame.grid_columnconfigure(1, weight=1)
-
-        #    quantity = IntVar()
-        #    quantity.set(0)
-        #    self.shopping_cart.append((quantity, item))
-
-        #    # Add widgets to the sub_frame
-        #    ItemFrame(sub_frame, data=item, fg_color="white").grid(
-        #        row=0, column=0, sticky="w"
-        #    )
-
-        #    QuantityFrame(
-        #        sub_frame,
-        #        data=quantity,
-        #        update_total_price=self.update_total_price,
-        #        item_price=item[3],
-        #        border_width=1,
-        #        fg_color="white",
-        #        border_color="#D3D3D3",
-        #        corner_radius=15,
-        #    ).grid(row=0, column=1, sticky="e", ipadx=10, ipady=5)
-
         # Welcome label
         welcome_label = CTkButton(
             self,
             image=user_image,
-            text=self.translations["user"]["welcome_user_message"].format(
-                user_name=self.user.name
-            ),
+            text=self.translations["user"]["welcome_user_message"].format(user_name=self.user.name),
             font=("Arial", 18, "bold"),
             fg_color="white",
             hover_color="white",
@@ -127,9 +83,7 @@ class UserMainPage(CTkFrame):
         self.credits_label = CTkButton(
             self,
             image=credit_image,
-            text=self.translations["user"]["credits_message"].format(
-                user_credit=self.user.credit
-            ),
+            text=self.translations["user"]["credits_message"].format(user_credit=self.user.credit),
             font=("Arial", 18, "bold"),
             fg_color="white",
             hover_color="white",
@@ -137,9 +91,7 @@ class UserMainPage(CTkFrame):
             width=290,
             height=60,
         )
-        self.credits_label.grid(
-            row=0, column=2, columnspan=2, pady=10, padx=10, sticky="w"
-        )
+        self.credits_label.grid(row=0, column=2, columnspan=2, pady=10, padx=10, sticky="w")
 
         # Cancel and checkout buttons
         cancel_button = CTkButton(
@@ -166,9 +118,7 @@ class UserMainPage(CTkFrame):
             corner_radius=10,
             command=self.checkout,
         )
-        self.checkout_button.grid(
-            row=3, column=2, columnspan=2, pady=20, padx=20, sticky="w"
-        )
+        self.checkout_button.grid(row=3, column=2, columnspan=2, pady=20, padx=20, sticky="w")
 
     def add_item_to_list(self, item):
         """
@@ -190,7 +140,7 @@ class UserMainPage(CTkFrame):
                     image="unsuccessful",
                     heading=self.translations["items"]["quantity_limit_reached"],
                     text=self.translations["items"]["item_quantity_message"].format(
-                        item_quantity=available_quantity, name=item[2]
+                        item_quantity=available_quantity, name=item.name
                     ),
                 )
                 self.root.after(5000, self.message.destroy)
@@ -205,9 +155,7 @@ class UserMainPage(CTkFrame):
             # Add the item to the list as it has not been added yet
             quantity = IntVar()
             quantity.set(1)  # Initialize quantity to 1
-            self.shopping_cart.append(
-                (quantity, item)
-            )  # Store quantity and item details
+            self.shopping_cart.append((quantity, item))  # Store quantity and item details
             self.update_total_price()
 
             indx = len(self.displayed_items)  # New row index
@@ -243,9 +191,7 @@ class UserMainPage(CTkFrame):
             total += int(quantity.get()) * float(item.price)
         self.total_price = total
         self.checkout_button.configure(
-            text=self.translations["buttons"]["checkout_button"].format(
-                total=self.total_price
-            )
+            text=self.translations["buttons"]["checkout_button"].format(total=self.total_price)
         )
 
     def logout(self):
@@ -301,9 +247,7 @@ class UserMainPage(CTkFrame):
                 )
 
                 if requested_quantity <= 0:
-                    logger.debug(
-                        f"Skipping item {item.id} due to non-positive quantity"
-                    )
+                    logger.debug(f"Skipping item {item.id} due to non-positive quantity")
                     continue
 
                 # Update item quantity - NO COMMIT YET
@@ -341,9 +285,7 @@ class UserMainPage(CTkFrame):
 
             self._show_success_message()
             self.credits_label.configure(
-                text=self.translations["user"]["credits_message"].format(
-                    user_credit=new_credit
-                )
+                text=self.translations["user"]["credits_message"].format(user_credit=new_credit)
             )
             self.items = Item.read_all(self.session)
 
@@ -407,18 +349,14 @@ class UserMainPage(CTkFrame):
                 language=get_system_language(),
             )
         if user_instance.mattermost_username:
-            self.mattermost_controller.notify_low_balance(
-                recipient=user_instance, balance=credit
-            )
+            self.mattermost_controller.notify_low_balance(recipient=user_instance, balance=credit)
 
     def _show_success_message(self):
         self.message = ShowMessage(
             self.root,
             image="successful",
             heading=self.translations["user"]["checkout_successful"],
-            text=self.translations["user"]["amount_debited"].format(
-                total=self.total_price
-            ),
+            text=self.translations["user"]["amount_debited"].format(total=self.total_price),
         )
 
     def on_barcode_scan(self, event):
@@ -438,9 +376,7 @@ class UserMainPage(CTkFrame):
         logger.debug(f"Checking stock levels for item {item.id}")
         critical_stock_level = 3  # Define threshold
 
-        if (
-            item.quantity < critical_stock_level
-        ):  # Assuming available_quantity is part of item
+        if item.quantity < critical_stock_level:  # Assuming available_quantity is part of item
             admins: List[User] = User.get_admins(self.session)
             for admin in admins:
                 if admin.email:

@@ -10,6 +10,7 @@ from jinja2 import Environment, FileSystemLoader
 from src.localization.translator import get_translations
 from src.logmgr import logger
 from src.messaging.base_messaging_controller import BaseMessagingController
+from src.utils.paths import get_image_path
 
 
 class EmailController(BaseMessagingController):
@@ -82,9 +83,7 @@ class EmailController(BaseMessagingController):
             # Add logo as inline image
             try:
                 logger.debug("Adding logo as inline image")
-                logo_path = os.path.join(
-                    os.path.dirname(__file__), "../../images/logo.png"
-                )
+                logo_path = get_image_path("logo.png")
                 with open(logo_path, "rb") as img_file:
                     img_data = img_file.read()
                 image = MIMEImage(img_data, name="logo.png")
