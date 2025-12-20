@@ -37,9 +37,7 @@ class DeleteConfirmation(CTkToplevel):
 
         # Load the delete icon
         delete_img = Image.open("src/images/delete.png")  # Update path if needed
-        self.delete_image = CTkImage(
-            light_image=delete_img, dark_image=delete_img, size=(70, 80)
-        )
+        self.delete_image = CTkImage(light_image=delete_img, dark_image=delete_img, size=(70, 80))
 
         # Delete icon label
         icon_label = CTkLabel(main_frame, text="", image=self.delete_image)
@@ -56,9 +54,7 @@ class DeleteConfirmation(CTkToplevel):
         # Confirmation text label
         confirmation_text = CTkLabel(
             main_frame,
-            text=self.translations["admin"]["confirmation_text"].format(
-                to_delete=to_delete
-            ),
+            text=self.translations["admin"]["confirmation_text"].format(to_delete=to_delete),
             font=("Inter", 24),
         )
         confirmation_text.grid(row=2, column=0, columnspan=2, pady=5)

@@ -14,9 +14,7 @@ class MessagingManager:
         self.controllers: Dict[str, BaseMessagingController] = {}
         logger.debug("MessagingManager initialized")
 
-    def add_controller(
-        self, controller: BaseMessagingController, name: Optional[str] = None
-    ):
+    def add_controller(self, controller: BaseMessagingController, name: Optional[str] = None):
         """
         Adds a message channel controller.
 
@@ -97,9 +95,7 @@ class MessagingManager:
         for channel in channels:
             if channel in self.controllers:
                 try:
-                    self.controllers[channel].send_message(
-                        recipient, message, subject, **kwargs
-                    )
+                    self.controllers[channel].send_message(recipient, message, subject, **kwargs)
                     logger.debug(f"Message queued for {channel}")
                 except Exception as e:
                     logger.error(f"Failed to queue message for {channel}: {e}")
@@ -120,13 +116,9 @@ class MessagingManager:
                 controller.notify_low_balance(recipient, balance, language)
                 logger.debug(f"Low balance notification queued for {name}")
             except Exception as e:
-                logger.error(
-                    f"Failed to queue low balance notification for {name}: {e}"
-                )
+                logger.error(f"Failed to queue low balance notification for {name}: {e}")
 
-    def notify_low_stock_all(
-        self, recipient, product_name, available_quantity, language="en"
-    ):
+    def notify_low_stock_all(self, recipient, product_name, available_quantity, language="en"):
         """
         Sends low-stock notification via all channels.
 
@@ -138,9 +130,7 @@ class MessagingManager:
         """
         for name, controller in self.controllers.items():
             try:
-                controller.notify_low_stock(
-                    recipient, product_name, available_quantity, language
-                )
+                controller.notify_low_stock(recipient, product_name, available_quantity, language)
                 logger.debug(f"Low stock notification queued for {name}")
             except Exception as e:
                 logger.error(f"Failed to queue low stock notification for {name}: {e}")

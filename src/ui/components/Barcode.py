@@ -47,9 +47,7 @@ class AddBarcodeFrame(CTkToplevel):
             text_color="black",
             fg_color="white",
         )
-        barcode_label.grid(
-            row=0, column=0, columnspan=2, pady=5, sticky="w", padx=(40, 0)
-        )
+        barcode_label.grid(row=0, column=0, columnspan=2, pady=5, sticky="w", padx=(40, 0))
         # Confirmation text label
         self.barcode_entry = CTkEntry(
             main_frame,
@@ -105,9 +103,7 @@ class AddBarcodeFrame(CTkToplevel):
 
     def process_barcode(self, barcode_value: str):
         # Function to handle the barcode value
-        self.barcode_entry.delete(
-            0, "end"
-        )  # Clear the previous entry to avoid appending
+        self.barcode_entry.delete(0, "end")  # Clear the previous entry to avoid appending
         self.barcode_entry.insert(0, str(barcode_value))
 
     def confirm_barcode(self):

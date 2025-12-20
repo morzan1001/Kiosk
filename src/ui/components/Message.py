@@ -43,7 +43,5 @@ class ShowMessage(CTkFrame):
         self.warning_label.grid(row=3, column=0, pady=10, padx=10, sticky="s")
 
         # Additional text
-        self.additional_text_label = CTkLabel(
-            self.main_frame, text=text, font=("Inter", 20)
-        )
+        self.additional_text_label = CTkLabel(self.main_frame, text=text, font=("Inter", 20))
         self.additional_text_label.grid(row=4, column=0, pady=10, padx=10, sticky="n")

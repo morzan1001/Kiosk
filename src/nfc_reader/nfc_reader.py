@@ -21,12 +21,8 @@ class NFCReader:
         self._lock = threading.Lock()
         self._stop_event = threading.Event()
         self._latest_nfcid = None
-        self._callbacks = (
-            []
-        )
-        self.thread = threading.Thread(
-            target=self._read_nfc
-        )
+        self._callbacks = []
+        self.thread = threading.Thread(target=self._read_nfc)
         self.thread.start()
 
     def _read_nfc(self):
@@ -91,9 +87,7 @@ class NFCReader:
             # Create a copy of the callbacks list to avoid holding the lock during callback execution
             callbacks = None
             with self._lock:
-                callbacks = list(
-                    self._callbacks
-                )
+                callbacks = list(self._callbacks)
 
             for callback in callbacks:
                 callback(nfcid_str)

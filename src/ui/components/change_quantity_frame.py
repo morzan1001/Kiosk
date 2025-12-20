@@ -11,14 +11,10 @@ class ChangeQuantityFrame(CTkFrame):
 
         # Load images for buttons using CTkImage
         minus_img = Image.open("src/images/minus.png")
-        self.minus_image = CTkImage(
-            light_image=minus_img, dark_image=minus_img, size=(20, 20)
-        )
+        self.minus_image = CTkImage(light_image=minus_img, dark_image=minus_img, size=(20, 20))
 
         add_img = Image.open("src/images/add.png")
-        self.add_image = CTkImage(
-            light_image=add_img, dark_image=add_img, size=(20, 20)
-        )
+        self.add_image = CTkImage(light_image=add_img, dark_image=add_img, size=(20, 20))
 
         vcmd = (self.register(self.validate_entry), "%P")
         self.data = StringVar(value="0")

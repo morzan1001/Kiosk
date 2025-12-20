@@ -32,16 +32,10 @@ def send_monthly_summaries():
     for user in users:
         summary = get_monthly_summary(user, session)
         if user.mattermost_username:
-            MATTERMOST_CONTROLLER.send_message(
-                recipient=user.mattermost_username, message=summary
-            )
-            logger.info(
-                f"Monthly summary sent to user {user.name} ({user.mattermost_username})"
-            )
+            MATTERMOST_CONTROLLER.send_message(recipient=user.mattermost_username, message=summary)
+            logger.info(f"Monthly summary sent to user {user.name} ({user.mattermost_username})")
         else:
-            logger.warning(
-                f"User {user.name} does not have a Mattermost username, skipping."
-            )
+            logger.warning(f"User {user.name} does not have a Mattermost username, skipping.")
     logger.info("Monthly summaries have been sent to all users")
 
 
@@ -61,9 +55,7 @@ def get_monthly_summary(user, session):
         + "\n"
     )
     summary += (
-        translations["monthly_summary"]["total_spent"].format(
-            total_amount=data["total_amount"]
-        )
+        translations["monthly_summary"]["total_spent"].format(total_amount=data["total_amount"])
         + "\n"
     )
     summary += (

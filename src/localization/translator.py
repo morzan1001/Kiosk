@@ -25,9 +25,7 @@ def get_system_language():
 
 def load_translation(language_code):
     """Load translation file for the given language code."""
-    locale_path = (
-        PROJECT_ROOT / "src" / "localization" / "locales" / f"{language_code}.json"
-    )
+    locale_path = PROJECT_ROOT / "src" / "localization" / "locales" / f"{language_code}.json"
     logger.debug(f"Loading translations from {locale_path}")
     try:
         with open(locale_path, "r", encoding="utf-8") as file:

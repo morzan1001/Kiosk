@@ -7,9 +7,7 @@ GPIO_CONTROLLER = None
 def initialize_gpio(chip="/dev/gpiochip0", line_number=4):
     global GPIO_CONTROLLER
     try:
-        logger.debug(
-            f"Initializing GPIOController with chip {chip} and line {line_number}"
-        )
+        logger.debug(f"Initializing GPIOController with chip {chip} and line {line_number}")
         GPIO_CONTROLLER = GPIOController(chip, line_number)
         logger.info("GPIO started successfully")
         GPIO_CONTROLLER.deactivate()  # Close Lock by default

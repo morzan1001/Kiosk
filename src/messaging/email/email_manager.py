@@ -42,9 +42,7 @@ def send_monthly_summaries():
                 )
                 logger.info(f"Monthly summary sent to user {user.name} ({user.email})")
             else:
-                logger.warning(
-                    f"User {user.name} does not have an email address, skipping."
-                )
+                logger.warning(f"User {user.name} does not have an email address, skipping.")
         logger.info("Monthly summaries have been sent to all users")
     except Exception as e:
         logger.error(f"Error sending monthly summaries: {e}")

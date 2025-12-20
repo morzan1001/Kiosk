@@ -29,17 +29,13 @@ class InfoCardFrame(CTkFrame):
             try:
                 image_bytes = BytesIO(image_data)
                 image_pil = Image.open(image_bytes)
-                ctk_image = CTkImage(
-                    light_image=image_pil, dark_image=image_pil, size=(60, 60)
-                )
+                ctk_image = CTkImage(light_image=image_pil, dark_image=image_pil, size=(60, 60))
             except Exception:
                 pass  # Fallback to empty
         elif image_path:
             try:
                 image_pil = Image.open(image_path)
-                ctk_image = CTkImage(
-                    light_image=image_pil, dark_image=image_pil, size=(60, 60)
-                )
+                ctk_image = CTkImage(light_image=image_pil, dark_image=image_pil, size=(60, 60))
             except Exception:
                 pass
 

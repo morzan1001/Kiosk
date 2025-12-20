@@ -26,9 +26,7 @@ class BaseMessagingController(ABC):
         """Processes the message queue in a separate thread."""
         while not self._stop_event.is_set():
             try:
-                task = self.queue.get(
-                    timeout=1
-                )  # Timeout to regularly check if it should stop
+                task = self.queue.get(timeout=1)  # Timeout to regularly check if it should stop
                 if task is None:
                     break
                 self._execute_task(task)
@@ -112,9 +110,7 @@ class BaseMessagingController(ABC):
         }
         self.queue.put(task)
 
-    def notify_low_stock(
-        self, recipient, product_name, available_quantity, language="en"
-    ):
+    def notify_low_stock(self, recipient, product_name, available_quantity, language="en"):
         """
         Notifies you when stock levels are low.
 

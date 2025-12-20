@@ -24,9 +24,7 @@ class HeadingFrame(CTkFrame):
 
         # Load the back button image using CTkImage
         back_image = Image.open(get_image_path("back.png"))
-        self.back_image = CTkImage(
-            light_image=back_image, dark_image=back_image, size=(42, 32)
-        )
+        self.back_image = CTkImage(light_image=back_image, dark_image=back_image, size=(42, 32))
 
         # Create the back button
         self.back_button = CTkButton(

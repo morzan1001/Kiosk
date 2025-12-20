@@ -35,14 +35,10 @@ class KioskMainFrame(CTkFrame):
         self.grid_columnconfigure(0, weight=1)
 
         top_img = Image.open(get_image_path("logo.png"))
-        self.top_image = CTkImage(
-            light_image=top_img, dark_image=top_img, size=(80, 80)
-        )
+        self.top_image = CTkImage(light_image=top_img, dark_image=top_img, size=(80, 80))
 
         bottom_img = Image.open(get_image_path("arrow.png"))
-        self.bottom_image = CTkImage(
-            light_image=bottom_img, dark_image=bottom_img, size=(60, 60)
-        )
+        self.bottom_image = CTkImage(light_image=bottom_img, dark_image=bottom_img, size=(60, 60))
 
         self.top_image_label = CTkLabel(self, image=self.top_image, text="")
         self.top_image_label.grid(row=1, column=0)

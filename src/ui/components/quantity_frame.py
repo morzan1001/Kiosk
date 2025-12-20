@@ -3,9 +3,7 @@ from PIL import Image
 
 
 class QuantityFrame(CTkFrame):
-    def __init__(
-        self, master, data, update_total_price, item_price: float, *args, **kwargs
-    ):
+    def __init__(self, master, data, update_total_price, item_price: float, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
 
         # Set the textvariable
@@ -18,14 +16,10 @@ class QuantityFrame(CTkFrame):
 
         # Load images for buttons using CTkImage
         add_image = Image.open("src/images/add.png")
-        self.add_photo = CTkImage(
-            light_image=add_image, dark_image=add_image, size=(30, 30)
-        )
+        self.add_photo = CTkImage(light_image=add_image, dark_image=add_image, size=(30, 30))
 
         minus_image = Image.open("src/images/minus.png")
-        self.minus_photo = CTkImage(
-            light_image=minus_image, dark_image=minus_image, size=(30, 30)
-        )
+        self.minus_photo = CTkImage(light_image=minus_image, dark_image=minus_image, size=(30, 30))
 
         # Create and place the decrement button
         self.decrement_button = CTkButton(

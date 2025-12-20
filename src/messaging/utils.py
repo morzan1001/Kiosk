@@ -1,6 +1,7 @@
 """
 Utility functions for messaging modules.
 """
+
 from datetime import datetime, timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -34,9 +35,7 @@ def get_monthly_summary_data(user, session):
     transactions = Transaction.read_all_for_user(session, user.id)
 
     transactions_in_last_month = [
-        t
-        for t in transactions
-        if first_day_of_last_month <= t.date <= last_day_of_last_month
+        t for t in transactions if first_day_of_last_month <= t.date <= last_day_of_last_month
     ]
 
     total_amount = 0.0
