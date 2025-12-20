@@ -1,30 +1,33 @@
+from src.lock.lock import GPIOController
 from src.logmgr import logger
-from src.lock import GPIOController
 
-gpio_controller = None
+GPIO_CONTROLLER = None
+
 
 def initialize_gpio(chip="/dev/gpiochip0", line_number=4):
-    global gpio_controller
+    global GPIO_CONTROLLER
     try:
-        logger.debug(f"Initializing GPIOController with chip {chip} and line {line_number}")
-        gpio_controller = GPIOController(chip, line_number)
+        logger.debug(
+            f"Initializing GPIOController with chip {chip} and line {line_number}"
+        )
+        GPIO_CONTROLLER = GPIOController(chip, line_number)
         logger.info("GPIO started successfully")
-        gpio_controller.deactivate() # Close Lock by default
+        GPIO_CONTROLLER.deactivate()  # Close Lock by default
     except Exception as e:
         logger.error("Error starting GPIO: ", e)
         raise
 
+
 def get_gpio_controller() -> GPIOController:
-    global gpio_controller
-    if gpio_controller is None:
+    if GPIO_CONTROLLER is None:
         logger.error("GPIO Controller is not initialized")
-    return gpio_controller
+    return GPIO_CONTROLLER
+
 
 def cleanup_gpio():
-    global gpio_controller
-    if gpio_controller:
+    if GPIO_CONTROLLER:
         try:
-            gpio_controller.cleanup()
+            GPIO_CONTROLLER.cleanup()
             logger.info("GPIO cleanup done")
         except Exception as e:
             logger.error(f"Error during GPIO cleanup: {e}")

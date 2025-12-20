@@ -4,11 +4,11 @@ from customtkinter import CTkButton, CTkFrame, CTkScrollableFrame
 
 from src.database import User, get_db
 from src.localization.translator import get_translations
-from src.ui.components.HeadingFrame import HeadingFrame
-from src.ui.components.UserFrame import UserFrame
+from src.ui.components.heading_frame import HeadingFrame
+from src.ui.components.user_frame import UserFrame
 
-from .NewUser import AddUserFrame
-from .UpdateUser import UpdateUserFrame
+from .new_user import AddUserFrame
+from .update_user import UpdateUserFrame
 
 
 class UserListFrame(CTkFrame):

@@ -11,7 +11,7 @@ python = "^3.11"
 customtkinter = "^5.2.2"
 sqlalchemy = "^2.0.45"
 py532lib = { git = "https://github.com/Liam-Deacon/py532lib.git" }
-gpiod = "^2.4.0"
+gpiod = { version = "^2.4.0", markers = "sys_platform == 'linux'" }
 APScheduler = "^3.11.1"
 jinja2 = "^3.1.6"
 pillow = "^12.0.0"
@@ -24,7 +24,22 @@ psycopg2-binary = "^2.9.11"
 
 [tool.poetry.group.dev.dependencies]
 alembic = "^1.17.2" 
+pylint = "^4.0.4"
+flake8 = "^7.3.0"
+black = "^25.12.0"
+isort = "^7.0.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.pylint.format]
+max-line-length = 100
+

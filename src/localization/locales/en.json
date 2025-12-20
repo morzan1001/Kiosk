@@ -3,6 +3,7 @@
         "welcome_message": "Welcome to the Kiosk",
         "kiosk_title": "Kiosk",
         "heads_up": "Attention!",
+        "error_heading": "Error",
         "scan_card_message": "Please scan your card",
         "error_message": "An error occurred here",
         "fill_all_fields": "Fill in all fields to update the item",

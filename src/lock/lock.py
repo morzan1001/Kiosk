@@ -1,8 +1,10 @@
 import gpiod
 from gpiod.line import Direction, Value
 
+
 class GPIOController:
     """Initialize the GPIOController with a specific chip and line number."""
+
     def __init__(self, chip, line_number):
         self.chip = chip
         self.line_number = line_number
@@ -15,10 +17,9 @@ class GPIOController:
             consumer="Kiosk-Lock",
             config={
                 self.line_number: gpiod.LineSettings(
-                    direction=Direction.OUTPUT, 
-                    output_value=Value.INACTIVE
+                    direction=Direction.OUTPUT, output_value=Value.INACTIVE
                 )
-            }
+            },
         )
 
     def activate(self):

@@ -4,10 +4,10 @@ from customtkinter import CTkButton, CTkFrame, CTkScrollableFrame
 
 from src.database import Item, get_db
 from src.localization.translator import get_translations
-from src.ui.components.HeadingFrame import HeadingFrame
-from src.ui.components.ItemFrame import ItemFrame
-from src.ui.screens.NewItem import AddNewItemFrame
-from src.ui.screens.UpdateItem import UpdateItemFrame
+from src.ui.components.heading_frame import HeadingFrame
+from src.ui.components.item_frame import ItemFrame
+from src.ui.screens.new_item import AddNewItemFrame
+from src.ui.screens.update_item import UpdateItemFrame
 
 
 class ItemListFrame(CTkFrame):

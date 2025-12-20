@@ -1,13 +1,17 @@
-from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkOptionMenu, filedialog, CTkImage
-from PIL import Image
-from src.localization.translator import get_translations
-from src.ui.components.HeadingFrame import HeadingFrame
-from src.ui.components.Confirmation import DeleteConfirmation
-from src.ui.components.Barcode import AddBarcodeFrame
-from src.ui.components.ChangeQuantityFrame import ChangeQuantityFrame
-from src.ui.components.Message import ShowMessage
-from src.database import get_db, Item
 from io import BytesIO
+
+from customtkinter import (CTkButton, CTkEntry, CTkFrame, CTkImage, CTkLabel,
+                           CTkOptionMenu, filedialog)
+from PIL import Image
+
+from src.database import Item, get_db
+from src.localization.translator import get_translations
+from src.ui.components.barcode import AddBarcodeFrame
+from src.ui.components.change_quantity_frame import ChangeQuantityFrame
+from src.ui.components.confirmation import DeleteConfirmation
+from src.ui.components.heading_frame import HeadingFrame
+from src.ui.components.message import ShowMessage
+
 
 class UpdateItemFrame(CTkFrame):
     def __init__(self, parent, back_button_function, item_id: int, *args, **kwargs):
@@ -33,14 +37,16 @@ class UpdateItemFrame(CTkFrame):
             heading_text=self.translations["items"]["update_item"],
             back_button_function=back_button_function,
             delete_button_function=self.delete_item,
-            width=600, 
-            fg_color="transparent", 
+            width=600,
+            fg_color="transparent",
         )
         heading_frame.grid(row=0, column=0, columnspan=2, padx=90, sticky="new")
 
         # Load the image using CTkImage
         upload_image = Image.open("src/images/upload.png")
-        self.upload_image = CTkImage(light_image=upload_image, dark_image=upload_image, size=(80, 80))
+        self.upload_image = CTkImage(
+            light_image=upload_image, dark_image=upload_image, size=(80, 80)
+        )
 
         # Image Button
         self.update_button = CTkButton(
@@ -49,8 +55,6 @@ class UpdateItemFrame(CTkFrame):
             width=165,
             height=120,
             text="",
-            fg_color="white",
-            hover_color="#ddd",
             command=self.upload_image_button_pressed,
         )
         self.update_button.grid(row=1, column=0, columnspan=2, pady=(20, 10))
@@ -61,7 +65,6 @@ class UpdateItemFrame(CTkFrame):
             text=self.translations["items"]["inventory_label"],
             width=290,
             anchor="w",
-            text_color="white",
             font=("Arial", 18, "bold"),
         )
         self.inventory_label.grid(row=2, column=1, pady=(10, 0))
@@ -72,10 +75,7 @@ class UpdateItemFrame(CTkFrame):
             placeholder_text=self.translations["items"]["item_name"],
             width=290,
             height=50,
-            border_color="#656565",
-            fg_color="#202020",
             corner_radius=10,
-            text_color="white",
             font=("Inter", 18, "bold"),
         )
         self.name_entry.grid(row=3, column=0, padx=(20, 10))
@@ -85,10 +85,8 @@ class UpdateItemFrame(CTkFrame):
             self,
             width=290,
             height=60,
-            fg_color="#1C1C1C",
             corner_radius=10,
             border_width=2,
-            border_color="#5D5D5D",
         )
         self.inventory_frame.grid(
             row=3, column=1, padx=(10, 20), pady=(10, 10), sticky="w"
@@ -100,30 +98,23 @@ class UpdateItemFrame(CTkFrame):
             placeholder_text=self.translations["items"]["enter_price"],
             width=290,
             height=50,
-            border_color="#656565",
-            fg_color="#202020",
             corner_radius=10,
-            text_color="white",
             font=("Inter", 18, "bold"),
         )
         self.price_entry.grid(row=4, column=0, padx=(20, 10), pady=(10, 10))
-        self.price_entry.bind('<KeyRelease>', self.validate_price_input)
+        self.price_entry.bind("<KeyRelease>", self.validate_price_input)
 
         # Category Dropdown
         self.category_dropdown = CTkOptionMenu(
             self,
-            values=[self.translations["items"]["drinks"], self.translations["items"]["snacks"]],
+            values=[
+                self.translations["items"]["drinks"],
+                self.translations["items"]["snacks"],
+            ],
             width=290,  # Gleiche Breite wie die anderen Felder
             height=50,
-            fg_color="#202020",
-            button_color="#202020",
-            text_color="white",
             font=("Inter", 18, "bold"),
-            button_hover_color="#333",
-            dropdown_fg_color="#2B2B2B", 
-            dropdown_text_color="white", 
-            dropdown_hover_color="#575757",  
-            dropdown_font=("Inter", 18, "bold")  
+            dropdown_font=("Inter", 18, "bold"),
         )
         self.category_dropdown.grid(
             row=4, column=1, padx=(10, 20), pady=(10, 10), sticky="w"
@@ -136,10 +127,6 @@ class UpdateItemFrame(CTkFrame):
             width=290,
             height=50,
             font=("Inter", 18, "bold"),
-            fg_color="#2B2B2B",
-            border_color="white",
-            border_width=1,
-            hover_color="#333333",
             command=self.show_barcode,
         )
         self.update_barcode_button.grid(row=5, column=0, padx=(20, 10), pady=(20, 10))
@@ -150,10 +137,7 @@ class UpdateItemFrame(CTkFrame):
             text=self.translations["items"]["update_item"],
             width=290,
             height=50,
-            text_color="white",
             font=("Inter", 18, "bold"),
-            fg_color="#129F07",
-            hover_color="#13aF07",
             command=self.update_item,
         )
         self.update_item_button.grid(row=5, column=1, padx=(10, 20), pady=(20, 10))
@@ -178,7 +162,9 @@ class UpdateItemFrame(CTkFrame):
             # Open the image using Image.open
             image_pil = Image.open(image_bytes)
             # Create CTkImage with the loaded image at size 100x100
-            photo = CTkImage(light_image=image_pil, dark_image=image_pil, size=(100, 100))
+            photo = CTkImage(
+                light_image=image_pil, dark_image=image_pil, size=(100, 100)
+            )
             self.update_button.configure(image=photo)
 
     def upload_image_button_pressed(self):
@@ -189,7 +175,11 @@ class UpdateItemFrame(CTkFrame):
             self.upload_image_tk = Image.open(file_path)
             self.file_path = file_path
             # Create CTkImage with the uploaded image at size 100x100
-            uploaded_image = CTkImage(light_image=self.upload_image_tk, dark_image=self.upload_image_tk, size=(100, 100))
+            uploaded_image = CTkImage(
+                light_image=self.upload_image_tk,
+                dark_image=self.upload_image_tk,
+                size=(100, 100),
+            )
             self.update_button.configure(image=uploaded_image)
 
     def confirm_barcode(self):
@@ -201,32 +191,34 @@ class UpdateItemFrame(CTkFrame):
 
     def show_barcode(self):
         self.barcode_frame = AddBarcodeFrame(self.parent, self.confirm_barcode)
-        self.after(100, self.barcode_frame.grab_set)  # Call grab_set after a short delay
+        self.after(
+            100, self.barcode_frame.grab_set
+        )  # Call grab_set after a short delay
 
     def validate_price_input(self, event=None):
         """Validate price input to ensure it's a valid number"""
         current_value = self.price_entry.get()
-        
+
         # Allow empty field
         if not current_value:
             return True
-        
+
         # Check if it's a valid price format (e.g., 1.99, 10, 0.50)
         try:
             price = float(current_value)
             if price < 0:
-                self.price_entry.delete(0, 'end')
+                self.price_entry.delete(0, "end")
                 return False
             # Limit to 2 decimal places
             formatted_price = f"{price:.2f}"
             if current_value != formatted_price:
-                self.price_entry.delete(0, 'end')
+                self.price_entry.delete(0, "end")
                 self.price_entry.insert(0, formatted_price)
         except ValueError:
             # Remove invalid character
-            self.price_entry.delete(0, 'end')
+            self.price_entry.delete(0, "end")
             return False
-        
+
         return True
 
     def update_item(self):
@@ -258,15 +250,23 @@ class UpdateItemFrame(CTkFrame):
 
         # Update the item instance with new values if it exists
         if item_instance:
-            item_instance.update(self.session, name=name, price=price, quantity=quantity, category=category, image=image_data, barcode=barcode)
+            item_instance.update(
+                self.session,
+                name=name,
+                price=price,
+                quantity=quantity,
+                category=category,
+                image=image_data,
+                barcode=barcode,
+            )
 
         self.back_button_function()
 
     def confirm_delete(self):
-         # Fetch the item by ID
+        # Fetch the item by ID
         item_instance = Item.get_by_id(self.session, self.item_id)
 
-         # If the item exists, delete the user
+        # If the item exists, delete the user
         if item_instance:
             item_instance.delete(self.session)
 

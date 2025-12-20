@@ -4,10 +4,10 @@ from PIL import Image
 
 from src.database import Item, get_db
 from src.localization.translator import get_translations
-from src.ui.components.Barcode import AddBarcodeFrame
-from src.ui.components.ChangeQuantityFrame import ChangeQuantityFrame
-from src.ui.components.HeadingFrame import HeadingFrame
-from src.ui.components.Message import ShowMessage
+from src.ui.components.barcode import AddBarcodeFrame
+from src.ui.components.change_quantity_frame import ChangeQuantityFrame
+from src.ui.components.heading_frame import HeadingFrame
+from src.ui.components.message import ShowMessage
 
 
 class AddNewItemFrame(CTkFrame):

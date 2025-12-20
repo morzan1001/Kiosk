@@ -1,14 +1,17 @@
 """Provides basic logging functionality"""
+
 import json
 import logging
 from datetime import datetime
-import os
+
+from src.utils.paths import get_config_path
 
 
 class LogMgr:
     """
     Helper class for basic logging functionality provided by python
     """
+
     LOGGING_PATH = ""
     MESSAGE_PREFIX_FORMAT = "%(asctime)s\t[%(levelname)s] : %(message)s"
 
@@ -22,8 +25,8 @@ class LogMgr:
         # Default to INFO if no config present
         log_level = "INFO"
         try:
-            config_path = os.path.join(os.path.dirname(__file__), "../../config.json")
-            with open(config_path, 'r', encoding='utf-8') as config_file:
+            config_path = get_config_path()
+            with open(config_path, "r", encoding="utf-8") as config_file:
                 config = json.load(config_file)
                 log_level = config.get("logging", {}).get("level", "INFO")
         except Exception as e:
@@ -44,14 +47,16 @@ class LogMgr:
     @staticmethod
     def log_prefix() -> str:
         """Generates and returns log prefix (timestamp) for log file"""
-        return f'{datetime.today().year}_{datetime.today().month}'
+        return f"{datetime.today().year}_{datetime.today().month}"
 
     def update_prefix(self):
         """Updates the log prefix for log file name to current time"""
         if self.current_prefix != self.log_prefix():
             self.current_prefix = self.log_prefix()
 
-            file_handler = logging.FileHandler(f'kiosk_{self.current_prefix}.log', encoding='utf-8')
+            file_handler = logging.FileHandler(
+                f"kiosk_{self.current_prefix}.log", encoding="utf-8"
+            )
             formatter = logging.Formatter(self.MESSAGE_PREFIX_FORMAT)
             file_handler.setFormatter(formatter)
 
@@ -92,4 +97,3 @@ class LogMgr:
         """Logs message with level: critical"""
         self.update_prefix()
         self.logger.critical(self.format_message(msg, error))
-

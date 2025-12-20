@@ -1,10 +1,12 @@
-from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkOptionMenu
+from customtkinter import (CTkButton, CTkEntry, CTkFrame, CTkLabel,
+                           CTkOptionMenu)
+
+from src.database import User, get_db
 from src.localization.translator import get_translations
-from src.database import get_db, User
-from src.ui.components.HeadingFrame import HeadingFrame
-from src.ui.components.ScanCard import ScanCardFrame
-from src.ui.components.CreditFrame import CreditFrame
-from src.ui.components.Message import ShowMessage
+from src.ui.components.credit_frame import CreditFrame
+from src.ui.components.heading_frame import HeadingFrame
+from src.ui.components.message import ShowMessage
+from src.ui.components.scan_card import ScanCardFrame
 
 
 class AddUserFrame(CTkFrame):
@@ -24,8 +26,8 @@ class AddUserFrame(CTkFrame):
         self.grid_rowconfigure((0, 1, 2, 3, 4, 5, 6), weight=1)
 
         heading_frame = HeadingFrame(
-            self, 
-            heading_text=self.translations["admin"]["add_new_user"], 
+            self,
+            heading_text=self.translations["admin"]["add_new_user"],
             back_button_function=back_button_function,
             width=600,
             fg_color="transparent",
@@ -38,7 +40,6 @@ class AddUserFrame(CTkFrame):
             text=self.translations["user"]["credits_label"],
             width=290,
             anchor="w",
-            text_color="white",
             font=("Arial", 18, "bold"),
         )
         credits_label.grid(row=2, column=1, pady=(10, 0), sticky="s")
@@ -49,10 +50,7 @@ class AddUserFrame(CTkFrame):
             placeholder_text=self.translations["user"]["enter_name"],
             width=290,
             height=50,
-            border_color="#656565",
-            fg_color="#202020",
             corner_radius=10,
-            text_color="white",
             font=("Inter", 18, "bold"),
         )
         self.name_entry.grid(row=3, column=0, padx=(20, 10))
@@ -62,10 +60,8 @@ class AddUserFrame(CTkFrame):
             self,
             width=290,
             height=60,
-            fg_color="#1C1C1C",
             corner_radius=10,
             border_width=2,
-            border_color="#5D5D5D",
         )
         self.credits_frame.grid(
             row=3, column=1, padx=(10, 20), pady=(10, 10), sticky="w"
@@ -73,20 +69,18 @@ class AddUserFrame(CTkFrame):
 
         self.type = CTkOptionMenu(
             self,
-            values=[self.translations["user"]["user"], self.translations["admin"]["admin"]],
+            values=[
+                self.translations["user"]["user"],
+                self.translations["admin"]["admin"],
+            ],
             width=620,
             height=50,
-            fg_color="#202020",
-            button_color="#202020",
-            text_color="white",
             font=("Inter", 18, "bold"),
-            button_hover_color="#333",
-            dropdown_fg_color="#2B2B2B",
-            dropdown_text_color="white",
-            dropdown_hover_color="#575757",
             dropdown_font=("Inter", 18, "bold"),
         )
-        self.type.grid(row=4, column=0, columnspan=2, pady=(10, 10), padx=(20, 20), sticky="n")
+        self.type.grid(
+            row=4, column=0, columnspan=2, pady=(10, 10), padx=(20, 20), sticky="n"
+        )
 
         # Update NFCID button
         self.update_nfcid_button = CTkButton(
@@ -95,10 +89,6 @@ class AddUserFrame(CTkFrame):
             width=290,
             height=50,
             font=("Inter", 18, "bold"),
-            fg_color="#2B2B2B",
-            border_color="white",
-            border_width=1,
-            hover_color="#333333",
             command=self.show_scan_card,
         )
         self.update_nfcid_button.grid(row=5, column=0, padx=(20, 10), pady=(20, 10))
@@ -109,10 +99,7 @@ class AddUserFrame(CTkFrame):
             text=self.translations["admin"]["add_new_user"],
             width=290,
             height=50,
-            text_color="white",
             font=("Inter", 18, "bold"),
-            fg_color="#494949",
-            hover_color="#13aF07",
             state="disabled",
             command=self.add_user,
         )
@@ -133,7 +120,6 @@ class AddUserFrame(CTkFrame):
         self.scan_card_frame.destroy()
 
     def enable_add_user_button(self):
-        self.add_item_button.configure(fg_color="#129F07")
         self.add_item_button.configure(state="normal")
 
     def add_user(self):
@@ -153,7 +139,7 @@ class AddUserFrame(CTkFrame):
 
             return
 
-          # Check if a user with the same NFC ID already exists
+        # Check if a user with the same NFC ID already exists
         existing_user = User.get_by_nfcid(self.session, nfcid)
         if existing_user:
             # Show message if user already exists
@@ -166,9 +152,7 @@ class AddUserFrame(CTkFrame):
             self.parent.after(5000, self.message.destroy)
         else:
             # Create a new User instance
-            new_user = User(
-                nfcid=nfcid, name=name, type=type, credit=user_credits
-            )
+            new_user = User(nfcid=nfcid, name=name, type=type, credit=user_credits)
 
         # Save the new user to the database
         new_user.create(self.session)

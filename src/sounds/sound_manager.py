@@ -1,24 +1,26 @@
-from logmgr import logger
+from src.logmgr import logger
 from src.sounds.sound_controller import SoundController
 
-sound_controller = None
+SOUND_CONTROLLER = None
+
 
 def initialize_sound_controller(pos_dir: str, neg_dir: str):
-    global sound_controller
-    sound_controller = SoundController(pos_dir, neg_dir)
-    sound_controller.start()  # Start the thread
+    global SOUND_CONTROLLER
+    SOUND_CONTROLLER = SoundController(pos_dir, neg_dir)
+    SOUND_CONTROLLER.start()
     logger.debug("SoundController thread started")
 
+
 def get_sound_controller():
-    global sound_controller
-    if sound_controller is None:
+    if SOUND_CONTROLLER is None:
         logger.error("SoundController is not initialized")
-    return sound_controller
+    return SOUND_CONTROLLER
+
 
 def stop_sound_controller():
-    global sound_controller
-    if sound_controller:
-        sound_controller.stop()
-        sound_controller.join()
-        sound_controller = None
+    global SOUND_CONTROLLER
+    if SOUND_CONTROLLER:
+        SOUND_CONTROLLER.stop()
+        SOUND_CONTROLLER.join()
+        SOUND_CONTROLLER = None
         logger.debug("SoundController stopped and thread joined")

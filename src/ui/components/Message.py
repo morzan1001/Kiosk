@@ -1,5 +1,8 @@
-from customtkinter import CTkFrame, CTkLabel, CTkImage
+from customtkinter import CTkFrame, CTkImage, CTkLabel
 from PIL import Image
+
+from src.logmgr import logger
+from src.utils.paths import get_image_path
 
 
 class ShowMessage(CTkFrame):
@@ -15,23 +18,32 @@ class ShowMessage(CTkFrame):
         self.main_frame.grid_columnconfigure(0, weight=1)
 
         # Load the image
-        img = Image.open(f"src/images/{image}.png")
-        ctk_image = CTkImage(light_image=img, dark_image=img, size=(80, 80))
-        
-        self.image_label = CTkLabel(self.main_frame, image=ctk_image, text="")
-        self.image_label.grid(row=2, column=0, pady=10, padx=10, sticky="s")
+        try:
+            # Ensure filename has extension if missing (legacy support)
+            if not image.endswith(".png"):
+                image += ".png"
+
+            img_path = get_image_path(image)
+            img = Image.open(img_path)
+            ctk_image = CTkImage(light_image=img, dark_image=img, size=(80, 80))
+
+            self.image_label = CTkLabel(self.main_frame, image=ctk_image, text="")
+            self.image_label.grid(row=2, column=0, pady=10, padx=10, sticky="s")
+        except Exception as e:
+            logger.error(f"Error loading image {image}: {e}")
+            self.image_label = CTkLabel(self.main_frame, text="[IMG]")
+            self.image_label.grid(row=2, column=0, pady=10, padx=10, sticky="s")
 
         # Warning text
         self.warning_label = CTkLabel(
             self.main_frame,
             text=heading,
             font=("Inter", 30, "bold"),
-            text_color="white",
         )
         self.warning_label.grid(row=3, column=0, pady=10, padx=10, sticky="s")
 
         # Additional text
         self.additional_text_label = CTkLabel(
-            self.main_frame, text=text, font=("Inter", 20), text_color="white"
+            self.main_frame, text=text, font=("Inter", 20)
         )
         self.additional_text_label.grid(row=4, column=0, pady=10, padx=10, sticky="n")

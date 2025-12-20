@@ -3,6 +3,7 @@
         "welcome_message": "Willkommen im Saftladen",
         "kiosk_title": "Saftladen",
         "heads_up": "Achtung!",
+        "error_heading": "Fehler",
         "scan_card_message": "Bitte Scannen Sie Ihre Karte",
         "error_message": "Hier ist ein Fehler aufgetreten",
         "fill_all_fields": "Füllen Sie alle Felder aus, um den Artikel zu aktualisieren",

@@ -1,5 +1,6 @@
-from customtkinter import CTkFrame, CTkButton, CTkEntry, StringVar, CTkImage
+from customtkinter import CTkButton, CTkEntry, CTkFrame, CTkImage, StringVar
 from PIL import Image
+
 
 class ChangeQuantityFrame(CTkFrame):
     def __init__(self, parent, *args, **kwargs):
@@ -10,10 +11,14 @@ class ChangeQuantityFrame(CTkFrame):
 
         # Load images for buttons using CTkImage
         minus_img = Image.open("src/images/minus.png")
-        self.minus_image = CTkImage(light_image=minus_img, dark_image=minus_img, size=(20, 20))
+        self.minus_image = CTkImage(
+            light_image=minus_img, dark_image=minus_img, size=(20, 20)
+        )
 
         add_img = Image.open("src/images/add.png")
-        self.add_image = CTkImage(light_image=add_img, dark_image=add_img, size=(20, 20))
+        self.add_image = CTkImage(
+            light_image=add_img, dark_image=add_img, size=(20, 20)
+        )
 
         vcmd = (self.register(self.validate_entry), "%P")
         self.data = StringVar(value="0")
@@ -24,8 +29,6 @@ class ChangeQuantityFrame(CTkFrame):
             textvariable=self.data,
             width=185,
             height=30,
-            fg_color="#1C1C1C",
-            text_color="white",
             font=("Inter", 18, "bold"),
             border_width=0,
             validate="key",
@@ -40,7 +43,7 @@ class ChangeQuantityFrame(CTkFrame):
             image=self.minus_image,
             width=30,
             height=30,
-            fg_color="#1C1C1C",
+            fg_color="transparent",
             hover=False,
             command=self.decrement,
         )
@@ -53,7 +56,7 @@ class ChangeQuantityFrame(CTkFrame):
             image=self.add_image,
             width=30,
             height=30,
-            fg_color="#1C1C1C",
+            fg_color="transparent",
             hover=False,
             command=self.increment,
         )
@@ -74,7 +77,7 @@ class ChangeQuantityFrame(CTkFrame):
             if new_value == "":
                 return False
             # Strip leading zeros
-            new_value = new_value.lstrip('0') or '0'
+            new_value = new_value.lstrip("0") or "0"
 
             # Check if the new value is a digit and within the range
             if new_value.isdigit() and 0 <= int(new_value) <= 999:

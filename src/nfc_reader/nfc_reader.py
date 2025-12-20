@@ -1,11 +1,15 @@
 import threading
-from src.logmgr import logger
+import time
+
 from py532lib.i2c import Pn532_i2c
 from py532lib.mifare import Mifare
+
+from src.logmgr import logger
 
 pn532 = Pn532_i2c()
 pn532.SAMconfigure()
 mifare = Mifare()
+
 
 class NFCReader:
     """
@@ -14,12 +18,16 @@ class NFCReader:
     """
 
     def __init__(self):
-        self._lock = threading.Lock()  # Lock for thread-safe access to _latest_nfcid
-        self._stop_event = threading.Event()  # Event to stop the reading thread
-        self._latest_nfcid = None  # Variable to store the latest read NFC ID
-        self._callbacks = []  # List of callback functions to be called when a new NFC ID is read
-        self.thread = threading.Thread(target=self._read_nfc)  # Initializing the reading thread
-        self.thread.start()  # Starting the reading thread
+        self._lock = threading.Lock()
+        self._stop_event = threading.Event()
+        self._latest_nfcid = None
+        self._callbacks = (
+            []
+        )
+        self.thread = threading.Thread(
+            target=self._read_nfc
+        )
+        self.thread.start()
 
     def _read_nfc(self):
         """
@@ -28,20 +36,21 @@ class NFCReader:
         """
         while not self._stop_event.is_set():
             try:
-                # Use the scan_field method to get the UID
                 uid = mifare.scan_field()
                 if uid:
-                    # Convert UID to list of integers
-                    F_UID = [int(byte) for byte in uid]
-                    # Update _latest_nfcid in a thread-safe manner
+                    f_uid = [int(byte) for byte in uid]
                     with self._lock:
-                        self._latest_nfcid = F_UID
+                        self._latest_nfcid = f_uid
                     # Notify all registered callbacks outside the lock
                     self._notify_callbacks()
+                    # Prevent multiple reads of the same card immediately and reduce CPU load
+                    time.sleep(0.5)
                 else:
-                    logger.debug("No NFC data found")
+                    # Small sleep to prevent CPU hogging when no card is present
+                    time.sleep(0.1)
             except Exception as e:
                 logger.error("Error reading NFC data: " + str(e))
+                time.sleep(1)
 
     def get_nfcid(self):
         """
@@ -82,8 +91,10 @@ class NFCReader:
             # Create a copy of the callbacks list to avoid holding the lock during callback execution
             callbacks = None
             with self._lock:
-                callbacks = list(self._callbacks)  # Copy the callbacks to avoid holding the lock
-            
+                callbacks = list(
+                    self._callbacks
+                )
+
             for callback in callbacks:
                 callback(nfcid_str)
         else:

@@ -1,6 +1,7 @@
-from customtkinter import CTkToplevel, CTkFrame, CTkLabel, CTkEntry, CTkButton
+from customtkinter import CTkButton, CTkEntry, CTkFrame, CTkLabel, CTkToplevel
 
 from src.localization.translator import get_translations
+
 
 class AddBarcodeFrame(CTkToplevel):
     def __init__(self, parent, confirm_function, *args, **kwargs):
@@ -90,7 +91,7 @@ class AddBarcodeFrame(CTkToplevel):
             command=self.confirm_barcode,
         )
         confirm_button.grid(row=2, column=1, padx=10, pady=20)
-        
+
     def on_barcode_scan(self, event):
         # Check if Enter key is pressed, which typically signals the end of a barcode scan
         if event.keysym == "Return":
@@ -104,7 +105,9 @@ class AddBarcodeFrame(CTkToplevel):
 
     def process_barcode(self, barcode_value: str):
         # Function to handle the barcode value
-        self.barcode_entry.delete(0, 'end')  # Clear the previous entry to avoid appending
+        self.barcode_entry.delete(
+            0, "end"
+        )  # Clear the previous entry to avoid appending
         self.barcode_entry.insert(0, str(barcode_value))
 
     def confirm_barcode(self):

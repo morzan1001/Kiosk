@@ -1,13 +1,14 @@
-from customtkinter import CTkFrame, CTkLabel, CTkImage
+from customtkinter import CTkFrame, CTkImage, CTkLabel
 from PIL import Image
+
+from src.database import Item, User, get_db
 from src.localization.translator import get_translations
-from src.ui.screens.UserListing import UserListFrame
-from src.ui.screens.ItemListing import ItemListFrame
-from src.ui.screens.UserMain import UserMainPage
-from src.ui.components.AdminPurchaseItems import AdminPurchaseItemsFrame
-from src.ui.components.CountFrame import CountFrame
-from src.database import get_db, User, Item
 from src.logmgr import logger
+from src.ui.components.dashboard_card_frame import DashboardCardFrame
+from src.ui.screens.item_listing import ItemListFrame
+from src.ui.screens.user_listing import UserListFrame
+from src.ui.screens.user_main import UserMainPage
+from src.utils.paths import get_image_path
 
 
 class AdminMainFrame(CTkFrame):
@@ -31,8 +32,10 @@ class AdminMainFrame(CTkFrame):
         self.configure(width=800, height=480, fg_color="transparent")
 
         # Load and display the logo image using CTkImage
-        logo_image = Image.open("src/images/logo.png")
-        self.logo_image = CTkImage(light_image=logo_image, dark_image=logo_image, size=(90, 90))
+        logo_image = Image.open(get_image_path("logo.png"))
+        self.logo_image = CTkImage(
+            light_image=logo_image, dark_image=logo_image, size=(90, 90)
+        )
         self.logo_label = CTkLabel(self, text="", image=self.logo_image)
         self.logo_label.grid(row=2, column=0, columnspan=3)
 
@@ -40,46 +43,42 @@ class AdminMainFrame(CTkFrame):
         self.welcome_label = CTkLabel(
             self,
             text=self.translations["admin"]["welcome_admin"],
-            text_color="white",
             font=("Inter", 22, "bold"),
         )
         self.welcome_label.grid(row=3, column=0, columnspan=3)
 
         # Display the user count
-        self.user_count_frame = CountFrame(
+        self.user_count_frame = DashboardCardFrame(
             self,
-            "user-big",
-            self.translations["user"]["user"],
-            user_count,
+            title=self.translations["user"]["user"],
+            image_filename="user-big",
+            value=str(user_count),
             width=270,
             height=135,
-            fg_color="white",
         )
         self.user_count_frame.grid(
             row=4, column=0, padx=20, ipadx=30, ipady=20, sticky="e"
         )
 
         # Display the item count
-        self.item_count_frame = CountFrame(
+        self.item_count_frame = DashboardCardFrame(
             self,
-            "item",
-            self.translations["items"]["items"],
-            item_count,
+            title=self.translations["items"]["items"],
+            image_filename="item",
+            value=str(item_count),
             width=270,
             height=135,
-            fg_color="white",
         )
         self.item_count_frame.grid(row=4, column=1, padx=20, ipadx=30, ipady=20)
 
-        # Display the item count
-        self.item_purchase_frame = AdminPurchaseItemsFrame(
+        # Display the item purchase button (no value, just title)
+        self.item_purchase_frame = DashboardCardFrame(
             self,
-            "items-list",
-            self.translations["items"]["purchase_items"],
-            item_count,
+            title=self.translations["items"]["purchase_items"],
+            image_filename="items-list",
+            value=None,
             width=270,
             height=135,
-            fg_color="white",
         )
         self.item_purchase_frame.grid(
             row=4, column=2, padx=20, ipadx=30, ipady=20, sticky="w"
@@ -94,11 +93,9 @@ class AdminMainFrame(CTkFrame):
         for child in self.user_count_frame.winfo_children():
             child.bind("<Button-1>", self.user_count_clicked)
 
-        # Bind all children of item_count_frame to item_count_clicked
         for child in self.item_count_frame.winfo_children():
             child.bind("<Button-1>", self.item_count_clicked)
 
-        # Bind all children of item_count_frame to item_count_clicked
         for child in self.item_purchase_frame.winfo_children():
             child.bind("<Button-1>", self.item_purchase_clicked)
 
@@ -120,7 +117,10 @@ class AdminMainFrame(CTkFrame):
         self.destroy()
         users = User.read_all(self.session)
         UserListFrame(
-            self.parent, self.translations["user"]["user_list"], self.back_button_pressed, users=users
+            self.parent,
+            self.translations["user"]["user_list"],
+            self.back_button_pressed,
+            users=users,
         ).grid(row=0, column=0, sticky="ns", ipadx=50, ipady=20)
 
     def item_count_clicked(self, event):
@@ -128,16 +128,14 @@ class AdminMainFrame(CTkFrame):
         self.destroy()
         items = Item.read_all(self.session)
         ItemListFrame(
-            self.parent, self.translations["items"]["item_list"], self.back_button_pressed, items
+            self.parent,
+            self.translations["items"]["item_list"],
+            self.back_button_pressed,
+            items,
         ).grid(row=0, column=0, sticky="ns", ipadx=50, ipady=20)
 
     def item_purchase_clicked(self, event):
         logger.debug("Item purchase clicked")
         self.destroy()
         items = Item.read_all(self.session)
-        UserMainPage(
-            self.parent,
-            main_menu=self.main_menu,
-            user=self.user,
-            items=items
-        )
+        UserMainPage(self.parent, main_menu=self.main_menu, user=self.user, items=items)

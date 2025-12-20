@@ -1,18 +1,22 @@
 import logging
-from customtkinter import CTkFrame, CTkLabel, CTkButton, CTkEntry, CTkOptionMenu, CTkCanvas
-from src.localization.translator import get_translations
-from src.ui.components.HeadingFrame import HeadingFrame
-from src.database import get_db, User, Transaction
-from src.ui.components.ScanCard import ScanCardFrame
-from src.ui.components.Confirmation import DeleteConfirmation
-from src.ui.components.CreditFrame import CreditFrame
-from src.ui.components.Message import ShowMessage
-from datetime import datetime, timedelta
 import math
+from datetime import datetime, timedelta
+
+from customtkinter import (CTkButton, CTkCanvas, CTkEntry, CTkFrame, CTkLabel,
+                           CTkOptionMenu)
+
+from src.database import Transaction, User, get_db
+from src.localization.translator import get_translations
+from src.ui.components.confirmation import DeleteConfirmation
+from src.ui.components.credit_frame import CreditFrame
+from src.ui.components.heading_frame import HeadingFrame
+from src.ui.components.message import ShowMessage
+from src.ui.components.scan_card import ScanCardFrame
 
 # Initialize the logger
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
+
 
 class UpdateUserFrame(CTkFrame):
     def __init__(self, parent, back_button_function, user_id: int, *args, **kwargs):
@@ -42,10 +46,10 @@ class UpdateUserFrame(CTkFrame):
             heading_text=self.translations["admin"]["update_user"],
             back_button_function=back_button_function,
             delete_button_function=self.delete_user,
-            width=600,  
+            width=600,
             fg_color="transparent",
         )
-        heading_frame.grid(row=0, column=0, columnspan=2, padx=90, sticky="new")   
+        heading_frame.grid(row=0, column=0, columnspan=2, padx=90, sticky="new")
 
         # Credits label
         credits_label = CTkLabel(
@@ -53,7 +57,6 @@ class UpdateUserFrame(CTkFrame):
             text=self.translations["user"]["credits_label"],
             width=290,
             anchor="w",
-            text_color="white",
             font=("Arial", 18, "bold"),
         )
         credits_label.grid(row=1, column=1, pady=(10, 0), sticky="s")
@@ -64,10 +67,7 @@ class UpdateUserFrame(CTkFrame):
             placeholder_text=self.translations["user"]["enter_name"],
             width=290,
             height=50,
-            border_color="#656565",
-            fg_color="#202020",
             corner_radius=10,
-            text_color="white",
             font=("Inter", 18, "bold"),
         )
         self.name_entry.grid(row=2, column=0, padx=(20, 10), sticky="e")
@@ -77,34 +77,34 @@ class UpdateUserFrame(CTkFrame):
             self,
             width=290,
             height=60,
-            fg_color="#1C1C1C",
             corner_radius=10,
             border_width=2,
-            border_color="#5D5D5D",
         )
-        self.credits_frame.grid(row=2, column=1, padx=(10, 20), pady=(10, 10), sticky="w")
+        self.credits_frame.grid(
+            row=2, column=1, padx=(10, 20), pady=(10, 10), sticky="w"
+        )
 
         # Type dropdown
         self.type = CTkOptionMenu(
             self,
-            values=[self.translations["user"]["user"], self.translations["admin"]["admin"]],
+            values=[
+                self.translations["user"]["user"],
+                self.translations["admin"]["admin"],
+            ],
             width=620,
             height=50,
-            fg_color="#202020",
-            button_color="#202020",
-            text_color="white",
             font=("Inter", 18, "bold"),
-            button_hover_color="#333",
-            dropdown_fg_color="#2B2B2B",
-            dropdown_text_color="white",
-            dropdown_hover_color="#575757",
             dropdown_font=("Inter", 18, "bold"),
         )
-        self.type.grid(row=3, column=0, columnspan=2, pady=(10, 10), padx=(20, 20), sticky="n")
+        self.type.grid(
+            row=3, column=0, columnspan=2, pady=(10, 10), padx=(20, 20), sticky="n"
+        )
 
         # Graph frame - update to match dropdown positioning
-        self.graph_frame = CTkFrame(self, width=620, height=120, fg_color="#1C1C1C", corner_radius=10)
-        self.graph_frame.grid(row=4, column=0, columnspan=2, padx=(20, 20), pady=(10, 10), sticky="n")
+        self.graph_frame = CTkFrame(self, width=620, height=120, corner_radius=10)
+        self.graph_frame.grid(
+            row=4, column=0, columnspan=2, padx=(20, 20), pady=(10, 10), sticky="n"
+        )
         self.graph_frame.grid_propagate(False)
 
         # Update NFCID button
@@ -114,13 +114,11 @@ class UpdateUserFrame(CTkFrame):
             width=290,
             height=50,
             font=("Inter", 18, "bold"),
-            fg_color="#2B2B2B",
-            border_color="white",
-            border_width=1,
-            hover_color="#333333",
             command=self.show_scan_card,
         )
-        self.update_nfcid_button.grid(row=5, column=0, padx=(20, 10), pady=(20, 10), sticky="e")  # Added sticky="e"
+        self.update_nfcid_button.grid(
+            row=5, column=0, padx=(20, 10), pady=(20, 10), sticky="e"
+        )  # Added sticky="e"
 
         # Update user button
         self.update_user_button = CTkButton(
@@ -128,13 +126,12 @@ class UpdateUserFrame(CTkFrame):
             text=self.translations["admin"]["update_user"],
             width=290,
             height=50,
-            text_color="white",
             font=("Inter", 18, "bold"),
-            fg_color="#129F07",
-            hover_color="#13aF07",
             command=self.update_user,
         )
-        self.update_user_button.grid(row=5, column=1, padx=(10, 20), pady=(20, 10), sticky="w")  # Added sticky="w"
+        self.update_user_button.grid(
+            row=5, column=1, padx=(10, 20), pady=(20, 10), sticky="w"
+        )  # Added sticky="w"
 
         self.initialize_user()
 
@@ -148,9 +145,11 @@ class UpdateUserFrame(CTkFrame):
             # Show empty state
             empty_label = CTkLabel(
                 self.graph_frame,
-                text=self.translations.get("user", {}).get("no_transactions", "No transactions"),
+                text=self.translations.get("user", {}).get(
+                    "no_transactions", "No transactions"
+                ),
                 text_color="#888888",
-                font=("Arial", 14)
+                font=("Arial", 14),
             )
             empty_label.place(relx=0.5, rely=0.5, anchor="center")
             return
@@ -160,7 +159,9 @@ class UpdateUserFrame(CTkFrame):
         container.place(relx=0.5, rely=0.5, anchor="center")
 
         # Create canvas for pie chart
-        canvas = CTkCanvas(container, width=100, height=100, bg="#1C1C1C", highlightthickness=0)
+        canvas = CTkCanvas(
+            container, width=100, height=100, bg="#1C1C1C", highlightthickness=0
+        )
         canvas.pack(side="left", padx=(0, 20))
 
         # Pie chart parameters
@@ -172,32 +173,38 @@ class UpdateUserFrame(CTkFrame):
         for i, (category, percentage) in enumerate(category_percentages.items()):
             # Calculate the angle for this slice
             extent = (percentage / 100) * 360
-            
+
             # Get color
             color = self.chartColors[i % len(self.chartColors)]
-            
+
             # Draw the arc (pie slice)
             canvas.create_arc(
-                center_x - radius, center_y - radius,
-                center_x + radius, center_y + radius,
-                start=start_angle, extent=extent,
-                fill=color, outline="#1C1C1C", width=2
+                center_x - radius,
+                center_y - radius,
+                center_x + radius,
+                center_y + radius,
+                start=start_angle,
+                extent=extent,
+                fill=color,
+                outline="#1C1C1C",
+                width=2,
             )
-            
+
             # Only draw percentage text if the slice is large enough
             if extent > 15:  # Only show text for slices larger than 15 degrees
                 mid_angle = start_angle + extent / 2
                 text_radius = radius * 0.7
                 text_x = center_x + text_radius * math.cos(math.radians(mid_angle))
                 text_y = center_y - text_radius * math.sin(math.radians(mid_angle))
-                
+
                 canvas.create_text(
-                    text_x, text_y,
+                    text_x,
+                    text_y,
                     text=f"{int(percentage)}%",
                     fill="white",
-                    font=("Arial", 9, "bold")
+                    font=("Arial", 9, "bold"),
                 )
-            
+
             start_angle += extent
 
         # Legend container
@@ -210,7 +217,7 @@ class UpdateUserFrame(CTkFrame):
             text=self.translations["user"]["last_month_purchase"],
             text_color="white",
             font=("Arial", 11, "bold"),
-            anchor="w"
+            anchor="w",
         )
         heading_label.pack(anchor="w", pady=(0, 5))
 
@@ -218,20 +225,16 @@ class UpdateUserFrame(CTkFrame):
         for i, (category, percentage) in enumerate(category_percentages.items()):
             if i >= 5:  # Limit to 5 items
                 break
-                
+
             item_frame = CTkFrame(legend_frame, fg_color="transparent", height=20)
             item_frame.pack(fill="x", pady=1)
             item_frame.pack_propagate(False)
 
             color = self.chartColors[i % len(self.chartColors)]
-            
+
             # Color indicator
             color_box = CTkFrame(
-                item_frame,
-                width=10,
-                height=10,
-                fg_color=color,
-                corner_radius=5
+                item_frame, width=10, height=10, fg_color=color, corner_radius=5
             )
             color_box.pack(side="left", padx=(0, 5), pady=(5, 0))
 
@@ -241,7 +244,7 @@ class UpdateUserFrame(CTkFrame):
                 text=f"{category}: {int(percentage)}%",
                 text_color="white",
                 font=("Arial", 10),
-                anchor="w"
+                anchor="w",
             )
             category_label.pack(side="left", fill="x", expand=True, pady=(5, 0))
 
@@ -254,7 +257,13 @@ class UpdateUserFrame(CTkFrame):
             credit = user.credit
             type = user.type
 
-            logger.debug("User data loaded: name=%s, nfcid=%s, credit=%s, type=%s", name, self.nfcid, credit, type)
+            logger.debug(
+                "User data loaded: name=%s, nfcid=%s, credit=%s, type=%s",
+                name,
+                self.nfcid,
+                credit,
+                type,
+            )
 
             self.name_entry.insert(0, name)
             self.credits_frame.set_entry_text(credit)
@@ -264,9 +273,14 @@ class UpdateUserFrame(CTkFrame):
             logger.debug("Number of transactions found: %d", len(transactions))
 
             last_month_transactions = self.get_transactions_last_month(transactions)
-            logger.debug("Number of transactions in the last month: %d", len(last_month_transactions))
+            logger.debug(
+                "Number of transactions in the last month: %d",
+                len(last_month_transactions),
+            )
 
-            category_percentages = self.calculate_category_percentage(last_month_transactions)
+            category_percentages = self.calculate_category_percentage(
+                last_month_transactions
+            )
             logger.debug("Calculated category percentages: %s", category_percentages)
 
             # Draw the pie chart
@@ -340,7 +354,13 @@ class UpdateUserFrame(CTkFrame):
         type = self.type.get()
         nfcid = self.nfcid.strip()
 
-        logger.debug("Input data: name='%s', nfcid='%s', user_credits='%s', type='%s'", name, nfcid, user_credits, type)
+        logger.debug(
+            "Input data: name='%s', nfcid='%s', user_credits='%s', type='%s'",
+            name,
+            nfcid,
+            user_credits,
+            type,
+        )
 
         if not (name and nfcid):
             logger.debug("Name or NFCID is missing")
@@ -357,7 +377,9 @@ class UpdateUserFrame(CTkFrame):
         logger.debug("Checking existing_user with nfcid='%s': %s", nfcid, existing_user)
 
         if existing_user and existing_user.id != self.user_id:
-            logger.debug("NFCID '%s' is already used by user_id '%s'", nfcid, existing_user.id)
+            logger.debug(
+                "NFCID '%s' is already used by user_id '%s'", nfcid, existing_user.id
+            )
             self.message = ShowMessage(
                 self.parent,
                 image="unsuccessful",
@@ -370,7 +392,13 @@ class UpdateUserFrame(CTkFrame):
             logger.debug("Updating user: %s", user_instance)
             if user_instance:
                 try:
-                    user_instance.update(self.session, nfcid=nfcid, name=name, type=type, credit=user_credits)
+                    user_instance.update(
+                        self.session,
+                        nfcid=nfcid,
+                        name=name,
+                        type=type,
+                        credit=user_credits,
+                    )
                     logger.debug("User updated successfully")
                 except Exception as e:
                     logger.exception("Error updating user")
@@ -402,4 +430,6 @@ class UpdateUserFrame(CTkFrame):
 
     def delete_user(self):
         logger.debug("Delete confirmation for user with user_id=%s", self.user_id)
-        DeleteConfirmation(self.parent, self.confirm_delete, self.translations["user"]["user"])
+        DeleteConfirmation(
+            self.parent, self.confirm_delete, self.translations["user"]["user"]
+        )
