@@ -5,7 +5,7 @@ from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, TemplateError
 
 from src.localization.translator import get_translations
 from src.logmgr import logger
@@ -26,7 +26,7 @@ class EmailController(BaseMessagingController):
         logger.debug("Translations loaded")
 
         template_dir = os.path.join(os.path.dirname(__file__), "templates")
-        self.jinja_env = Environment(loader=FileSystemLoader(template_dir))
+        self.jinja_env = Environment(loader=FileSystemLoader(template_dir), autoescape=True)
         logger.debug("Jinja2 environment set up")
 
         # Initialize the base class (threading and queue)
@@ -89,7 +89,7 @@ class EmailController(BaseMessagingController):
                 image = MIMEImage(img_data, name="logo.png")
                 image.add_header("Content-ID", "<logo>")
                 msg.attach(image)
-            except Exception as e:
+            except OSError as e:
                 logger.warning(f"Failed to attach logo image: {e}")
 
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
@@ -98,7 +98,7 @@ class EmailController(BaseMessagingController):
                 server.send_message(msg)
 
             logger.info(f"Email sent to {recipient_email}")
-        except Exception as e:
+        except OSError as e:
             logger.error(f"Failed to send email: {e}")
 
     def load_template(self, template_name, context):
@@ -119,6 +119,6 @@ class EmailController(BaseMessagingController):
             full_body = template.render(context)
             logger.debug("Email body rendered using Jinja2")
             return full_body
-        except Exception as e:
+        except TemplateError as e:
             logger.error(f"Failed to load template {template_name}: {e}")
             return ""

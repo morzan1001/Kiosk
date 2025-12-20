@@ -1,6 +1,6 @@
 import os
 import queue
-import random
+import secrets
 import threading
 
 import sounddevice as sd
@@ -47,16 +47,14 @@ class SoundController(threading.Thread):
             logger.error("sound_type must be 'positive' or 'negative'.")
             return
 
-        sound_files = [
-            f for f in os.listdir(sound_dir) if f.endswith((".wav", ".mp3", ".ogg"))
-        ]
+        sound_files = [f for f in os.listdir(sound_dir) if f.endswith((".wav", ".mp3", ".ogg"))]
         logger.debug(f"Found {len(sound_files)} sound files in '{sound_dir}'")
 
         if not sound_files:
             logger.warning("No sound files found in the specified directory.")
             return
 
-        sound_file = random.choice(sound_files)
+        sound_file = secrets.choice(sound_files)
         sound_path = os.path.join(sound_dir, sound_file)
         logger.debug(f"Selected sound file: {sound_file}")
 

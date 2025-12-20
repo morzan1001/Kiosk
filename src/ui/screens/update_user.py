@@ -82,7 +82,7 @@ class UpdateUserFrame(CTkFrame):
         self.credits_frame.grid(row=2, column=1, padx=(10, 20), pady=(10, 10), sticky="w")
 
         # Type dropdown
-        self.type = CTkOptionMenu(
+        self.user_type_menu = CTkOptionMenu(
             self,
             values=[
                 self.translations["user"]["user"],
@@ -93,7 +93,9 @@ class UpdateUserFrame(CTkFrame):
             font=("Inter", 18, "bold"),
             dropdown_font=("Inter", 18, "bold"),
         )
-        self.type.grid(row=3, column=0, columnspan=2, pady=(10, 10), padx=(20, 20), sticky="n")
+        self.user_type_menu.grid(
+            row=3, column=0, columnspan=2, pady=(10, 10), padx=(20, 20), sticky="n"
+        )
 
         # Graph frame - update to match dropdown positioning
         self.graph_frame = CTkFrame(self, width=620, height=120, corner_radius=10)
@@ -244,19 +246,19 @@ class UpdateUserFrame(CTkFrame):
             name = user.name
             self.nfcid = user.nfcid
             credit = user.credit
-            type = user.type
+            user_type = user.type
 
             logger.debug(
                 "User data loaded: name=%s, nfcid=%s, credit=%s, type=%s",
                 name,
                 self.nfcid,
                 credit,
-                type,
+                user_type,
             )
 
             self.name_entry.insert(0, name)
             self.credits_frame.set_entry_text(credit)
-            self.type.set(type)
+            self.user_type_menu.set(user_type)
 
             transactions = Transaction.read_all_for_user(self.session, self.user_id)
             logger.debug("Number of transactions found: %d", len(transactions))
@@ -338,7 +340,7 @@ class UpdateUserFrame(CTkFrame):
         logger.debug("Starting update_user")
         name = self.name_entry.get().strip()
         user_credits = self.credits_frame.get()
-        type = self.type.get()
+        user_type = self.user_type_menu.get()
         nfcid = self.nfcid.strip()
 
         logger.debug(
@@ -346,7 +348,7 @@ class UpdateUserFrame(CTkFrame):
             name,
             nfcid,
             user_credits,
-            type,
+            user_type,
         )
 
         if not (name and nfcid):
@@ -381,7 +383,7 @@ class UpdateUserFrame(CTkFrame):
                         self.session,
                         nfcid=nfcid,
                         name=name,
-                        type=type,
+                        type=user_type,
                         credit=user_credits,
                     )
                     logger.debug("User updated successfully")

@@ -11,14 +11,10 @@ from src.ui.screens.update_item import UpdateItemFrame
 
 
 class ItemListFrame(CTkFrame):
+    LEFT_CLICK_EVENT = "<Button-1>"
+
     def __init__(
-        self,
-        parent,
-        heading_text: str,
-        back_button_function,
-        items: List[Item],
-        *args,
-        **kwargs
+        self, parent, heading_text: str, back_button_function, items: List[Item], *args, **kwargs
     ):
         super().__init__(parent, *args, **kwargs)
 
@@ -54,9 +50,7 @@ class ItemListFrame(CTkFrame):
 
         # Add frames for items
         for indx, item in enumerate(self.items):
-            sub_frame = CTkFrame(
-                self.item_list_frame, fg_color="white", width=580, height=60
-            )
+            sub_frame = CTkFrame(self.item_list_frame, fg_color="white", width=580, height=60)
             sub_frame.grid(row=indx, column=0, padx=10, pady=10, sticky="nsew")
 
             # Configure grid for sub_frame
@@ -69,26 +63,26 @@ class ItemListFrame(CTkFrame):
             item_frame.grid(row=0, column=0, sticky="w")
 
             sub_frame.bind(
-                "<Button-1>",
+                self.LEFT_CLICK_EVENT,
                 lambda event, item_id=item.id: self.update_item(event, item_id),
             )
 
             item_frame.bind(
-                "<Button-1>",
+                self.LEFT_CLICK_EVENT,
                 lambda event, item_id=item.id: self.update_item(event, item_id),
             )
 
             # Bind all children of sub_frame to update_item
             for child in sub_frame.winfo_children():
                 child.bind(
-                    "<Button-1>",
+                    self.LEFT_CLICK_EVENT,
                     lambda event, item_id=item.id: self.update_item(event, item_id),
                 )
 
             # Bind all children of item_frame to update_item
             for child in item_frame.winfo_children():
                 child.bind(
-                    "<Button-1>",
+                    self.LEFT_CLICK_EVENT,
                     lambda event, item_id=item.id: self.update_item(event, item_id),
                 )
 
@@ -104,9 +98,9 @@ class ItemListFrame(CTkFrame):
 
     def return_to_items_listing(self):
         all_items: List[Item] = Item.read_all(self.session)
-        ItemListFrame(
-            self.parent, self.heading_text, self.back_button_function, all_items
-        ).grid(row=0, column=0, sticky="ns", ipadx=50, ipady=20)
+        ItemListFrame(self.parent, self.heading_text, self.back_button_function, all_items).grid(
+            row=0, column=0, sticky="ns", ipadx=50, ipady=20
+        )
         if hasattr(self, "new_item_frame"):
             self.new_item_frame.destroy()
 

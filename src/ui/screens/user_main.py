@@ -60,9 +60,6 @@ class UserMainPage(CTkFrame):
         self.item_frame.grid(row=1, rowspan=2, column=0, columnspan=4)
         self.item_frame.grid_columnconfigure(0, weight=1)
 
-        # for i in range(len(self.items)):
-        #    self.item_frame.grid_rowconfigure(i, weight=1)
-
         self.shopping_cart = []
 
         # Welcome label
@@ -144,12 +141,10 @@ class UserMainPage(CTkFrame):
                     ),
                 )
                 self.root.after(5000, self.message.destroy)
-                return
             else:
                 # Increment the quantity in the UI if there's enough stock
                 quantity_var.set(current_quantity + 1)
                 self.update_total_price()
-                # self.shopping_cart.append((quantity, item))  # Store quantity and item details
 
         else:
             # Add the item to the list as it has not been added yet

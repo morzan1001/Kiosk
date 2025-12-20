@@ -12,14 +12,10 @@ from .update_user import UpdateUserFrame
 
 
 class UserListFrame(CTkFrame):
+    LEFT_CLICK_EVENT = "<Button-1>"
+
     def __init__(
-        self,
-        parent,
-        heading_text: str,
-        back_button_function,
-        users: List[User],
-        *args,
-        **kwargs
+        self, parent, heading_text: str, back_button_function, users: List[User], *args, **kwargs
     ):
         super().__init__(parent, *args, **kwargs)
 
@@ -54,9 +50,7 @@ class UserListFrame(CTkFrame):
 
         # Add frames for users
         for indx, user in enumerate(users):
-            sub_frame = CTkFrame(
-                self.user_list_frame, fg_color="white", width=580, height=60
-            )
+            sub_frame = CTkFrame(self.user_list_frame, fg_color="white", width=580, height=60)
             sub_frame.grid(row=indx, column=0, padx=10, pady=10, sticky="nsew")
 
             # Configure grid for sub_frame
@@ -71,25 +65,25 @@ class UserListFrame(CTkFrame):
             user_frame.grid(row=0, column=0, sticky="w")
 
             sub_frame.bind(
-                "<Button-1>",
+                self.LEFT_CLICK_EVENT,
                 lambda event, user_id=user.id: self.update_user(event, user_id),
             )
 
             user_frame.bind(
-                "<Button-1>",
+                self.LEFT_CLICK_EVENT,
                 lambda event, user_id=user.id: self.update_user(event, user_id),
             )
 
             # Bind all children of user_count_frame to user_count_clicked
             for child in sub_frame.winfo_children():
                 child.bind(
-                    "<Button-1>",
+                    self.LEFT_CLICK_EVENT,
                     lambda event, user_id=user.id: self.update_user(event, user_id),
                 )
 
             for child in user_frame.winfo_children():
                 child.bind(
-                    "<Button-1>",
+                    self.LEFT_CLICK_EVENT,
                     lambda event, user_id=user.id: self.update_user(event, user_id),
                 )
 
@@ -105,16 +99,14 @@ class UserListFrame(CTkFrame):
 
     def update_user(self, event, user_id):
         self.destroy()
-        self.update_user_frame = UpdateUserFrame(
-            self.parent, self.return_to_user_listing, user_id
-        )
+        self.update_user_frame = UpdateUserFrame(self.parent, self.return_to_user_listing, user_id)
         self.update_user_frame.grid(row=0, column=0, sticky="nsew")
 
     def return_to_user_listing(self):
         users: List[User] = User.read_all(self.session)
-        UserListFrame(
-            self.parent, self.heading_text, self.back_button_function, users
-        ).grid(row=0, column=0, sticky="ns", ipadx=50, ipady=20)
+        UserListFrame(self.parent, self.heading_text, self.back_button_function, users).grid(
+            row=0, column=0, sticky="ns", ipadx=50, ipady=20
+        )
 
         if hasattr(self, "new_user_frame"):
             self.new_user_frame.destroy()

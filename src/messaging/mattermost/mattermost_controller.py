@@ -58,7 +58,7 @@ class MattermostController(BaseMessagingController):
             message = self.translations["mattermost"]["low_balance"].format(
                 name=getattr(recipient, "name", str(recipient)), balance=balance_float
             )
-        except Exception as e:
+        except (KeyError, ValueError, AttributeError) as e:
             logger.error(f"Error accessing translations: {e}")
             # Fallback message
             message = f"Your credit balance is low: {float(balance):.2f}€"
@@ -80,7 +80,7 @@ class MattermostController(BaseMessagingController):
             message = self.translations["mattermost"]["low_stock"].format(
                 product_name=product_name, available_quantity=available_quantity
             )
-        except Exception as e:
+        except (KeyError, ValueError) as e:
             logger.error(f"Error accessing translations: {e}")
             # Fallback message
             message = f"Low stock levels: {product_name} - only {available_quantity} available"

@@ -12,6 +12,8 @@ from src.utils.paths import get_image_path
 
 
 class AdminMainFrame(CTkFrame):
+    LEFT_CLICK_EVENT = "<Button-1>"
+
     def __init__(self, parent, main_menu, user: User, user_count: int, item_count: int):
         super().__init__(parent)
 
@@ -33,9 +35,7 @@ class AdminMainFrame(CTkFrame):
 
         # Load and display the logo image using CTkImage
         logo_image = Image.open(get_image_path("logo.png"))
-        self.logo_image = CTkImage(
-            light_image=logo_image, dark_image=logo_image, size=(90, 90)
-        )
+        self.logo_image = CTkImage(light_image=logo_image, dark_image=logo_image, size=(90, 90))
         self.logo_label = CTkLabel(self, text="", image=self.logo_image)
         self.logo_label.grid(row=2, column=0, columnspan=3)
 
@@ -56,9 +56,7 @@ class AdminMainFrame(CTkFrame):
             width=270,
             height=135,
         )
-        self.user_count_frame.grid(
-            row=4, column=0, padx=20, ipadx=30, ipady=20, sticky="e"
-        )
+        self.user_count_frame.grid(row=4, column=0, padx=20, ipadx=30, ipady=20, sticky="e")
 
         # Display the item count
         self.item_count_frame = DashboardCardFrame(
@@ -80,24 +78,22 @@ class AdminMainFrame(CTkFrame):
             width=270,
             height=135,
         )
-        self.item_purchase_frame.grid(
-            row=4, column=2, padx=20, ipadx=30, ipady=20, sticky="w"
-        )
+        self.item_purchase_frame.grid(row=4, column=2, padx=20, ipadx=30, ipady=20, sticky="w")
 
         # Bind frames to their respective functions
-        self.user_count_frame.bind("<Button-1>", self.user_count_clicked)
-        self.item_count_frame.bind("<Button-1>", self.item_count_clicked)
-        self.item_purchase_frame.bind("<Button-1>", self.item_purchase_clicked)
+        self.user_count_frame.bind(self.LEFT_CLICK_EVENT, self.user_count_clicked)
+        self.item_count_frame.bind(self.LEFT_CLICK_EVENT, self.item_count_clicked)
+        self.item_purchase_frame.bind(self.LEFT_CLICK_EVENT, self.item_purchase_clicked)
 
         # Bind all children of user_count_frame to user_count_clicked
         for child in self.user_count_frame.winfo_children():
-            child.bind("<Button-1>", self.user_count_clicked)
+            child.bind(self.LEFT_CLICK_EVENT, self.user_count_clicked)
 
         for child in self.item_count_frame.winfo_children():
-            child.bind("<Button-1>", self.item_count_clicked)
+            child.bind(self.LEFT_CLICK_EVENT, self.item_count_clicked)
 
         for child in self.item_purchase_frame.winfo_children():
-            child.bind("<Button-1>", self.item_purchase_clicked)
+            child.bind(self.LEFT_CLICK_EVENT, self.item_purchase_clicked)
 
     def back_button_pressed(self):
         self.destroy()
