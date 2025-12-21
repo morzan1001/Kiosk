@@ -6,12 +6,12 @@ It includes:
 - User, Item, and Transaction models
 """
 
-from src.database.connection import SessionManager, get_db
+from src.database.connection import SessionManager, get_db, get_new_session
+from src.database.models.item import Item
+from src.database.models.transaction import Transaction
 
 # Models
 from src.database.models.user import User
-from src.database.models.item import Item 
-from src.database.models.transaction import Transaction
 
 # Export classes and functions when this package is imported
-__all__ = ["SessionManager", "get_db", "User", "Item", "Transaction"]
+__all__ = ["SessionManager", "get_db", "get_new_session", "User", "Item", "Transaction"]

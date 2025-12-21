@@ -1,27 +1,33 @@
-from customtkinter import CTkFrame, CTkLabel, CTkEntry, CTkButton, StringVar, CTkImage
+from customtkinter import CTkButton, CTkEntry, CTkFrame, CTkImage, CTkLabel, StringVar
 from PIL import Image
+
+from src.utils.paths import get_image_path
+
 
 class CreditFrame(CTkFrame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure((0, 1, 2, 3), weight=1)
+        # Layout: [icon][entry........][minus][plus]
+        # Only the entry column should expand, so the icon stays at the far left.
+        self.grid_columnconfigure(0, weight=0)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=0)
+        self.grid_columnconfigure(3, weight=0)
+        self.grid_rowconfigure(0, weight=1)
 
         # Load images for buttons using CTkImage
-        credit_img = Image.open("src/images/credit.png")
+        credit_img = Image.open(get_image_path("credit.png"))
         self.credit_image = CTkImage(light_image=credit_img, dark_image=credit_img, size=(40, 40))
 
-        minus_img = Image.open("src/images/minus.png")
+        minus_img = Image.open(get_image_path("minus.png"))
         self.minus_image = CTkImage(light_image=minus_img, dark_image=minus_img, size=(30, 30))
 
-        add_img = Image.open("src/images/add.png")
+        add_img = Image.open(get_image_path("add.png"))
         self.add_image = CTkImage(light_image=add_img, dark_image=add_img, size=(30, 30))
 
-        self.credit_label = CTkLabel(
-            self, text="", width=40, height=40, image=self.credit_image
-        )
-        self.credit_label.grid(row=0, column=0, padx=(10, 0))
+        self.credit_label = CTkLabel(self, text="", width=40, height=40, image=self.credit_image)
+        self.credit_label.grid(row=0, column=0, padx=(10, 0), sticky="w")
 
         vcmd = (self.register(self.validate_entry), "%P")  # Validation command
         self.data = StringVar(value="0")
@@ -32,14 +38,14 @@ class CreditFrame(CTkFrame):
             textvariable=self.data,
             width=145,
             height=30,
-            fg_color="#1C1C1C",
+            fg_color="transparent",
             text_color="white",
             font=("Inter", 18, "bold"),
             border_width=0,
             validate="key",
             validatecommand=vcmd,
         )
-        self.entry.grid(row=0, column=1, padx=(10, 5))
+        self.entry.grid(row=0, column=1, padx=(10, 5), sticky="ew")
 
         # Minus button
         self.minus_button = CTkButton(
@@ -48,7 +54,7 @@ class CreditFrame(CTkFrame):
             image=self.minus_image,
             width=30,
             height=30,
-            fg_color="#1C1C1C",
+            fg_color="transparent",
             hover=False,
             command=self.decrease_number,
         )
@@ -61,7 +67,7 @@ class CreditFrame(CTkFrame):
             image=self.add_image,
             width=30,
             height=30,
-            fg_color="#1C1C1C",
+            fg_color="transparent",
             hover=False,
             command=self.increase_number,
         )

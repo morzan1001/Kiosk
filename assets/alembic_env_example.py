@@ -1,20 +1,18 @@
 import sys
-from pathlib import Path
 from logging.config import fileConfig
-
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from pathlib import Path
 
 from alembic import context
+from sqlalchemy import engine_from_config, pool
 
 # Add src directory to path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 # Import models
 from src.database.connection import Base
-from src.database.models.user import User  
 from src.database.models.item import Item
 from src.database.models.transaction import Transaction
+from src.database.models.user import User
 
 # Alembic Config object
 config = context.config
@@ -23,6 +21,7 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 target_metadata = Base.metadata
+
 
 def run_migrations_offline() -> None:
     url = config.get_main_option("sqlalchemy.url")
@@ -34,11 +33,12 @@ def run_migrations_offline() -> None:
         # Prevent table deletion
         compare_type=True,
         compare_server_default=True,
-        render_as_batch=True
+        render_as_batch=True,
     )
 
     with context.begin_transaction():
         context.run_migrations()
+
 
 def run_migrations_online() -> None:
     connectable = engine_from_config(
@@ -52,13 +52,14 @@ def run_migrations_online() -> None:
             connection=connection,
             target_metadata=target_metadata,
             # Prevent table deletion
-            compare_type=True, 
+            compare_type=True,
             compare_server_default=True,
-            render_as_batch=True
+            render_as_batch=True,
         )
 
         with context.begin_transaction():
             context.run_migrations()
+
 
 if context.is_offline_mode():
     run_migrations_offline()

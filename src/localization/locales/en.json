@@ -3,11 +3,13 @@
         "welcome_message": "Welcome to the Kiosk",
         "kiosk_title": "Kiosk",
         "heads_up": "Attention!",
+        "error_heading": "Error",
         "scan_card_message": "Please scan your card",
         "error_message": "An error occurred here",
         "fill_all_fields": "Fill in all fields to update the item",
         "valid_number_price": "The price should be a valid number",
-        "upload_image": "Upload image to add item"
+        "upload_image": "Upload image to add item",
+        "image_read_failed": "The selected image could not be read"
     },
     "buttons": {
         "cancel_button": "Cancel",
@@ -25,6 +27,8 @@
         "credits_label": "Credits",
         "enter_name": "Enter name",
         "last_month_purchase": "Purchases in the last month",
+        "all_time_purchase": "All purchases",
+        "no_transactions": "No transactions",
         "checkout_unsuccessful": "Checkout unsuccessful",
         "checkout_successful": "Checkout successful",
         "amount_debited": "{total:.2f}€ has been deducted from your account",
