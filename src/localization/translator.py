@@ -25,16 +25,16 @@ def get_system_language():
     """Determine the system language."""
     try:
         system_locale = locale.getlocale()[0]
-        if not system_locale:
-            # Fallback to getdefaultlocale (deprecated but useful fallback)
-            # pylint: disable=deprecated-method
-            system_locale = locale.getdefaultlocale()[0]
+        if system_locale is None:
+            # Ensure a locale is set, then re-read.
+            locale.setlocale(locale.LC_ALL, "")
+            system_locale = locale.getlocale()[0]
+        if system_locale is None:
+            return "en"
     except (ValueError, locale.Error):
-        system_locale = "en"
+        return "en"
 
-    if system_locale and system_locale.startswith("de"):
-        return "de"
-    return "en"
+    return "de" if system_locale.startswith("de") else "en"
 
 
 def load_translation(language_code):

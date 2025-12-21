@@ -1,6 +1,7 @@
 from customtkinter import CTkButton, CTkFrame
+from sqlalchemy.exc import IntegrityError, OperationalError, SQLAlchemyError
 
-from src.database import Item, get_db
+from src.database import Item, get_new_session
 from src.localization.translator import get_translations
 from src.logmgr import logger
 from src.ui.components.heading_frame import HeadingFrame
@@ -21,8 +22,6 @@ class AddNewItemFrame(CTkFrame):
         self.parent = parent
         self.back_button_function = back_button_function
         self.translations = get_translations()
-
-        self.session = get_db()
 
         self.configure(width=800, height=480, fg_color="transparent")
 
@@ -72,7 +71,7 @@ class AddNewItemFrame(CTkFrame):
             self.parent.after(5000, self.message.destroy)
             return
 
-        if not (name and price and category and barcode):
+        if not (name and price and category and quantity and barcode):
             self.message = ShowMessage(
                 self.parent,
                 image="unsuccessful",
@@ -82,47 +81,83 @@ class AddNewItemFrame(CTkFrame):
             self.parent.after(5000, self.message.destroy)
             return
 
-        # Check if an item with the same barcode already exists
-        existing_item = Item.get_by_barcode(self.session, barcode)
-        if existing_item:
-            self.message = ShowMessage(
-                self.parent,
-                image="unsuccessful",
-                heading=self.translations["items"]["error_adding_item"],
-                text=self.translations["items"]["barcode_already_exists"],
-            )
-            self.parent.after(5000, self.message.destroy)
-            return
-
-        # Read the image file as binary data
-        image_data = None
-        if file_path:
-            try:
-                with open(file_path, "rb") as file:
-                    image_data = file.read()
-            except (OSError, ValueError):
-                image_data = None
-                logger.exception("Failed to read selected image file: %s", file_path)
+        session = get_new_session()
+        try:
+            # Check if an item with the same barcode already exists
+            existing_item = Item.get_by_barcode(session, barcode)
+            if existing_item:
                 self.message = ShowMessage(
                     self.parent,
                     image="unsuccessful",
                     heading=self.translations["items"]["error_adding_item"],
-                    text=self.translations["general"]["image_read_failed"],
+                    text=self.translations["items"]["barcode_already_exists"],
                 )
                 self.parent.after(5000, self.message.destroy)
                 return
 
-        # Create a new Item instance
-        new_item = Item(
-            name=name,
-            price=price,
-            category=category,
-            quantity=quantity,
-            barcode=barcode,
-            image=image_data,
-        )
+            # Read the image file as binary data
+            image_data = None
+            if file_path:
+                try:
+                    with open(file_path, "rb") as file:
+                        image_data = file.read()
+                except (OSError, ValueError):
+                    image_data = None
+                    logger.exception("Failed to read selected image file: %s", file_path)
+                    self.message = ShowMessage(
+                        self.parent,
+                        image="unsuccessful",
+                        heading=self.translations["items"]["error_adding_item"],
+                        text=self.translations["general"]["image_read_failed"],
+                    )
+                    self.parent.after(5000, self.message.destroy)
+                    return
 
-        # Save the new item to the database
-        new_item.create(self.session)
+            # Create a new Item instance
+            new_item = Item(
+                name=name,
+                price=price,
+                category=category,
+                quantity=quantity,
+                barcode=barcode,
+                image=image_data,
+            )
+
+            # Save the new item to the database
+            try:
+                new_item.create(session)
+            except (IntegrityError, OperationalError):
+                try:
+                    session.rollback()
+                except (SQLAlchemyError, RuntimeError):
+                    logger.exception("Rollback failed after DB error while creating item")
+
+                logger.exception("DB error while creating item | barcode=%s", barcode)
+                self.message = ShowMessage(
+                    self.parent,
+                    image="unsuccessful",
+                    heading=self.translations["items"]["error_adding_item"],
+                    text=self.translations["general"]["error_message"],
+                )
+                self.parent.after(5000, self.message.destroy)
+                return
+            except Exception:  # pylint: disable=broad-exception-caught
+                # Keep UI stable even if an unexpected error happens.
+                try:
+                    session.rollback()
+                except (SQLAlchemyError, RuntimeError):
+                    logger.exception("Rollback failed after unexpected error while creating item")
+
+                logger.exception("Unexpected error while creating item | barcode=%s", barcode)
+                self.message = ShowMessage(
+                    self.parent,
+                    image="unsuccessful",
+                    heading=self.translations["items"]["error_adding_item"],
+                    text=self.translations["general"]["error_message"],
+                )
+                self.parent.after(5000, self.message.destroy)
+                return
+        finally:
+            session.close()
 
         self.back_button_function()
