@@ -126,4 +126,3 @@ class AddNewItemFrame(CTkFrame):
         new_item.create(self.session)
 
         self.back_button_function()
-        return

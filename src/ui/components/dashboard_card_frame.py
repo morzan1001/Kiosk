@@ -54,7 +54,7 @@ class DashboardCardFrame(CTkFrame):
 
             image_label = CTkLabel(self, image=ctk_image, text="")
             image_label.grid(row=0, column=0, rowspan=2, padx=10, pady=10, sticky="nsew")
-        except (FileNotFoundError, OSError, ValueError) as e:
+        except (OSError, ValueError) as e:
             logger.error("Error loading image %s: %s", image_filename, e)
             image_label = CTkLabel(self, text="[IMG]")
             image_label.grid(row=0, column=0, rowspan=2, padx=10, pady=10)

@@ -37,7 +37,7 @@ class ShowMessage(CTkFrame):
 
             self.image_label = CTkLabel(self.main_frame, image=ctk_image, text="")
             self.image_label.grid(row=2, column=0, pady=10, padx=10, sticky="s")
-        except (FileNotFoundError, OSError, ValueError) as e:
+        except (OSError, ValueError) as e:
             logger.error("Error loading image %s: %s", image, e)
             self.image_label = CTkLabel(self.main_frame, text="[IMG]")
             self.image_label.grid(row=2, column=0, pady=10, padx=10, sticky="s")

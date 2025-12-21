@@ -37,7 +37,7 @@ class Config:
         try:
             with open(config_path, "r", encoding="utf-8") as f:
                 self._config_data = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError, OSError) as e:
+        except (json.JSONDecodeError, OSError) as e:
             logger.error("Error loading config from %s", config_path, error=e)
             # Fallback or re-raise depending on severity
             self._config_data = {}

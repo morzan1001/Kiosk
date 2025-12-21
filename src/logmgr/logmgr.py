@@ -48,7 +48,7 @@ class LogMgr:
             with open(config_path, "r", encoding="utf-8") as config_file:
                 config = json.load(config_file)
                 log_level = config.get("logging", {}).get("level", "INFO")
-        except (FileNotFoundError, json.JSONDecodeError, OSError) as e:
+        except (json.JSONDecodeError, OSError) as e:
             self.logger.warning("Could not load logging config, defaulting to INFO: %s", e)
 
         self.logger.setLevel(getattr(logging, log_level))

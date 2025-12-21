@@ -15,7 +15,7 @@ from src.logmgr import logger
 
 def clear_root(parent, keep_types: Tuple[Type, ...] = ()) -> None:
     """Destroy all direct children of parent except instances of keep_types."""
-    for child in list(parent.winfo_children()):
+    for child in parent.winfo_children():
         if keep_types and isinstance(child, keep_types):
             continue
         try:

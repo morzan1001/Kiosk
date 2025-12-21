@@ -61,7 +61,7 @@ def initialize_translations():
         _STATE.translations = load_translation(language_code)
         logger.debug("Translations object initialized")
         logger.info("Translations loaded successfully")
-    except (FileNotFoundError, json.JSONDecodeError, OSError) as e:
+    except (json.JSONDecodeError, OSError) as e:
         logger.error("Failed to initialize translations", error=e)
         raise
 
