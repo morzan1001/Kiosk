@@ -87,11 +87,25 @@ class NFCReader:
                 return nfcid_str
             return None
 
-    def stop(self) -> None:
-        """Stops the reading thread and waits for it to fully halt."""
+    def stop(self, timeout: float | None = None) -> None:
+        """Stop the reader thread.
+
+        Args:
+            timeout: Optional timeout (seconds) for waiting on the thread.
+                If None, wait indefinitely.
+        """
         self._stop_event.set()
-        if threading.current_thread() != self.thread:
-            self.thread.join()
+        if threading.current_thread() == self.thread:
+            return
+
+        try:
+            self.thread.join(timeout=timeout)
+        except RuntimeError:
+            logger.exception("Failed to join NFC reader thread")
+            return
+
+        if timeout is not None and self.thread.is_alive():
+            logger.warning("NFC reader thread did not stop within %.2fs", timeout)
 
     def register_callback(self, callback: Callable[[str], None]) -> None:
         """

@@ -153,8 +153,29 @@ class UpdateUserFrame(CTkFrame):
         self.scan_card_frame.grid(row=0, column=0, sticky="nsew")
 
     def remove_scan_card(self):
+        scan_card_frame = getattr(self, "scan_card_frame", None)
+        if scan_card_frame is None:
+            return
+
+        try:
+            stop_reader = getattr(scan_card_frame, "stop_reader", None)
+            if callable(stop_reader):
+                stop_reader(timeout=1.0)
+            else:
+                # Fallback for older ScanCardFrame implementations.
+                nfc_reader = getattr(scan_card_frame, "nfc_reader", None)
+                stop_nfc = getattr(nfc_reader, "stop", None)
+                if callable(stop_nfc):
+                    try:
+                        stop_nfc(timeout=1.0)
+                    except TypeError:
+                        stop_nfc()
+        except (OSError, RuntimeError, TypeError, ValueError):
+            logger.exception("Stopping scan card reader failed")
+
+        scan_card_frame.destroy()
         if hasattr(self, "scan_card_frame"):
-            self.scan_card_frame.destroy()
+            delattr(self, "scan_card_frame")
 
     def set_nfcid(self, new_nfcid):
         self.nfcid = new_nfcid

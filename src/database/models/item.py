@@ -1,5 +1,7 @@
 """This file holds the item model."""
 
+from typing import Optional
+
 from sqlalchemy import Column, Float, Integer, LargeBinary, String
 
 from src.database.connection import Base
@@ -23,7 +25,7 @@ class Item(Base, CRUDMixin):
         return f"<Item(id={self.id}, name='{self.name}', price={self.price})>"
 
     @classmethod
-    def get_by_id(cls, session, item_id) -> "Item":
+    def get_by_id(cls, session, item_id) -> Optional["Item"]:
         return session.query(cls).filter_by(id=item_id).first()
 
     @classmethod
@@ -31,5 +33,5 @@ class Item(Base, CRUDMixin):
         return session.query(cls).count()
 
     @classmethod
-    def get_by_barcode(cls, session, barcode) -> "Item":
+    def get_by_barcode(cls, session, barcode) -> Optional["Item"]:
         return session.query(cls).filter_by(barcode=barcode).first()

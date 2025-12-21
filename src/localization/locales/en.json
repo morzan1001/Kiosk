@@ -8,7 +8,8 @@
         "error_message": "An error occurred here",
         "fill_all_fields": "Fill in all fields to update the item",
         "valid_number_price": "The price should be a valid number",
-        "upload_image": "Upload image to add item"
+        "upload_image": "Upload image to add item",
+        "image_read_failed": "The selected image could not be read"
     },
     "buttons": {
         "cancel_button": "Cancel",

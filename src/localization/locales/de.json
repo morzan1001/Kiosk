@@ -8,7 +8,8 @@
         "error_message": "Hier ist ein Fehler aufgetreten",
         "fill_all_fields": "Füllen Sie alle Felder aus, um den Artikel zu aktualisieren",
         "valid_number_price": "Der Preis sollte eine gültige Zahl sein",
-        "upload_image": "Bild hochladen, um Artikel hinzuzufügen"
+        "upload_image": "Bild hochladen, um Artikel hinzuzufügen",
+        "image_read_failed": "Das ausgewählte Bild konnte nicht gelesen werden"
     },
     "buttons": {
         "cancel_button": "Abbrechen",

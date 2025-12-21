@@ -22,7 +22,7 @@ class User(Base, CRUDMixin):
 
     def __repr__(self):
         return (
-            f"<User(id={self.nfcid}, name='{self.name}', credit={self.credit}, "
+            f"<User(id={self.id}, name='{self.name}', credit={self.credit}, "
             f"email='{self.email}', mattermost_username='{self.mattermost_username}')>"
         )
 

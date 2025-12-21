@@ -2,6 +2,7 @@ from customtkinter import CTkButton, CTkFrame
 
 from src.database import Item, get_db
 from src.localization.translator import get_translations
+from src.logmgr import logger
 from src.ui.components.heading_frame import HeadingFrame
 from src.ui.components.item_form import ItemForm
 from src.ui.components.Message import ShowMessage
@@ -96,8 +97,20 @@ class AddNewItemFrame(CTkFrame):
         # Read the image file as binary data
         image_data = None
         if file_path:
-            with open(file_path, "rb") as file:
-                image_data = file.read()
+            try:
+                with open(file_path, "rb") as file:
+                    image_data = file.read()
+            except (OSError, ValueError):
+                image_data = None
+                logger.exception("Failed to read selected image file: %s", file_path)
+                self.message = ShowMessage(
+                    self.parent,
+                    image="unsuccessful",
+                    heading=self.translations["items"]["error_adding_item"],
+                    text=self.translations["general"]["image_read_failed"],
+                )
+                self.parent.after(5000, self.message.destroy)
+                return
 
         # Create a new Item instance
         new_item = Item(
@@ -113,35 +126,4 @@ class AddNewItemFrame(CTkFrame):
         new_item.create(self.session)
 
         self.back_button_function()
-
-        # Get image data
-        image_data = None
-        if hasattr(self, "file_path"):
-            with open(self.file_path, "rb") as file:
-                image_data = file.read()
-
-        else:
-            self.message = ShowMessage(
-                self.parent,
-                image="unsuccessful",
-                heading=self.translations["items"]["error_adding_item"],
-                text=self.translations["general"]["upload_image"],
-            )
-            self.parent.after(5000, self.message.destroy)
-
-            return
-
-        # Create a new Item instance
-        new_item = Item(
-            name=name,
-            price=price,
-            quantity=quantity,
-            category=category,
-            image=image_data,
-            barcode=barcode,
-        )
-
-        # Save the new item to the database
-        new_item.create(self.session)
-
-        self.back_button_function()
+        return

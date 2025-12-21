@@ -1,5 +1,7 @@
 """Transient message overlay component."""
 
+import os
+
 from customtkinter import CTkFrame, CTkImage, CTkLabel
 from PIL import Image
 
@@ -24,8 +26,10 @@ class ShowMessage(CTkFrame):
         # Load the image
         try:
             # Ensure filename has extension if missing (legacy support)
-            if not image.endswith(".png"):
-                image += ".png"
+            if isinstance(image, str):
+                _, ext = os.path.splitext(os.path.basename(image))
+                if not ext:
+                    image += ".png"
 
             img_path = get_image_path(image)
             img = Image.open(img_path)

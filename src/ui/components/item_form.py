@@ -1,3 +1,4 @@
+import os
 from io import BytesIO
 from typing import Optional
 
@@ -10,21 +11,27 @@ from customtkinter import (
     CTkOptionMenu,
     filedialog,
 )
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 
 from src.localization.translator import get_translations
+from src.logmgr import logger
 from src.ui.components.Barcode import AddBarcodeFrame
 from src.ui.components.change_quantity_frame import ChangeQuantityFrame
+from src.ui.components.Message import ShowMessage
 from src.utils.paths import get_image_path
 
 
 class ItemForm(CTkFrame):
-    def __init__(self, master, parent_screen, show_inventory_icon: bool = False, *args, **kwargs):
+    _MAX_UPLOAD_BYTES: int = 5 * 1024 * 1024
+
+    def __init__(self, master, parent_screen, *args, show_inventory_icon: bool = False, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.parent_screen = parent_screen
         self.translations = get_translations()
         self.barcode: str = ""
         self.file_path: Optional[str] = None
+        self.uploaded_image: Optional[CTkImage] = None
+        self._message: Optional[ShowMessage] = None
 
         self.grid_columnconfigure((0, 1), weight=1)
         # Row 0: Image (fixed)
@@ -45,14 +52,14 @@ class ItemForm(CTkFrame):
         # Load the image using CTkImage
         upload_image_path = get_image_path("upload.png")
         upload_image = Image.open(upload_image_path)
-        self.upload_image = CTkImage(
+        self.upload_icon = CTkImage(
             light_image=upload_image, dark_image=upload_image, size=(80, 80)
         )
 
         # Image Button
         self.image_button = CTkButton(
             self,
-            image=self.upload_image,
+            image=self.upload_icon,
             width=165,
             height=120,
             text="",
@@ -137,19 +144,65 @@ class ItemForm(CTkFrame):
         self.barcode_button.grid(row=5, column=0, padx=(20, 10), pady=(5, 20), sticky="ew")
 
     def upload_image_button_pressed(self):
+        """Open a file picker and load a safely-sized image preview."""
         file_path = filedialog.askopenfilename(
             filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;*.gif")]
         )
-        if file_path:
-            self.file_path = file_path
-            image_pil = Image.open(file_path)
-            # Create CTkImage with the uploaded image at size 100x100
-            uploaded_image = CTkImage(
-                light_image=image_pil,
-                dark_image=image_pil,
-                size=(100, 100),
+
+        if not file_path:
+            return
+
+        def show_error(text: str) -> None:
+            if self._message is not None:
+                try:
+                    self._message.destroy()
+                except Exception:  # pylint: disable=broad-exception-caught
+                    pass
+
+            self._message = ShowMessage(
+                self.parent_screen,
+                image="unsuccessful",
+                heading=self.translations.get("general", {}).get("error_heading", "Error"),
+                text=text,
             )
-            self.image_button.configure(image=uploaded_image)
+            self.parent_screen.after(5000, self._message.destroy)
+
+        try:
+            file_size = os.path.getsize(file_path)
+        except OSError as e:
+            logger.exception("Failed to read image file size: %s", file_path)
+            show_error(str(e))
+            return
+
+        if file_size > self._MAX_UPLOAD_BYTES:
+            max_mb = self._MAX_UPLOAD_BYTES // (1024 * 1024)
+            show_error(
+                self.translations.get("items", {}).get(
+                    "image_too_large", "Selected image is too large."
+                )
+                + f" (max {max_mb}MB)"
+            )
+            return
+
+        try:
+            with Image.open(file_path) as img:
+                img.load()
+                thumb = img.copy()
+            thumb.thumbnail((100, 100))
+
+            # Store the CTkImage on the instance to prevent garbage collection.
+            self.uploaded_image = CTkImage(light_image=thumb, dark_image=thumb, size=(100, 100))
+        except UnidentifiedImageError as e:
+            logger.error("Unrecognized image file %s: %s", file_path, e)
+            show_error(str(e))
+            return
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.exception("Failed to load image %s", file_path)
+            show_error(str(e))
+            return
+
+        self.file_path = file_path
+        self.image_button.configure(image=self.uploaded_image)
 
     def confirm_barcode(self):
         self.barcode = self.barcode_frame.get()
@@ -192,7 +245,20 @@ class ItemForm(CTkFrame):
             self.category_dropdown.set(category)
 
         if image_data:
-            image_bytes = BytesIO(image_data)
-            image_pil = Image.open(image_bytes)
-            photo = CTkImage(light_image=image_pil, dark_image=image_pil, size=(100, 100))
-            self.image_button.configure(image=photo)
+            try:
+                with BytesIO(image_data) as image_bytes:
+                    with Image.open(image_bytes) as img:
+                        img.load()
+                        thumb = img.copy()
+
+                thumb.thumbnail((100, 100))
+                self.uploaded_image = CTkImage(light_image=thumb, dark_image=thumb, size=(100, 100))
+                self.image_button.configure(image=self.uploaded_image)
+            except UnidentifiedImageError as e:
+                logger.error("Invalid image data for item preview: %s", e)
+                self.uploaded_image = None
+                self.image_button.configure(image=self.upload_icon)
+            except Exception:  # pylint: disable=broad-exception-caught
+                logger.exception("Failed to render item image preview from binary data")
+                self.uploaded_image = None
+                self.image_button.configure(image=self.upload_icon)

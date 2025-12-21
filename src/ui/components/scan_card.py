@@ -91,3 +91,14 @@ class ScanCardFrame(CTkFrame):
             logger.info("Invalid card scanned!")
         # Stop the NFC reader once an ID has been processed
         self.nfc_reader.stop()
+
+    def stop_reader(self, timeout: float = 1.0) -> None:
+        """Stop the background NFC reader thread.
+
+        This is important when the scan screen is dismissed (e.g. user cancels/back).
+        """
+        try:
+            if hasattr(self, "nfc_reader") and self.nfc_reader is not None:
+                self.nfc_reader.stop(timeout=timeout)
+        except Exception:  # pylint: disable=broad-exception-caught
+            logger.exception("Failed to stop NFC reader")

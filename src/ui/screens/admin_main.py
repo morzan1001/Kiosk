@@ -8,7 +8,9 @@ from PIL import Image
 
 from src.database import Item, User, get_db
 from src.localization.translator import get_translations
+from src.logmgr import logger
 from src.ui.components.dashboard_card_frame import DashboardCardFrame
+from src.ui.components.Message import ShowMessage
 from src.ui.navigation import clear_root
 from src.ui.screens.item_listing import ItemListFrame
 from src.ui.screens.user_listing import UserListFrame
@@ -115,6 +117,35 @@ class AdminMainFrame(CTkFrame):
         user_count = User.get_count(self.session)
         item_count = Item.get_count(self.session)
         user = User.get_by_id(self.session, self.user.id)
+
+        if user is None:
+            logger.error(
+                "Admin user no longer exists (id=%s). Returning to main menu.",
+                self.user.id,
+            )
+
+            # Return to main menu/login screen.
+            try:
+                if callable(self.main_menu):
+                    self.main_menu(self.parent).grid(row=0, column=0, sticky="nsew")
+                elif hasattr(self.main_menu, "show"):
+                    self.main_menu.show()
+                else:
+                    logger.error("Unsupported main_menu type: %s", type(self.main_menu))
+            except Exception:  # pylint: disable=broad-exception-caught
+                logger.exception("Failed to navigate back to main menu")
+
+            message = ShowMessage(
+                self.parent,
+                image="unsuccessful",
+                heading=self.translations.get("general", {}).get("error_heading", "Error"),
+                text=self.translations.get("admin", {}).get(
+                    "user_not_found", "User not found. Please log in again."
+                ),
+            )
+            self.parent.after(5000, message.destroy)
+            return
+
         AdminMainFrame(
             self.parent,
             main_menu=self.main_menu,

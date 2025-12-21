@@ -100,8 +100,8 @@ class EmailController(BaseMessagingController):
                 server.send_message(msg)
 
             logger.info("Email sent to %s", recipient_email)
-        except OSError as e:
-            logger.error("Failed to send email: %s", e)
+        except (OSError, smtplib.SMTPException) as e:
+            logger.error("Failed to send email: %s", e, exc_info=True)
 
     def load_template(self, template_name, context):
         """Loads and renders an email template."""
