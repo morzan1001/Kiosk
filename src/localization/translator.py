@@ -1,52 +1,77 @@
-import os
+"""Translation loading and access helpers.
+
+This module loads the locale-specific JSON file into a global cache via
+initialize_translations() and exposes it via get_translations().
+"""
+
 import json
 import locale
+from dataclasses import dataclass
+from typing import Optional
 
 from src.logmgr import logger
+from src.utils.paths import PROJECT_ROOT
 
-translations = None  # Initialize translations variable
+
+@dataclass
+class _TranslationState:
+    translations: Optional[dict] = None
+
+
+_STATE = _TranslationState()
+
 
 def get_system_language():
-    # Get the system's language setting
-    system_locale = locale.getdefaultlocale()[0]
-    if system_locale.startswith('de'):
-        return 'de'
-    else:
-        return 'en'
+    """Determine the system language."""
+    try:
+        system_locale = locale.getlocale()[0]
+        if system_locale is None:
+            # Ensure a locale is set, then re-read.
+            locale.setlocale(locale.LC_ALL, "")
+            system_locale = locale.getlocale()[0]
+        if system_locale is None:
+            return "en"
+    except (ValueError, locale.Error):
+        return "en"
+
+    return "de" if system_locale.startswith("de") else "en"
+
 
 def load_translation(language_code):
-    # Path to the locale files
-    locale_path = os.path.join(os.path.dirname(__file__), "locales", f"{language_code}.json")
-    logger.debug(f"Loading translations from {locale_path}")
+    """Load translation file for the given language code."""
+    locale_path = PROJECT_ROOT / "src" / "localization" / "locales" / f"{language_code}.json"
+    logger.debug("Loading translations from %s", locale_path)
     try:
-        with open(locale_path, 'r', encoding='utf-8') as file:
+        with open(locale_path, "r", encoding="utf-8") as file:
             return json.load(file)
     except FileNotFoundError as e:
-        logger.error(f"Translation file not found: {e}")
+        logger.error("Translation file not found: %s", e)
         raise
     except json.JSONDecodeError as e:
-        logger.error(f"Error decoding JSON from translation file: {e}")
+        logger.error("Error decoding JSON from translation file: %s", e)
         raise
+
 
 def initialize_translations():
-    global translations  # Use the global translations variable
+    """Initialize the global translations cache based on the system language."""
     try:
-        # Determine system language
         language_code = get_system_language()
-        logger.debug(f"System language determined: {language_code}")
+        logger.debug("System language determined: %s", language_code)
 
-        # Load translations
-        translations = load_translation(language_code)
-        logger.debug(f"Translations object initialized: {translations}")
+        _STATE.translations = load_translation(language_code)
+        logger.debug("Translations object initialized")
         logger.info("Translations loaded successfully")
-    except Exception as e:
-        logger.error(f"Failed to initialize translations: {e}")
+    except (json.JSONDecodeError, OSError) as e:
+        logger.error("Failed to initialize translations", error=e)
         raise
 
-def get_translations():
-    global translations  # Use the global translations variable
-    if translations is None:
+
+def get_translations() -> dict:
+    """Return the global translations dict (must be initialized first)."""
+    if _STATE.translations is None:
         logger.error("Translations have not been initialized.")
-        raise ValueError("Translations have not been initialized. Call initialize_translations() first.")
+        raise ValueError(
+            "Translations have not been initialized. Call initialize_translations() first."
+        )
     logger.debug("Translations fetched successfully")
-    return translations
+    return _STATE.translations

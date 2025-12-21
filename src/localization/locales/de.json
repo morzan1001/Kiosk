@@ -3,11 +3,13 @@
         "welcome_message": "Willkommen im Saftladen",
         "kiosk_title": "Saftladen",
         "heads_up": "Achtung!",
+        "error_heading": "Fehler",
         "scan_card_message": "Bitte Scannen Sie Ihre Karte",
         "error_message": "Hier ist ein Fehler aufgetreten",
         "fill_all_fields": "Füllen Sie alle Felder aus, um den Artikel zu aktualisieren",
         "valid_number_price": "Der Preis sollte eine gültige Zahl sein",
-        "upload_image": "Bild hochladen, um Artikel hinzuzufügen"
+        "upload_image": "Bild hochladen, um Artikel hinzuzufügen",
+        "image_read_failed": "Das ausgewählte Bild konnte nicht gelesen werden"
     },
     "buttons": {
         "cancel_button": "Abbrechen",
@@ -25,6 +27,8 @@
         "credits_label": "Guthaben",
         "enter_name": "Namen eingeben",
         "last_month_purchase": "Einkäufe im letzten Monat",
+        "all_time_purchase": "Alle Einkäufe",
+        "no_transactions": "Keine Transaktionen",
         "checkout_unsuccessful": "Checkout nicht erfolgreich",
         "checkout_successful": "Checkout erfolgreich",
         "amount_debited": "Es wurden {total:.2f} € von Ihrem Konto abgezogen",

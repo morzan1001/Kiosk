@@ -1,112 +1,113 @@
-from .email_controller import EmailController
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.cron import CronTrigger
-from src.logmgr import logger
-from src.database.connection import get_db
+"""
+Email Manager Module.
+Provides initialization and access functions for the EmailController.
+"""
+
+from typing import Any, Dict, Optional
+
+from src.app_context import get_app_context
+from src.database.connection import get_new_session
 from src.database.models.user import User
-from src.database.models.transaction import Transaction
-from src.database.models.item import Item
-from datetime import datetime, timedelta
 from src.localization.translator import get_system_language
+from src.logmgr import logger
+from src.messaging.utils import get_monthly_summary_data, initialize_scheduler
 
-email_controller = None
-scheduler = None
+from .email_controller import EmailController
 
-def initialize_email_controller(server: str, port: int, login: str, password: str):
-    """Initialize the EmailController and the scheduler."""
-    global email_controller
-    email_controller = EmailController(
-        smtp_server=server,
-        smtp_port=port,
-        login=login,
-        password=password
+
+def initialize_email_controller(server: str, port: int, login: str, password: str) -> None:
+    """
+    Initialize the EmailController and the scheduler.
+
+    Args:
+        server: SMTP server address.
+        port: SMTP server port.
+        login: SMTP login username.
+        password: SMTP login password.
+    """
+    ctx = get_app_context()
+    ctx.email_controller = EmailController(
+        smtp_server=server, smtp_port=port, login=login, password=password
     )
-    initialize_scheduler()
+    ctx._scheduler_email = initialize_scheduler(send_monthly_summaries)
 
-def get_email_controller() -> EmailController:
-    global email_controller
-    if email_controller is None:
+
+def get_email_controller() -> Optional[EmailController]:
+    """
+    Get the initialized EmailController instance.
+
+    Returns:
+        The EmailController instance or None if not initialized.
+    """
+    ctx = get_app_context()
+    if ctx.email_controller is None:
         logger.error("Email-Controller is not initialized")
-    return email_controller
+    return ctx.email_controller
 
-def initialize_scheduler():
-    """Initialize the APScheduler to run monthly summaries."""
-    global scheduler
-    logger.debug("Initializing scheduler")
-    scheduler = BackgroundScheduler()
-    # Schedule the job to run on the first day of every month at 00:00
-    scheduler.add_job(send_monthly_summaries, CronTrigger(day=1, hour=0, minute=0))
-    scheduler.start()
-    logger.info("Scheduler started")
 
-def send_monthly_summaries():
+def send_monthly_summaries() -> None:
     """Send monthly summaries to all users."""
     logger.debug("Starting to send monthly summaries")
-    # Get the current session
-    session = get_db()
-    # Get all users from the database using read_all class method
-    users = User.read_all(session)
-    for user in users:
-        # Generate the summary for the user
-        summary = get_monthly_summary(user, session)
-        # Send the email if the user has an email address
-        if user.email:
-            email_controller.send_monthly_summary(recipient=user.email, summary=summary, language=get_system_language())
-            logger.info(f"Monthly summary sent to user {user.name} ({user.email})")
-        else:
-            logger.warning(f"User {user.name} does not have an email address, skipping.")
-    logger.info("Monthly summaries have been sent to all users")
+    ctx = get_app_context()
+    session = get_new_session()
+    try:
+        users = User.read_all(session)
+        for user in users:
+            summary = get_monthly_summary(user, session)
+            if user.email and ctx.email_controller:
+                ctx.email_controller.send_monthly_summary(
+                    recipient=user.email,
+                    summary=summary,
+                    language=get_system_language(),
+                )
+                logger.info("Monthly summary sent to user %s (%s)", user.name, user.email)
+            else:
+                logger.warning("User %s does not have an email address, skipping.", user.name)
+        logger.info("Monthly summaries have been sent to all users")
+    except Exception:  # pylint: disable=broad-exception-caught
+        logger.exception("Error sending monthly summaries")
+    finally:
+        session.close()
 
-def get_monthly_summary(user, session):
-    """Generate a monthly summary for a given user."""
-    # Calculate the date range for the last month
-    today = datetime.today()
-    first_day_of_current_month = today.replace(day=1)
-    last_day_of_last_month = first_day_of_current_month - timedelta(days=1)
-    first_day_of_last_month = last_day_of_last_month.replace(day=1)
 
-    # Get all transactions of the user within the date range
-    transactions = Transaction.read_all_for_user(session, user.id)
+def get_monthly_summary(user: User, session: Any) -> Dict[str, Any]:
+    """
+    Generate a monthly summary for a given user.
 
-    # Filter transactions within the date range
-    transactions_in_last_month = [
-        t for t in transactions if first_day_of_last_month <= t.date <= last_day_of_last_month
-    ]
+    Args:
+        user: The user to generate the summary for.
+        session: Database session.
 
-    # Calculate the total amount and aggregate product purchases
-    total_amount = 0.0
-    product_purchases = {}
+    Returns:
+        Dictionary containing summary data.
+    """
+    (
+        total_amount,
+        product_purchases,
+        first_day_of_last_month,
+        last_day_of_last_month,
+    ) = get_monthly_summary_data(user, session)
 
-    for t in transactions_in_last_month:
-        total_amount += t.cost
-
-        item = Item.get_by_id(session, item_id=t.item_id) if t.item_id else None
-        product_name = item.name if item else "Unknown Product"
-
-        if product_name in product_purchases:
-            product_purchases[product_name]["quantity"] += 1
-            product_purchases[product_name]["total_cost"] += t.cost
-        else:
-            product_purchases[product_name] = {
-                "quantity": 1,
-                "total_cost": t.cost
-            }
-
-    # Prepare the summary
-    summary = {
-        'total_transactions': len(transactions_in_last_month),
-        'total_amount': total_amount,
-        'period': f"{first_day_of_last_month.strftime('%d.%m.%Y')} - {last_day_of_last_month.strftime('%d.%m.%Y')}",
-        'product_purchases': product_purchases
+    summary: Dict[str, Any] = {
+        "total_transactions": sum(p["quantity"] for p in product_purchases.values()),
+        "total_amount": total_amount,
+        "period": (
+            f"{first_day_of_last_month.strftime('%d.%m.%Y')} - "
+            f"{last_day_of_last_month.strftime('%d.%m.%Y')}"
+        ),
+        "product_purchases": product_purchases,
     }
     return summary
 
-def shutdown_scheduler():
+
+def shutdown_scheduler() -> None:
     """Shutdown the scheduler and email controller."""
-    global scheduler, email_controller
-    if scheduler:
-        scheduler.shutdown()
+    ctx = get_app_context()
+    if ctx._scheduler_email:
+        ctx._scheduler_email.shutdown()
+        ctx._scheduler_email = None
         logger.info("Scheduler shut down")
-    if email_controller:
-        email_controller.stop()
+    if ctx.email_controller:
+        ctx.email_controller.stop()
+        ctx.email_controller = None
         logger.info("EmailController thread stopped")

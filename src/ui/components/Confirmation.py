@@ -1,7 +1,8 @@
-from customtkinter import CTkToplevel, CTkFrame, CTkLabel, CTkButton, CTkImage
+from customtkinter import CTkButton, CTkFrame, CTkImage, CTkLabel, CTkToplevel
 from PIL import Image
 
 from src.localization.translator import get_translations
+from src.utils.paths import get_image_path
 
 
 class DeleteConfirmation(CTkToplevel):
@@ -36,13 +37,11 @@ class DeleteConfirmation(CTkToplevel):
         main_frame.grid_rowconfigure((0, 1, 2, 3), weight=1)
 
         # Load the delete icon
-        delete_img = Image.open("src/images/delete.png")  # Update path if needed
+        delete_img = Image.open(get_image_path("delete.png"))
         self.delete_image = CTkImage(light_image=delete_img, dark_image=delete_img, size=(70, 80))
 
         # Delete icon label
-        icon_label = CTkLabel(
-            main_frame, text="", image=self.delete_image, fg_color="white"
-        )
+        icon_label = CTkLabel(main_frame, text="", image=self.delete_image, fg_color="white")
         icon_label.grid(row=0, column=0, columnspan=2, pady=10)
 
         # Head up label
@@ -88,8 +87,6 @@ class DeleteConfirmation(CTkToplevel):
             width=220,
             height=50,
             font=("Inter", 18, "bold"),
-            fg_color="#129F07",
-            hover_color="#15aF07",
             command=self.confirm_delete_func,
         )
         confirm_button.grid(row=3, column=1, padx=10, pady=20)

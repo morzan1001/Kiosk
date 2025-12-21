@@ -1,5 +1,12 @@
-from customtkinter import CTkFrame, CTkEntry, CTkButton, CTkImage
+"""Quantity selector component used in the user cart."""
+
+import tkinter as tk
+
+from customtkinter import CTkButton, CTkEntry, CTkFrame, CTkImage
 from PIL import Image
+
+from src.utils.paths import get_image_path
+
 
 class QuantityFrame(CTkFrame):
     def __init__(self, master, data, update_total_price, item_price: float, *args, **kwargs):
@@ -14,10 +21,10 @@ class QuantityFrame(CTkFrame):
         self.grid_rowconfigure((0), weight=1)
 
         # Load images for buttons using CTkImage
-        add_image = Image.open("src/images/add.png")
+        add_image = Image.open(get_image_path("add.png"))
         self.add_photo = CTkImage(light_image=add_image, dark_image=add_image, size=(30, 30))
 
-        minus_image = Image.open("src/images/minus.png")
+        minus_image = Image.open(get_image_path("minus.png"))
         self.minus_photo = CTkImage(light_image=minus_image, dark_image=minus_image, size=(30, 30))
 
         # Create and place the decrement button
@@ -34,7 +41,7 @@ class QuantityFrame(CTkFrame):
         self.decrement_button.grid(row=0, column=0, padx=(10, 0))
 
         # Create and place the entry
-        vcmd = (self.register(self.validate_entry), '%P')  # Validation command
+        vcmd = (self.register(self.validate_entry), "%P")  # Validation command
         self.entry = CTkEntry(
             self,
             textvariable=self.data,
@@ -65,7 +72,7 @@ class QuantityFrame(CTkFrame):
     def increment(self):
         try:
             value = self.data.get()
-        except:
+        except (tk.TclError, TypeError):
             value = 0
         if value < 999:
             self.data.set(value + 1)
@@ -74,18 +81,15 @@ class QuantityFrame(CTkFrame):
     def decrement(self):
         try:
             value = self.data.get()
-        except:
+        except (tk.TclError, TypeError):
             value = 0
         if value > 0:
             self.data.set(value - 1)
             self.update_total_price()
 
     def validate_entry(self, new_value):
-        if new_value == "" or int(new_value) > 999:
+        if new_value == "":
             return False
-        
-        # Check if the new value is a digit
-        if new_value.isdigit():
-            return True
-        else:
+        if not new_value.isdigit():
             return False
+        return int(new_value) <= 999
