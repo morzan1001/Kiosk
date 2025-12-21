@@ -29,6 +29,7 @@ from src.utils.paths import get_image_path
 
 class UserMainPage(CTkFrame):
     """Main user screen for selecting items and checking out."""
+
     def __init__(self, root, main_menu, user: User, items: List[Item], *args, **kwargs):
         super().__init__(root, *args, **kwargs)
 

@@ -9,6 +9,7 @@ from src.utils.paths import get_image_path
 
 class HeadingFrame(CTkFrame):
     """Heading bar used across screens."""
+
     def __init__(
         self,
         parent,

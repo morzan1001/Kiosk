@@ -14,13 +14,13 @@ from src.logmgr import logger
 from src.ui.components.heading_frame import HeadingFrame
 from src.ui.components.user_frame import UserFrame
 from src.ui.navigation import clear_root
-
 from src.ui.screens.new_user import AddUserFrame
 from src.ui.screens.update_user import UpdateUserFrame
 
 
 class UserListFrame(CTkFrame):
     """Screen that lists users and navigates to create/update screens."""
+
     # Use release instead of press to avoid accidental re-navigation
     # when switching screens (common with touchscreens).
     LEFT_CLICK_EVENT = "<ButtonRelease-1>"

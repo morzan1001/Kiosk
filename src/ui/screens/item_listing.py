@@ -20,6 +20,7 @@ from src.ui.screens.update_item import UpdateItemFrame
 
 class ItemListFrame(CTkFrame):
     """Screen that lists items and navigates to create/update screens."""
+
     # Use release instead of press to avoid accidental re-navigation
     # when switching screens (common with touchscreens).
     LEFT_CLICK_EVENT = "<ButtonRelease-1>"

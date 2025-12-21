@@ -13,6 +13,7 @@ from src.utils.paths import get_config_path
 
 class Config:
     """Singleton configuration accessor for `config.json`."""
+
     _instance = None
     _config_data: Dict[str, Any] = {}
 

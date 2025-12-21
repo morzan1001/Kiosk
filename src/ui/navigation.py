@@ -7,9 +7,8 @@ This module centralizes navigation utilities for the CustomTkinter UI.
 
 from __future__ import annotations
 
-from typing import Tuple, Type
-
 import tkinter as tk
+from typing import Tuple, Type
 
 from src.logmgr import logger
 

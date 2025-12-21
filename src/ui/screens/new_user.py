@@ -1,7 +1,6 @@
 """Admin screen for creating a new user."""
 
 import sqlalchemy.exc
-
 from customtkinter import CTkButton, CTkFrame
 
 from src.database import User, get_db
@@ -14,6 +13,7 @@ from src.ui.components.user_form import UserForm
 
 class AddUserFrame(CTkFrame):
     """Form screen to add a new user."""
+
     def __init__(self, parent, back_button_function, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 

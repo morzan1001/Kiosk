@@ -24,6 +24,7 @@ from src.utils.paths import get_image_path
 
 class KioskMainFrame(CTkFrame):
     """Main kiosk frame shown at application startup."""
+
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 

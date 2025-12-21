@@ -12,6 +12,7 @@ from src.utils.paths import get_image_path
 
 class ScanCardFrame(CTkFrame):
     """Screen prompting the user to scan an NFC card."""
+
     def __init__(
         self,
         parent,

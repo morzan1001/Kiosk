@@ -9,6 +9,7 @@ from src.utils.paths import get_image_path
 
 class ShowMessage(CTkFrame):
     """Simple message frame with icon, heading and text."""
+
     def __init__(self, root, image, heading: str, text: str, *args, **kwargs):
         super().__init__(root, *args, **kwargs)
 

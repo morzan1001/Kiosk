@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 from tkinter import Canvas
 
 import sqlalchemy.exc
-
 from customtkinter import CTkButton, CTkEntry, CTkFrame, CTkLabel, CTkOptionMenu
 
 from src.database import Transaction, User, get_db

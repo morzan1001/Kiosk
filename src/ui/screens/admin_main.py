@@ -18,7 +18,7 @@ from src.utils.paths import get_image_path
 
 class AdminMainFrame(CTkFrame):
     """Admin dashboard with clickable cards for navigation."""
-    
+
     LEFT_CLICK_EVENT = "<ButtonRelease-1>"
 
     def __init__(self, parent, main_menu, user: User, user_count: int, item_count: int):
