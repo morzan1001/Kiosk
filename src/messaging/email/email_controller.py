@@ -41,13 +41,20 @@ class EmailController(BaseMessagingController):
     def _send_message_internal(self, recipient, message, subject=None, **kwargs):
         """Internal implementation for sending an email."""
         is_html = kwargs.get("is_html", False)
+        if not message or not str(message).strip():
+            logger.error("Refusing to send empty email body to %s", recipient)
+            return
         self._send_email(recipient, subject or "Nachricht", message, is_html)
 
     def _notify_low_balance_internal(self, recipient, balance, language="en"):
         """Internal implementation for low-balance notifications."""
         translated_subject = self.translations["email"]["low_balance_subject"]
         template_file = f"low_balance_{language}.html"
-        body = self.load_template(template_file, {"balance": f"{balance:.2f}"})
+        try:
+            body = self.load_template(template_file, {"balance": f"{balance:.2f}"})
+        except TemplateError:
+            # load_template already logged details.
+            return
         self._send_email(recipient, translated_subject, body, is_html=True)
 
     def _notify_low_stock_internal(
@@ -56,21 +63,34 @@ class EmailController(BaseMessagingController):
         """Internal implementation for low stock notifications."""
         translated_subject = self.translations["email"]["low_stock_subject"]
         template_file = f"product_low_stock_{language}.html"
-        body = self.load_template(
-            template_file,
-            {"product_name": product_name, "available_quantity": available_quantity},
-        )
+        try:
+            body = self.load_template(
+                template_file,
+                {"product_name": product_name, "available_quantity": available_quantity},
+            )
+        except TemplateError:
+            return
         self._send_email(recipient, translated_subject, body, is_html=True)
 
     def _send_monthly_summary_internal(self, recipient, summary, language="en"):
         """Internal implementation for monthly summaries."""
         translated_subject = self.translations["email"]["monthly_summary_subject"]
         template_file = f"monthly_summary_{language}.html"
-        body = self.load_template(template_file, {"summary": summary})
+        try:
+            body = self.load_template(template_file, {"summary": summary})
+        except TemplateError:
+            return
         self._send_email(recipient, translated_subject, body, is_html=True)
 
     def _send_email(self, recipient_email, subject, body, is_html):
         """Internal method for actually sending the email."""
+        if not body or not str(body).strip():
+            logger.error(
+                "Refusing to send email with empty body | to=%s subject=%s",
+                recipient_email,
+                subject,
+            )
+            return
         try:
             logger.debug("Sending email to %s with subject '%s'", recipient_email, subject)
             msg = MIMEMultipart("related")
@@ -121,6 +141,7 @@ class EmailController(BaseMessagingController):
             full_body = template.render(context)
             logger.debug("Email body rendered using Jinja2")
             return full_body
-        except TemplateError as e:
-            logger.error("Failed to load template %s: %s", template_name, e)
-            return ""
+        except TemplateError:
+            # Do not silently return an empty body, otherwise callers may send blank emails.
+            logger.exception("Failed to render email template %s", template_name)
+            raise

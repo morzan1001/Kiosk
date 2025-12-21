@@ -1,6 +1,6 @@
 """This file holds the user model."""
 
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy import Column, Float, Integer, String
 
@@ -27,11 +27,11 @@ class User(Base, CRUDMixin):
         )
 
     @classmethod
-    def get_by_id(cls, session, user_id: int) -> "User":
+    def get_by_id(cls, session, user_id: int) -> Optional["User"]:
         return session.query(cls).filter_by(id=user_id).first()
 
     @classmethod
-    def get_by_nfcid(cls, session, nfcid: str) -> "User":
+    def get_by_nfcid(cls, session, nfcid: str) -> Optional["User"]:
         return session.query(cls).filter_by(nfcid=nfcid).first()
 
     @classmethod

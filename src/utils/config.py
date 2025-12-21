@@ -4,6 +4,7 @@ Loads `config.json` once (singleton-style) and provides dot-notation access via
 `Config.get`.
 """
 
+import copy
 import json
 import threading
 from typing import Any, Dict
@@ -55,7 +56,7 @@ class Config:
 
     def get_all(self) -> Dict[str, Any]:
         """Return the full configuration dict."""
-        return self._config_data
+        return copy.deepcopy(self._config_data)
 
 
 # Global instance
