@@ -13,7 +13,16 @@ class UserForm(CTkFrame):
         self.nfcid: str = ""
 
         self.grid_columnconfigure((0, 1), weight=1)
-        self.grid_rowconfigure((0, 1, 2, 3), weight=1)
+        # Row 0: Labels (fixed)
+        # Row 1: Name + Credits (fixed)
+        # Row 2: Type (fixed)
+        # Row 3: Spacer (flex)
+        # Row 4: Buttons (fixed)
+        self.grid_rowconfigure(0, weight=0)
+        self.grid_rowconfigure(1, weight=0)
+        self.grid_rowconfigure(2, weight=0)
+        self.grid_rowconfigure(3, weight=1)
+        self.grid_rowconfigure(4, weight=0)
 
         self.configure(fg_color="transparent")
 
@@ -24,8 +33,9 @@ class UserForm(CTkFrame):
             width=290,
             anchor="w",
             font=("Arial", 18, "bold"),
+            text_color="white",
         )
-        self.credits_label.grid(row=0, column=1, pady=(10, 0), sticky="s")
+        self.credits_label.grid(row=0, column=1, padx=(10, 20), pady=(10, 0), sticky="sw")
 
         # Name entry
         self.name_entry = CTkEntry(
@@ -36,17 +46,19 @@ class UserForm(CTkFrame):
             corner_radius=10,
             font=("Inter", 18, "bold"),
         )
-        self.name_entry.grid(row=1, column=0, padx=(20, 10), sticky="e")
+        self.name_entry.grid(row=1, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
 
         # Credits frame
         self.credits_frame = CreditFrame(
             self,
             width=290,
-            height=60,
+            height=50,
+            fg_color="#1C1C1C",
             corner_radius=10,
             border_width=2,
+            border_color="#5D5D5D",
         )
-        self.credits_frame.grid(row=1, column=1, padx=(10, 20), pady=(10, 10), sticky="w")
+        self.credits_frame.grid(row=1, column=1, padx=(10, 20), pady=(10, 10), sticky="ew")
 
         # Type dropdown
         self.user_type_menu = CTkOptionMenu(
@@ -55,14 +67,15 @@ class UserForm(CTkFrame):
                 self.translations["user"]["user"],
                 self.translations["admin"]["admin"],
             ],
-            width=620,
+            width=760,
             height=50,
             font=("Inter", 18, "bold"),
+            dropdown_fg_color="#2B2B2B",
+            dropdown_text_color="white",
+            dropdown_hover_color="#575757",
             dropdown_font=("Inter", 18, "bold"),
         )
-        self.user_type_menu.grid(
-            row=2, column=0, columnspan=2, pady=(10, 10), padx=(20, 20), sticky="n"
-        )
+        self.user_type_menu.grid(row=2, column=0, columnspan=2, padx=20, pady=(10, 10), sticky="ew")
 
         # NFCID button
         self.nfcid_button = CTkButton(
@@ -73,7 +86,7 @@ class UserForm(CTkFrame):
             font=("Inter", 18, "bold"),
             command=self.show_scan_card,
         )
-        self.nfcid_button.grid(row=3, column=0, padx=(20, 10), pady=(20, 10), sticky="e")
+        self.nfcid_button.grid(row=4, column=0, padx=(20, 10), pady=(5, 20), sticky="ew")
 
     def show_scan_card(self):
         self.scan_card_frame = ScanCardFrame(

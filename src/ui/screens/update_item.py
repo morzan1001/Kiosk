@@ -2,10 +2,10 @@ from customtkinter import CTkButton, CTkFrame
 
 from src.database import Item, get_db
 from src.localization.translator import get_translations
-from src.ui.components.confirmation import DeleteConfirmation
+from src.ui.components.Confirmation import DeleteConfirmation
 from src.ui.components.heading_frame import HeadingFrame
 from src.ui.components.item_form import ItemForm
-from src.ui.components.message import ShowMessage
+from src.ui.components.Message import ShowMessage
 
 
 class UpdateItemFrame(CTkFrame):
@@ -23,7 +23,9 @@ class UpdateItemFrame(CTkFrame):
 
         # Configure the grid for the frame
         self.grid_columnconfigure((0, 1), weight=1)
-        self.grid_rowconfigure((0, 1, 2), weight=1)
+        self.grid_rowconfigure(0, weight=0)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=0)
 
         # Heading Frame
         heading_frame = HeadingFrame(
@@ -31,13 +33,13 @@ class UpdateItemFrame(CTkFrame):
             heading_text=self.translations["items"]["update_item"],
             back_button_function=back_button_function,
             delete_button_function=self.delete_item,
-            width=600,
+            width=760,
             fg_color="transparent",
         )
-        heading_frame.grid(row=0, column=0, columnspan=2, padx=90, sticky="new")
+        heading_frame.grid(row=0, column=0, columnspan=2, padx=20, pady=(20, 0), sticky="new")
 
         # Item Form
-        self.item_form = ItemForm(self, parent_screen=self.parent)
+        self.item_form = ItemForm(self, parent_screen=self.parent, show_inventory_icon=True)
         self.item_form.grid(row=1, column=0, columnspan=2, sticky="nsew")
         self.item_form.barcode_button.configure(text=self.translations["items"]["update_barcode"])
 
@@ -50,7 +52,7 @@ class UpdateItemFrame(CTkFrame):
             font=("Inter", 18, "bold"),
             command=self.update_item,
         )
-        self.update_item_button.grid(row=4, column=1, padx=(10, 20), pady=(20, 10))
+        self.update_item_button.grid(row=5, column=1, padx=(10, 20), pady=(5, 20), sticky="ew")
 
         self.initialize_item()
 

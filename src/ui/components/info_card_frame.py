@@ -30,13 +30,13 @@ class InfoCardFrame(CTkFrame):
                 image_bytes = BytesIO(image_data)
                 image_pil = Image.open(image_bytes)
                 ctk_image = CTkImage(light_image=image_pil, dark_image=image_pil, size=(60, 60))
-            except Exception:
+            except (OSError, ValueError):
                 pass  # Fallback to empty
         elif image_path:
             try:
                 image_pil = Image.open(image_path)
                 ctk_image = CTkImage(light_image=image_pil, dark_image=image_pil, size=(60, 60))
-            except Exception:
+            except (OSError, ValueError):
                 pass
 
         # Image Label
@@ -52,6 +52,7 @@ class InfoCardFrame(CTkFrame):
             self,
             text=title,
             font=("Arial", 16, "bold"),
+            text_color="black",
             anchor="s",
         )
         title_label.grid(row=0, column=1, sticky="sw", padx=10, pady=5)
@@ -61,6 +62,7 @@ class InfoCardFrame(CTkFrame):
             self,
             text=subtitle,
             font=("Arial", 14),
+            text_color="black",
             anchor="n",
         )
         subtitle_label.grid(row=1, column=1, sticky="nw", padx=10, pady=5)

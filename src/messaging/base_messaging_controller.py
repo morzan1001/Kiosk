@@ -1,6 +1,12 @@
+"""
+Base Messaging Controller Module.
+Provides an abstract base class for all messaging channels.
+"""
+
 import queue
 import threading
 from abc import ABC, abstractmethod
+from typing import Any, Dict, Optional, Union
 
 from src.localization.translator import get_translations
 from src.logmgr import logger
@@ -12,36 +18,42 @@ class BaseMessagingController(ABC):
     Provides a uniform interface for different messaging services.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initializes the common threading and queue components."""
-        logger.debug(f"Initializing {self.__class__.__name__}")
-        self.queue = queue.Queue()
-        self._stop_event = threading.Event()
-        self.thread = threading.Thread(target=self._process_queue)
+        logger.debug("Initializing %s", self.__class__.__name__)
+        self.queue: queue.Queue[Optional[Dict[str, Any]]] = queue.Queue()
+        self._stop_event: threading.Event = threading.Event()
+        self.thread: threading.Thread = threading.Thread(target=self._process_queue)
         self.thread.daemon = True
         self.thread.start()
-        self.translations = get_translations()
+        self.translations: Dict[str, Any] = get_translations()
 
-    def _process_queue(self):
+    def _process_queue(self) -> None:
         """Processes the message queue in a separate thread."""
         while not self._stop_event.is_set():
             try:
-                task = self.queue.get(timeout=1)  # Timeout to regularly check if it should stop
+                task: Optional[Dict[str, Any]] = self.queue.get(timeout=1)
                 if task is None:
                     break
                 self._execute_task(task)
                 self.queue.task_done()
             except queue.Empty:
                 continue
-            except Exception as e:
+            except Exception:  # pylint: disable=broad-exception-caught
                 if not self._stop_event.is_set():
-                    logger.error(
-                        f"Failed to process message task in {self.__class__.__name__}: {str(e)}"
+                    logger.exception(
+                        "Failed to process message task in %s",
+                        self.__class__.__name__,
                     )
 
-    def _execute_task(self, task):
-        """Executes a specific task from the queue."""
-        task_type = task.get("type")
+    def _execute_task(self, task: Dict[str, Any]) -> None:
+        """
+        Executes a specific task from the queue.
+
+        Args:
+            task: Dictionary containing task type and parameters.
+        """
+        task_type: Optional[str] = task.get("type")
         try:
             if task_type == "send_message":
                 self._send_message_internal(
@@ -70,11 +82,13 @@ class BaseMessagingController(ABC):
                     language=task.get("language", "en"),
                 )
             else:
-                logger.warning(f"Unknown task type: {task_type}")
-        except Exception as e:
-            logger.error(f"Failed to execute task {task_type}: {str(e)}")
+                logger.warning("Unknown task type: %s", task_type)
+        except Exception:  # pylint: disable=broad-exception-caught
+            logger.exception("Failed to execute task %s", task_type)
 
-    def send_message(self, recipient, message, subject=None, **kwargs):
+    def send_message(
+        self, recipient: str, message: str, subject: Optional[str] = None, **kwargs: Any
+    ) -> None:
         """
         Sends a general message.
 
@@ -84,7 +98,7 @@ class BaseMessagingController(ABC):
             subject: Subject (optional, relevant for email)
             **kwargs: Additional parameters depending on implementation
         """
-        task = {
+        task: Dict[str, Any] = {
             "type": "send_message",
             "recipient": recipient,
             "subject": subject,
@@ -93,7 +107,9 @@ class BaseMessagingController(ABC):
         }
         self.queue.put(task)
 
-    def notify_low_balance(self, recipient, balance, language="en"):
+    def notify_low_balance(
+        self, recipient: Union[str, Any], balance: float, language: str = "en"
+    ) -> None:
         """
         Notifies about low balance.
 
@@ -102,7 +118,7 @@ class BaseMessagingController(ABC):
             balance: Current balance
             language: Language for the message
         """
-        task = {
+        task: Dict[str, Any] = {
             "type": "low_balance",
             "recipient": recipient,
             "balance": balance,
@@ -110,7 +126,13 @@ class BaseMessagingController(ABC):
         }
         self.queue.put(task)
 
-    def notify_low_stock(self, recipient, product_name, available_quantity, language="en"):
+    def notify_low_stock(
+        self,
+        recipient: Union[str, Any],
+        product_name: str,
+        available_quantity: int,
+        language: str = "en",
+    ) -> None:
         """
         Notifies you when stock levels are low.
 
@@ -120,7 +142,7 @@ class BaseMessagingController(ABC):
             available_quantity: Available quantity
             language: Language for the message
         """
-        task = {
+        task: Dict[str, Any] = {
             "type": "low_stock",
             "recipient": recipient,
             "product_name": product_name,
@@ -129,7 +151,7 @@ class BaseMessagingController(ABC):
         }
         self.queue.put(task)
 
-    def send_monthly_summary(self, recipient, summary, language="en"):
+    def send_monthly_summary(self, recipient: str, summary: Any, language: str = "en") -> None:
         """
         Sends a monthly summary.
 
@@ -138,7 +160,7 @@ class BaseMessagingController(ABC):
             summary: Summary data
             language: Language for the message
         """
-        task = {
+        task: Dict[str, Any] = {
             "type": "monthly_summary",
             "recipient": recipient,
             "summary": summary,
@@ -146,24 +168,28 @@ class BaseMessagingController(ABC):
         }
         self.queue.put(task)
 
-    def stop(self):
+    def stop(self) -> None:
         """Stops the message processing thread."""
-        logger.debug(f"Stopping {self.__class__.__name__} thread")
+        logger.debug("Stopping %s thread", self.__class__.__name__)
         self._stop_event.set()
-        self.queue.put(None)  # Signal to stop the queue processing
+        self.queue.put(None)
         if threading.current_thread() != self.thread:
             self.thread.join()
 
     # Abstract methods that must be implemented by subclasses
     @abstractmethod
-    def _send_message_internal(self, recipient, message, subject=None, **kwargs):
+    def _send_message_internal(
+        self, recipient: str, message: str, subject: Optional[str] = None, **kwargs: Any
+    ) -> None:
         """
         Internal implementation for sending a message.
         Must be implemented by each subclass.
         """
 
     @abstractmethod
-    def _notify_low_balance_internal(self, recipient, balance, language="en"):
+    def _notify_low_balance_internal(
+        self, recipient: Union[str, Any], balance: float, language: str = "en"
+    ) -> None:
         """
         Internal implementation for low-balance notifications.
         Must be implemented by each subclass.
@@ -171,25 +197,34 @@ class BaseMessagingController(ABC):
 
     @abstractmethod
     def _notify_low_stock_internal(
-        self, recipient, product_name, available_quantity, language="en"
-    ):
+        self,
+        recipient: Union[str, Any],
+        product_name: str,
+        available_quantity: int,
+        language: str = "en",
+    ) -> None:
         """
         Internal implementation for low-stock notifications.
         Must be implemented by each subclass.
         """
 
-    def _send_monthly_summary_internal(self, recipient, summary, language="en"):
+    def _send_monthly_summary_internal(
+        self, recipient: str, summary: Any, language: str = "en"
+    ) -> None:
         """
         Internal implementation for sending monthly summaries.
         Standard implementation - can be overridden by subclasses.
         """
         # pylint: disable=unused-argument
-        logger.warning(f"{self.__class__.__name__} does not support monthly summaries")
+        logger.warning(
+            "%s does not support monthly summaries",
+            self.__class__.__name__,
+        )
 
     @abstractmethod
-    def get_channel_type(self):
+    def get_channel_type(self) -> str:
         """
         Returns the type of message channel (e.g., ‘email’, ‘mattermost’).
         Must be implemented by every subclass.
         """
-        pass
+        raise NotImplementedError

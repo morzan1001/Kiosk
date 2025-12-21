@@ -1,3 +1,5 @@
+"""NFC scan prompt component."""
+
 from customtkinter import CTkButton, CTkFrame, CTkImage, CTkLabel
 from PIL import Image
 
@@ -5,9 +7,11 @@ from src.localization.translator import get_translations
 from src.logmgr import logger
 from src.nfc_reader import NFCReader
 from src.ui.components.heading_frame import HeadingFrame
+from src.utils.paths import get_image_path
 
 
 class ScanCardFrame(CTkFrame):
+    """Screen prompting the user to scan an NFC card."""
     def __init__(
         self,
         parent,
@@ -36,15 +40,20 @@ class ScanCardFrame(CTkFrame):
         self.grid_columnconfigure(0, weight=1)
 
         self.heading_frame = HeadingFrame(
-            self, heading_text=heading_text, back_button_function=back_button_function
+            self,
+            heading_text=heading_text,
+            back_button_function=back_button_function,
+            width=760,
+            fg_color="transparent",
         )
+        self.heading_frame.grid(row=0, column=0, padx=20, pady=(20, 0), sticky="new")
 
         # Load images using CTkImage
-        arrow_image = Image.open("src/images/arrow.png")
-        self.bottom_image = CTkImage(light_image=arrow_image, dark_image=arrow_image)
+        arrow_image = Image.open(get_image_path("arrow.png"))
+        self.bottom_image = CTkImage(light_image=arrow_image, dark_image=arrow_image, size=(60, 60))
 
         # Load icon for the button using CTkImage
-        button_icon_image = Image.open("src/images/Card.png")
+        button_icon_image = Image.open(get_image_path("Card.png"))
         self.button_icon = CTkImage(
             light_image=button_icon_image, dark_image=button_icon_image, size=(105, 90)
         )
@@ -57,7 +66,9 @@ class ScanCardFrame(CTkFrame):
             compound="left",
             width=470,
             height=110,
+            text_color="black",
             hover=False,
+            fg_color="white",
             font=("Inter", 24, "bold"),
             border_spacing=0,
         )
@@ -72,7 +83,7 @@ class ScanCardFrame(CTkFrame):
         Callback function to process the NFC ID.
         """
         if current_id:
-            logger.info(f"Presented NFC-ID: {current_id}")
+            logger.info("Presented NFC-ID: %s", current_id)
             self.set_nfcid_id(current_id)
             self.go_back_function()
         else:

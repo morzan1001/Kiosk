@@ -1,3 +1,5 @@
+"""Mattermost messaging controller implementation."""
+
 import requests
 
 from src.localization.translator import get_translations
@@ -59,7 +61,7 @@ class MattermostController(BaseMessagingController):
                 name=getattr(recipient, "name", str(recipient)), balance=balance_float
             )
         except (KeyError, ValueError, AttributeError) as e:
-            logger.error(f"Error accessing translations: {e}")
+            logger.error("Error accessing translations: %s", e)
             # Fallback message
             message = f"Your credit balance is low: {float(balance):.2f}€"
 
@@ -67,9 +69,9 @@ class MattermostController(BaseMessagingController):
         username = getattr(recipient, "mattermost_username", recipient)
         if username:
             self._send_direct_message(username, message)
-            logger.info(f"Low balance notification sent via Mattermost to {username}")
+            logger.info("Low balance notification sent via Mattermost to %s", username)
         else:
-            logger.warning(f"No Mattermost username available for recipient {recipient}")
+            logger.warning("No Mattermost username available for recipient %s", recipient)
 
     def _notify_low_stock_internal(
         self, recipient, product_name, available_quantity, language="en"
@@ -81,7 +83,7 @@ class MattermostController(BaseMessagingController):
                 product_name=product_name, available_quantity=available_quantity
             )
         except (KeyError, ValueError) as e:
-            logger.error(f"Error accessing translations: {e}")
+            logger.error("Error accessing translations: %s", e)
             # Fallback message
             message = f"Low stock levels: {product_name} - only {available_quantity} available"
 
@@ -89,9 +91,9 @@ class MattermostController(BaseMessagingController):
         username = getattr(recipient, "mattermost_username", recipient)
         if username:
             self._send_direct_message(username, message)
-            logger.info(f"Low stock notification sent via Mattermost to {username}")
+            logger.info("Low stock notification sent via Mattermost to %s", username)
         else:
-            logger.warning(f"No Mattermost username available for recipient {recipient}")
+            logger.warning("No Mattermost username available for recipient %s", recipient)
 
     def _send_public_message(self, channel_id, message):
         """Sends a public message to a Mattermost channel."""
@@ -100,15 +102,15 @@ class MattermostController(BaseMessagingController):
         payload = {"channel_id": channel_id, "message": message}
         response = requests.post(url, json=payload, headers=headers, timeout=self.TIMEOUT)
         if response.status_code != 201:
-            logger.error(f"Failed to send public message to Mattermost: {response.text}")
+            logger.error("Failed to send public message to Mattermost: %s", response.text)
         else:
-            logger.info(f"Public message sent to Mattermost channel {channel_id}")
+            logger.info("Public message sent to Mattermost channel %s", channel_id)
 
     def _send_direct_message(self, username: str, message: str):
         """Sends a direct message to a Mattermost user."""
         user_id = self._get_user_id(username)
         if not user_id:
-            logger.error(f"Failed to find user ID for username: {username}")
+            logger.error("Failed to find user ID for username: %s", username)
             return
 
         url = f"{self.base_url}/api/v4/posts"
@@ -120,7 +122,7 @@ class MattermostController(BaseMessagingController):
             channel_url, json=channel_payload, headers=headers, timeout=self.TIMEOUT
         )
         if channel_response.status_code != 201:
-            logger.error(f"Failed to create direct message channel: {channel_response.text}")
+            logger.error("Failed to create direct message channel: %s", channel_response.text)
             return
         channel_id = channel_response.json()["id"]
 
@@ -129,10 +131,12 @@ class MattermostController(BaseMessagingController):
         response = requests.post(url, json=payload, headers=headers, timeout=self.TIMEOUT)
         if response.status_code != 201:
             logger.error(
-                f"Failed to send direct message to Mattermost user {user_id}: {response.text}"
+                "Failed to send direct message to Mattermost user %s: %s",
+                user_id,
+                response.text,
             )
         else:
-            logger.info(f"Direct message sent to Mattermost user {user_id}")
+            logger.info("Direct message sent to Mattermost user %s", user_id)
 
     def _get_user_id(self, username: str):
         """Retrieves the user ID for a given username."""
@@ -144,7 +148,7 @@ class MattermostController(BaseMessagingController):
         headers = self._get_headers()
         response = requests.get(url, headers=headers, timeout=self.TIMEOUT)
         if response.status_code != 200:
-            logger.error(f"Failed to get user ID for username {username}: {response.text}")
+            logger.error("Failed to get user ID for username %s: %s", username, response.text)
             return None
         return response.json().get("id")
 
@@ -154,6 +158,6 @@ class MattermostController(BaseMessagingController):
         headers = self._get_headers()
         response = requests.get(url, headers=headers, timeout=self.TIMEOUT)
         if response.status_code != 200:
-            logger.error(f"Failed to get bot user ID: {response.text}")
+            logger.error("Failed to get bot user ID: %s", response.text)
             return None
         return response.json().get("id")

@@ -4,7 +4,7 @@ from src.database import Item, get_db
 from src.localization.translator import get_translations
 from src.ui.components.heading_frame import HeadingFrame
 from src.ui.components.item_form import ItemForm
-from src.ui.components.message import ShowMessage
+from src.ui.components.Message import ShowMessage
 
 
 class AddNewItemFrame(CTkFrame):
@@ -13,7 +13,9 @@ class AddNewItemFrame(CTkFrame):
 
         # Configure the grid for the frame
         self.grid_columnconfigure((0, 1), weight=1)
-        self.grid_rowconfigure((0, 1, 2), weight=1)
+        self.grid_rowconfigure(0, weight=0)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=0)
 
         self.parent = parent
         self.back_button_function = back_button_function
@@ -28,10 +30,10 @@ class AddNewItemFrame(CTkFrame):
             self,
             heading_text=self.translations["items"]["add_new_item"],
             back_button_function=self.back_button_function,
-            width=600,
+            width=760,
             fg_color="transparent",
         )
-        self.heading_frame.grid(row=0, column=0, columnspan=2, padx=10, sticky="new")
+        self.heading_frame.grid(row=0, column=0, columnspan=2, padx=20, pady=(20, 0), sticky="new")
 
         # Item Form
         self.item_form = ItemForm(self, parent_screen=self.parent)
@@ -46,7 +48,7 @@ class AddNewItemFrame(CTkFrame):
             font=("Inter", 18, "bold"),
             command=self.add_item,
         )
-        self.add_item_button.grid(row=4, column=1, padx=(10, 20), pady=(20, 10))
+        self.add_item_button.grid(row=5, column=1, padx=(10, 20), pady=(5, 20), sticky="ew")
 
     def add_item(self):
         data = self.item_form.get_data()

@@ -26,6 +26,8 @@
         "credits_label": "Guthaben",
         "enter_name": "Namen eingeben",
         "last_month_purchase": "Einkäufe im letzten Monat",
+        "all_time_purchase": "Alle Einkäufe",
+        "no_transactions": "Keine Transaktionen",
         "checkout_unsuccessful": "Checkout nicht erfolgreich",
         "checkout_successful": "Checkout erfolgreich",
         "amount_debited": "Es wurden {total:.2f} € von Ihrem Konto abgezogen",

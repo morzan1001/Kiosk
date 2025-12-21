@@ -1,3 +1,5 @@
+"""Email messaging controller implementation."""
+
 import os
 import smtplib
 from datetime import datetime
@@ -70,7 +72,7 @@ class EmailController(BaseMessagingController):
     def _send_email(self, recipient_email, subject, body, is_html):
         """Internal method for actually sending the email."""
         try:
-            logger.debug(f"Sending email to {recipient_email} with subject '{subject}'")
+            logger.debug("Sending email to %s with subject '%s'", recipient_email, subject)
             msg = MIMEMultipart("related")
             msg["From"] = self.login
             msg["To"] = recipient_email
@@ -90,21 +92,21 @@ class EmailController(BaseMessagingController):
                 image.add_header("Content-ID", "<logo>")
                 msg.attach(image)
             except OSError as e:
-                logger.warning(f"Failed to attach logo image: {e}")
+                logger.warning("Failed to attach logo image: %s", e)
 
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
                 server.starttls()
                 server.login(self.login, self.password)
                 server.send_message(msg)
 
-            logger.info(f"Email sent to {recipient_email}")
+            logger.info("Email sent to %s", recipient_email)
         except OSError as e:
-            logger.error(f"Failed to send email: {e}")
+            logger.error("Failed to send email: %s", e)
 
     def load_template(self, template_name, context):
         """Loads and renders an email template."""
         try:
-            logger.debug(f"Loading email template '{template_name}'")
+            logger.debug("Loading email template '%s'", template_name)
             footer_text = self.translations["email"]["footer"]
             current_date = datetime.now().strftime("%d.%m.%Y")
 
@@ -120,5 +122,5 @@ class EmailController(BaseMessagingController):
             logger.debug("Email body rendered using Jinja2")
             return full_body
         except TemplateError as e:
-            logger.error(f"Failed to load template {template_name}: {e}")
+            logger.error("Failed to load template %s: %s", template_name, e)
             return ""

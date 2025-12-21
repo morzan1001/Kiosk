@@ -1,7 +1,5 @@
 """This file holds the item model."""
 
-from typing import List
-
 from sqlalchemy import Column, Float, Integer, LargeBinary, String
 
 from src.database.connection import Base

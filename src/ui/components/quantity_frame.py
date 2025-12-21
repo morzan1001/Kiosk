@@ -1,5 +1,11 @@
+"""Quantity selector component used in the user cart."""
+
+import tkinter as tk
+
 from customtkinter import CTkButton, CTkEntry, CTkFrame, CTkImage
 from PIL import Image
+
+from src.utils.paths import get_image_path
 
 
 class QuantityFrame(CTkFrame):
@@ -15,10 +21,10 @@ class QuantityFrame(CTkFrame):
         self.grid_rowconfigure((0), weight=1)
 
         # Load images for buttons using CTkImage
-        add_image = Image.open("src/images/add.png")
+        add_image = Image.open(get_image_path("add.png"))
         self.add_photo = CTkImage(light_image=add_image, dark_image=add_image, size=(30, 30))
 
-        minus_image = Image.open("src/images/minus.png")
+        minus_image = Image.open(get_image_path("minus.png"))
         self.minus_photo = CTkImage(light_image=minus_image, dark_image=minus_image, size=(30, 30))
 
         # Create and place the decrement button
@@ -29,6 +35,7 @@ class QuantityFrame(CTkFrame):
             height=10,
             text="",
             command=self.decrement,
+            fg_color="transparent",
             hover=False,
         )
         self.decrement_button.grid(row=0, column=0, padx=(10, 0))
@@ -40,8 +47,10 @@ class QuantityFrame(CTkFrame):
             textvariable=self.data,
             width=50,
             justify="center",
+            fg_color="transparent",
             border_width=0,
             font=("Arial", 16, "bold"),
+            text_color="black",
             validate="key",
             validatecommand=vcmd,
         )
@@ -55,6 +64,7 @@ class QuantityFrame(CTkFrame):
             height=10,
             text="",
             command=self.increment,
+            fg_color="transparent",
             hover=False,
         )
         self.increment_button.grid(row=0, column=2, padx=(0, 10))
@@ -62,7 +72,7 @@ class QuantityFrame(CTkFrame):
     def increment(self):
         try:
             value = self.data.get()
-        except Exception:
+        except (tk.TclError, TypeError):
             value = 0
         if value < 999:
             self.data.set(value + 1)
@@ -71,18 +81,15 @@ class QuantityFrame(CTkFrame):
     def decrement(self):
         try:
             value = self.data.get()
-        except Exception:
+        except (tk.TclError, TypeError):
             value = 0
         if value > 0:
             self.data.set(value - 1)
             self.update_total_price()
 
     def validate_entry(self, new_value):
-        if new_value == "" or int(new_value) > 999:
+        if new_value == "":
             return False
-
-        # Check if the new value is a digit
-        if new_value.isdigit():
-            return True
-        else:
+        if not new_value.isdigit():
             return False
+        return int(new_value) <= 999

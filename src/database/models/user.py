@@ -1,6 +1,6 @@
 """This file holds the user model."""
 
-from typing import List, Optional
+from typing import List
 
 from sqlalchemy import Column, Float, Integer, String
 
@@ -21,7 +21,10 @@ class User(Base, CRUDMixin):
     mattermost_username = Column(String, nullable=True)
 
     def __repr__(self):
-        return f"<User(id={self.nfcid}, name='{self.name}', credit={self.credit}, email='{self.email}', mattermost_username='{self.mattermost_username}')>"
+        return (
+            f"<User(id={self.nfcid}, name='{self.name}', credit={self.credit}, "
+            f"email='{self.email}', mattermost_username='{self.mattermost_username}')>"
+        )
 
     @classmethod
     def get_by_id(cls, session, user_id: int) -> "User":

@@ -1,4 +1,13 @@
-"""Provides basic logging functionality"""
+"""Logging utilities.
+
+This project historically used a small wrapper (`LogMgr`) around Python's
+`logging` module to simplify usage and automatically rotate log files monthly.
+
+The wrapper is kept for backwards compatibility, but its public methods now
+accept the standard logging API shape (`msg, *args, **kwargs`) so call sites can
+use lazy formatting (e.g. ``logger.info("Value: %s", value)``) and
+``logger.exception(...)``.
+"""
 
 import json
 import logging
@@ -39,8 +48,8 @@ class LogMgr:
             with open(config_path, "r", encoding="utf-8") as config_file:
                 config = json.load(config_file)
                 log_level = config.get("logging", {}).get("level", "INFO")
-        except Exception as e:
-            self.logger.warning(f"Could not load logging config, defaulting to INFO: {e}")
+        except (FileNotFoundError, json.JSONDecodeError, OSError) as e:
+            self.logger.warning("Could not load logging config, defaulting to INFO: %s", e)
 
         self.logger.setLevel(getattr(logging, log_level))
 
@@ -68,32 +77,49 @@ class LogMgr:
             self.logger.addHandler(file_handler)
 
     def format_message(self, msg: str, error=None) -> str:
-        """Formats the log message according to whether an error exists"""
-        if error:
-            return f"{msg} - {error}"
-        return msg
+        """Formats a message by optionally appending an error string."""
+        if error is None:
+            return msg
+        return f"{msg} - {error}"
 
-    def warning(self, msg: str, error=None):
-        """Logs message with level: warning"""
-        self.update_prefix()
-        self.logger.warning(self.format_message(msg, error))
+    def _log(self, level_method, msg: str, *args, error=None, **kwargs):
+        """Internal helper that mimics the stdlib logging API.
 
-    def debug(self, msg: str, error=None):
-        """Logs message with level: debug"""
-        self.update_prefix()
-        self.logger.debug(self.format_message(msg, error))
+        Supports the project's legacy `error=` keyword / second positional arg
+        while allowing lazy formatting via `*args`.
+        """
+        # Backwards compatibility:
+        # Historically the wrapper used a second positional arg as `error`.
+        # With stdlib-like logging (`msg, *args`) that would otherwise be treated
+        # as formatting args and can raise at runtime if `msg` has no placeholders.
+        if error is None and len(args) == 1 and "%" not in msg:
+            error = args[0]
+            args = ()
 
-    def info(self, msg: str, error=None):
-        """Logs message with level: info"""
         self.update_prefix()
-        self.logger.info(self.format_message(msg, error))
+        msg = self.format_message(msg, error)
+        level_method(msg, *args, **kwargs)
 
-    def error(self, msg: str, error=None):
-        """Logs message with level: error"""
-        self.update_prefix()
-        self.logger.error(self.format_message(msg, error))
+    def warning(self, msg: str, *args, error=None, **kwargs):
+        """Logs message with level: warning."""
+        self._log(self.logger.warning, msg, *args, error=error, **kwargs)
 
-    def critical(self, msg: str, error=None):
-        """Logs message with level: critical"""
-        self.update_prefix()
-        self.logger.critical(self.format_message(msg, error))
+    def debug(self, msg: str, *args, error=None, **kwargs):
+        """Logs message with level: debug."""
+        self._log(self.logger.debug, msg, *args, error=error, **kwargs)
+
+    def info(self, msg: str, *args, error=None, **kwargs):
+        """Logs message with level: info."""
+        self._log(self.logger.info, msg, *args, error=error, **kwargs)
+
+    def error(self, msg: str, *args, error=None, **kwargs):
+        """Logs message with level: error."""
+        self._log(self.logger.error, msg, *args, error=error, **kwargs)
+
+    def critical(self, msg: str, *args, error=None, **kwargs):
+        """Logs message with level: critical."""
+        self._log(self.logger.critical, msg, *args, error=error, **kwargs)
+
+    def exception(self, msg: str, *args, error=None, **kwargs):
+        """Log a message with level ERROR and exception information."""
+        self._log(self.logger.exception, msg, *args, error=error, **kwargs)

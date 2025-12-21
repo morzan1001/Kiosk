@@ -1,10 +1,15 @@
+"""Admin dashboard screen.
+
+Shows high-level counters (users/items) and provides navigation into admin flows.
+"""
+
 from customtkinter import CTkFrame, CTkImage, CTkLabel
 from PIL import Image
 
 from src.database import Item, User, get_db
 from src.localization.translator import get_translations
-from src.logmgr import logger
 from src.ui.components.dashboard_card_frame import DashboardCardFrame
+from src.ui.navigation import clear_root
 from src.ui.screens.item_listing import ItemListFrame
 from src.ui.screens.user_listing import UserListFrame
 from src.ui.screens.user_main import UserMainPage
@@ -12,7 +17,9 @@ from src.utils.paths import get_image_path
 
 
 class AdminMainFrame(CTkFrame):
-    LEFT_CLICK_EVENT = "<Button-1>"
+    """Admin dashboard with clickable cards for navigation."""
+    
+    LEFT_CLICK_EVENT = "<ButtonRelease-1>"
 
     def __init__(self, parent, main_menu, user: User, user_count: int, item_count: int):
         super().__init__(parent)
@@ -43,6 +50,7 @@ class AdminMainFrame(CTkFrame):
         self.welcome_label = CTkLabel(
             self,
             text=self.translations["admin"]["welcome_admin"],
+            text_color="white",
             font=("Inter", 22, "bold"),
         )
         self.welcome_label.grid(row=3, column=0, columnspan=3)
@@ -55,6 +63,7 @@ class AdminMainFrame(CTkFrame):
             value=str(user_count),
             width=270,
             height=135,
+            fg_color="white",
         )
         self.user_count_frame.grid(row=4, column=0, padx=20, ipadx=30, ipady=20, sticky="e")
 
@@ -66,17 +75,22 @@ class AdminMainFrame(CTkFrame):
             value=str(item_count),
             width=270,
             height=135,
+            fg_color="white",
         )
         self.item_count_frame.grid(row=4, column=1, padx=20, ipadx=30, ipady=20)
 
         # Display the item purchase button (no value, just title)
+        purchase_title = self.translations["items"]["purchase_items"]
+        if " " in purchase_title:
+            purchase_title = purchase_title.replace(" ", "\n", 1)
         self.item_purchase_frame = DashboardCardFrame(
             self,
-            title=self.translations["items"]["purchase_items"],
+            title=purchase_title,
             image_filename="items-list",
             value=None,
             width=270,
             height=135,
+            fg_color="white",
         )
         self.item_purchase_frame.grid(row=4, column=2, padx=20, ipadx=30, ipady=20, sticky="w")
 
@@ -96,7 +110,8 @@ class AdminMainFrame(CTkFrame):
             child.bind(self.LEFT_CLICK_EVENT, self.item_purchase_clicked)
 
     def back_button_pressed(self):
-        self.destroy()
+        """Refresh the admin dashboard (used as back target from sub-screens)."""
+        clear_root(self.parent)
         user_count = User.get_count(self.session)
         item_count = Item.get_count(self.session)
         user = User.get_by_id(self.session, self.user.id)
@@ -108,30 +123,38 @@ class AdminMainFrame(CTkFrame):
             item_count=item_count,
         )
 
-    def user_count_clicked(self, event):
-        logger.debug("User count clicked")
-        self.destroy()
+    def user_count_clicked(self, _event):
+        """Open the user listing screen."""
+        clear_root(self.parent)
         users = User.read_all(self.session)
+
+        def back_to_admin() -> None:
+            self.back_button_pressed()
+
         UserListFrame(
             self.parent,
             self.translations["user"]["user_list"],
-            self.back_button_pressed,
+            back_to_admin,
             users=users,
-        ).grid(row=0, column=0, sticky="ns", ipadx=50, ipady=20)
+        ).grid(row=0, column=0, sticky="nsew")
 
-    def item_count_clicked(self, event):
-        logger.debug("Item count clicked")
-        self.destroy()
+    def item_count_clicked(self, _event):
+        """Open the item listing screen."""
+        clear_root(self.parent)
         items = Item.read_all(self.session)
+
+        def back_to_admin() -> None:
+            self.back_button_pressed()
+
         ItemListFrame(
             self.parent,
             self.translations["items"]["item_list"],
-            self.back_button_pressed,
+            back_to_admin,
             items,
-        ).grid(row=0, column=0, sticky="ns", ipadx=50, ipady=20)
+        ).grid(row=0, column=0, sticky="nsew")
 
-    def item_purchase_clicked(self, event):
-        logger.debug("Item purchase clicked")
-        self.destroy()
+    def item_purchase_clicked(self, _event):
+        """Open the item purchase flow (user main page)."""
+        clear_root(self.parent)
         items = Item.read_all(self.session)
         UserMainPage(self.parent, main_menu=self.main_menu, user=self.user, items=items)

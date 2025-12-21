@@ -2,6 +2,9 @@
   "CTk": {
     "fg_color": ["#EBEBEB", "#242424"]
   },
+  "CTkToplevel": {
+    "fg_color": ["#EBEBEB", "#242424"]
+  },
   "CTkFrame": {
     "corner_radius": 6,
     "border_width": 0,
@@ -26,8 +29,8 @@
   "CTkEntry": {
     "corner_radius": 6,
     "border_width": 2,
-    "fg_color": ["#F9F9FA", "#343638"],
-    "border_color": ["#979DA2", "#565B5E"],
+    "fg_color": ["#F9F9FA", "#202020"],
+    "border_color": ["#979DA2", "#656565"],
     "text_color": ["#000000", "#FFFFFF"],
     "placeholder_text_color": ["#737980", "#AAB0B5"]
   },
@@ -81,17 +84,17 @@
   },
   "CTkOptionMenu": {
     "corner_radius": 6,
-    "fg_color": ["#129F07", "#129F07"],
-    "button_color": ["#108C06", "#108C06"],
-    "button_hover_color": ["#0E7A05", "#0E7A05"],
-    "text_color": ["#DCE4EE", "#DCE4EE"],
+    "fg_color": ["#F9F9FA", "#202020"],
+    "button_color": ["#E0E0E0", "#202020"],
+    "button_hover_color": ["#D0D0D0", "#333333"],
+    "text_color": ["#000000", "#FFFFFF"],
     "text_color_disabled": ["#A3A8AE", "#5C5E60"]
   },
   "CTkComboBox": {
     "corner_radius": 6,
     "border_width": 2,
-    "fg_color": ["#F9F9FA", "#343638"],
-    "border_color": ["#979DA2", "#565B5E"],
+    "fg_color": ["#F9F9FA", "#202020"],
+    "border_color": ["#979DA2", "#656565"],
     "button_color": ["#979DA2", "#565B5E"],
     "button_hover_color": ["#6E7174", "#7A848D"],
     "text_color": ["#000000", "#FFFFFF"],
@@ -118,8 +121,8 @@
   "CTkTextbox": {
     "corner_radius": 6,
     "border_width": 0,
-    "fg_color": ["#F9F9FA", "#343638"],
-    "border_color": ["#979DA2", "#565B5E"],
+    "fg_color": ["#F9F9FA", "#202020"],
+    "border_color": ["#979DA2", "#656565"],
     "text_color": ["#000000", "#FFFFFF"],
     "scrollbar_button_color": ["#979DA2", "#565B5E"],
     "scrollbar_button_hover_color": ["#6E7174", "#7A848D"]
@@ -128,8 +131,8 @@
     "label_fg_color": ["#979DA2", "#565B5E"]
   },
   "DropdownMenu": {
-    "fg_color": ["#FFFFFF", "#343638"],
-    "hover_color": ["#EBEBEB", "#2B2B2B"],
+    "fg_color": ["#FFFFFF", "#2B2B2B"],
+    "hover_color": ["#EBEBEB", "#575757"],
     "text_color": ["#000000", "#FFFFFF"]
   },
   "CTkFont": {

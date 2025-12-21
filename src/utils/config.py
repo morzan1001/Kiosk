@@ -1,3 +1,9 @@
+"""Configuration loader.
+
+Loads `config.json` once (singleton-style) and provides dot-notation access via
+`Config.get`.
+"""
+
 import json
 from typing import Any, Dict
 
@@ -6,6 +12,7 @@ from src.utils.paths import get_config_path
 
 
 class Config:
+    """Singleton configuration accessor for `config.json`."""
     _instance = None
     _config_data: Dict[str, Any] = {}
 
@@ -16,12 +23,16 @@ class Config:
         return cls._instance
 
     def _load(self):
+        """Load configuration JSON from disk.
+
+        On failure, an empty config is used.
+        """
         config_path = get_config_path()
         try:
             with open(config_path, "r", encoding="utf-8") as f:
                 self._config_data = json.load(f)
-        except Exception as e:
-            logger.error(f"Error loading config from {config_path}", error=e)
+        except (FileNotFoundError, json.JSONDecodeError, OSError) as e:
+            logger.error("Error loading config from %s", config_path, error=e)
             # Fallback or re-raise depending on severity
             self._config_data = {}
 
@@ -37,6 +48,7 @@ class Config:
             return default
 
     def get_all(self) -> Dict[str, Any]:
+        """Return the full configuration dict."""
         return self._config_data
 
 

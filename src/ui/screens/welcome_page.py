@@ -1,3 +1,9 @@
+"""Welcome/login screen.
+
+Shows the kiosk start screen and handles NFC-based login, routing to either the
+user or admin flow.
+"""
+
 from typing import List
 
 from customtkinter import CTkFrame, CTkImage, CTkLabel
@@ -9,13 +15,15 @@ from src.lock.gpio_manager import get_gpio_controller
 from src.logmgr import logger
 from src.nfc_reader import NFCReader
 from src.sounds.sound_manager import get_sound_controller
-from src.ui.components.message import ShowMessage
+from src.ui.components.Message import ShowMessage
+from src.ui.navigation import clear_root
 from src.ui.screens.admin_main import AdminMainFrame
 from src.ui.screens.user_main import UserMainPage
 from src.utils.paths import get_image_path
 
 
 class KioskMainFrame(CTkFrame):
+    """Main kiosk frame shown at application startup."""
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
 
@@ -62,6 +70,8 @@ class KioskMainFrame(CTkFrame):
             compound="left",
             width=470,
             height=110,
+            text_color="black",
+            fg_color="white",
             font=("Inter", 24, "bold"),
             corner_radius=10,
         )
@@ -73,9 +83,9 @@ class KioskMainFrame(CTkFrame):
         self.nfc_reader.register_callback(self.login)
 
     def navigate_to_admin(self, user: User):
-        self.destroy()
         self.gpio_controller.activate()
         try:
+            clear_root(self.parent)
             user_count: int = User.get_count(self.session)
             item_count: int = Item.get_count(self.session)
             AdminMainFrame(
@@ -89,9 +99,9 @@ class KioskMainFrame(CTkFrame):
             self.cleanup_resources()
 
     def navigate_to_customer(self, user: User):
-        self.destroy()
         self.gpio_controller.activate()
         try:
+            clear_root(self.parent)
             items: List[Item] = Item.read_all(self.session)
             UserMainPage(
                 self.parent,
@@ -120,7 +130,7 @@ class KioskMainFrame(CTkFrame):
 
     def _process_login(self, current_id: str):
         if current_id:
-            logger.info(f"Scanned NFC ID: {current_id}")
+            logger.info("Scanned NFC ID: %s", current_id)
             user: User = User.get_by_nfcid(self.session, current_id)
             if user:
                 self.handle_type(user)
@@ -138,5 +148,6 @@ class KioskMainFrame(CTkFrame):
     def cleanup_resources(self):
         try:
             self.nfc_reader.stop()
-        except Exception as e:
-            logger.error(f"Error stopping NFC reader: {e}")
+        except (AttributeError, OSError, RuntimeError):  # pragma: no cover
+            # NFC shutdown can fail depending on hardware/driver state; we only log.
+            logger.exception("Error stopping NFC reader")

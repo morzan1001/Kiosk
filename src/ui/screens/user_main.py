@@ -1,7 +1,14 @@
+"""User purchase flow screen.
+
+This screen is shown after a user logs in (e.g. via NFC). It manages the
+shopping cart UI, checkout transaction, and optional notifications.
+"""
+
 from datetime import datetime
 from tkinter import IntVar
 from typing import List
 
+import sqlalchemy.exc
 from customtkinter import CTkButton, CTkFrame, CTkImage, CTkScrollableFrame
 from PIL import Image
 
@@ -14,12 +21,14 @@ from src.messaging.email import get_email_controller
 from src.messaging.mattermost import get_mattermost_controller
 from src.sounds.sound_manager import get_sound_controller
 from src.ui.components.item_frame import ItemFrame
-from src.ui.components.message import ShowMessage
+from src.ui.components.Message import ShowMessage
 from src.ui.components.quantity_frame import QuantityFrame
+from src.ui.navigation import clear_root
 from src.utils.paths import get_image_path
 
 
 class UserMainPage(CTkFrame):
+    """Main user screen for selecting items and checking out."""
     def __init__(self, root, main_menu, user: User, items: List[Item], *args, **kwargs):
         super().__init__(root, *args, **kwargs)
 
@@ -56,8 +65,10 @@ class UserMainPage(CTkFrame):
         credit_img = Image.open(get_image_path("credit.png"))
         credit_image = CTkImage(light_image=credit_img, dark_image=credit_img)
 
-        self.item_frame = CTkScrollableFrame(self, fg_color="white", width=580, height=260)
-        self.item_frame.grid(row=1, rowspan=2, column=0, columnspan=4)
+        self.item_frame = CTkScrollableFrame(self, fg_color="white", width=760, height=260)
+        self.item_frame.grid(
+            row=1, rowspan=2, column=0, columnspan=4, padx=20, pady=10, sticky="nsew"
+        )
         self.item_frame.grid_columnconfigure(0, weight=1)
 
         self.shopping_cart = []
@@ -74,7 +85,7 @@ class UserMainPage(CTkFrame):
             width=290,
             height=60,
         )
-        welcome_label.grid(row=0, column=0, columnspan=2, pady=10, padx=10, sticky="e")
+        welcome_label.grid(row=0, column=0, columnspan=2, pady=10, padx=(20, 10), sticky="ew")
 
         # Credits label
         self.credits_label = CTkButton(
@@ -88,7 +99,7 @@ class UserMainPage(CTkFrame):
             width=290,
             height=60,
         )
-        self.credits_label.grid(row=0, column=2, columnspan=2, pady=10, padx=10, sticky="w")
+        self.credits_label.grid(row=0, column=2, columnspan=2, pady=10, padx=(10, 20), sticky="ew")
 
         # Cancel and checkout buttons
         cancel_button = CTkButton(
@@ -104,7 +115,7 @@ class UserMainPage(CTkFrame):
             hover_color="#333",
             command=self.logout,
         )
-        cancel_button.grid(row=3, column=0, columnspan=2, pady=20, padx=20, sticky="e")
+        cancel_button.grid(row=3, column=0, columnspan=2, pady=20, padx=(20, 10), sticky="ew")
 
         self.checkout_button = CTkButton(
             self,
@@ -115,7 +126,9 @@ class UserMainPage(CTkFrame):
             corner_radius=10,
             command=self.checkout,
         )
-        self.checkout_button.grid(row=3, column=2, columnspan=2, pady=20, padx=20, sticky="w")
+        self.checkout_button.grid(
+            row=3, column=2, columnspan=2, pady=20, padx=(10, 20), sticky="ew"
+        )
 
     def add_item_to_list(self, item):
         """
@@ -155,7 +168,7 @@ class UserMainPage(CTkFrame):
 
             indx = len(self.displayed_items)  # New row index
             self.item_frame.grid_rowconfigure(indx, weight=1)
-            sub_frame = CTkFrame(self.item_frame, width=580, height=60)
+            sub_frame = CTkFrame(self.item_frame, fg_color="white", width=740, height=60)
             sub_frame.grid(row=indx, column=0, padx=10, pady=10, sticky="nsew")
 
             # Configure grid for sub_frame
@@ -164,7 +177,7 @@ class UserMainPage(CTkFrame):
             sub_frame.grid_columnconfigure(1, weight=1)
 
             # Add widgets to the sub_frame
-            ItemFrame(sub_frame, data=item).grid(row=0, column=0, sticky="w")
+            ItemFrame(sub_frame, data=item, fg_color="white").grid(row=0, column=0, sticky="w")
 
             quantity_frame = QuantityFrame(
                 sub_frame,
@@ -172,6 +185,8 @@ class UserMainPage(CTkFrame):
                 update_total_price=self.update_total_price,
                 item_price=item.price,
                 border_width=1,
+                fg_color="white",
+                border_color="#D3D3D3",
                 corner_radius=15,
             )
             quantity_frame.grid(row=0, column=1, sticky="e", ipadx=10, ipady=5)
@@ -190,14 +205,12 @@ class UserMainPage(CTkFrame):
         )
 
     def logout(self):
-        self.destroy()
+        clear_root(self.root)
         self.gpio_controller.deactivate()
         self.main_menu(self.root).grid(row=0, column=0, sticky="nsew")
 
     def checkout(self):
-        """
-        Handles the checkout process.
-        """
+        """Validate cart and execute checkout as one DB transaction."""
         logger.debug("Starting checkout process")
         if self.total_price == 0:
             logger.debug("No items in the shopping cart")
@@ -206,7 +219,10 @@ class UserMainPage(CTkFrame):
         user_credit = self.user.credit
         if self.total_price > float(user_credit):
             logger.debug(
-                f"Insufficient credit for checkout. Total price: {self.total_price}, User credit: {user_credit}"
+                (
+                    f"Insufficient credit for checkout. Total price: {self.total_price}, "
+                    f"User credit: {user_credit}"
+                )
             )
             self._handle_insufficient_credit()
             return
@@ -216,7 +232,10 @@ class UserMainPage(CTkFrame):
             requested_quantity = int(quantity.get())
             if requested_quantity > item.quantity:
                 logger.debug(
-                    f"Insufficient quantity for item {item.id}. Requested: {requested_quantity}, Available: {item.quantity}"
+                    (
+                        f"Insufficient quantity for item {item.id}. Requested: "
+                        f"{requested_quantity}, Available: {item.quantity}"
+                    )
                 )
                 self._handle_insufficient_quantity(item)
                 return
@@ -225,24 +244,31 @@ class UserMainPage(CTkFrame):
         try:
             self._process_checkout(user_credit)
             logger.debug("Checkout process completed successfully")
-        except Exception as e:
-            logger.error(f"Checkout failed: {str(e)}")
+        except (ValueError, sqlalchemy.exc.SQLAlchemyError):
+            logger.exception("Checkout failed")
             self._handle_checkout_error()
 
     def _process_checkout(self, user_credit):
+        """Perform the checkout transaction (row locks, updates, commit/rollback)."""
         current_datetime = datetime.now()
-        logger.debug(f"Processing checkout at {current_datetime}")
+        logger.debug("Processing checkout at %s", current_datetime)
 
         try:
             # Process all items in one loop
             for quantity, item_in_cart in self.shopping_cart:
                 requested_quantity = int(quantity.get())
                 logger.debug(
-                    f"Processing item {item_in_cart.id} with requested quantity {requested_quantity}"
+                    (
+                        f"Processing item {item_in_cart.id} with requested quantity "
+                        f"{requested_quantity}"
+                    )
                 )
 
                 if requested_quantity <= 0:
-                    logger.debug(f"Skipping item {item_in_cart.id} due to non-positive quantity")
+                    logger.debug(
+                        "Skipping item %s due to non-positive quantity",
+                        item_in_cart.id,
+                    )
                     continue
 
                 # Re-fetch item with row lock to prevent race conditions
@@ -262,7 +288,11 @@ class UserMainPage(CTkFrame):
 
                 # Update item quantity - NO COMMIT YET
                 new_quantity = locked_item.quantity - requested_quantity
-                logger.debug(f"Updating item {locked_item.id} quantity to {new_quantity}")
+                logger.debug(
+                    "Updating item %s quantity to %s",
+                    locked_item.id,
+                    new_quantity,
+                )
                 locked_item.update(self.session, commit=False, quantity=new_quantity)
 
                 # Create transaction - NO COMMIT YET
@@ -273,7 +303,7 @@ class UserMainPage(CTkFrame):
                     cost=str(locked_item.price * requested_quantity),
                     category=locked_item.category,
                 )
-                logger.debug(f"Creating transaction for item {locked_item.id}")
+                logger.debug("Creating transaction for item %s", locked_item.id)
                 new_transaction.create(self.session, commit=False)
 
             # Update user credit - NO COMMIT YET
@@ -317,10 +347,10 @@ class UserMainPage(CTkFrame):
 
             self.root.after(5000, self.logout)
 
-        except Exception as e:
+        except (ValueError, sqlalchemy.exc.SQLAlchemyError):
             self.session.rollback()
-            logger.error(f"Checkout failed, rolled back: {e}")
-            raise e
+            logger.exception("Checkout failed, rolled back")
+            raise
 
     def _handle_insufficient_credit(self):
         if self.sound_controller:
@@ -357,7 +387,7 @@ class UserMainPage(CTkFrame):
                 item_quantity=item.quantity, name=item.name
             ),
         )
-        logger.debug(f"Showing insufficient quantity message for item {item.id}")
+        logger.debug("Showing insufficient quantity message for item %s", item.id)
         self.root.after(5000, self.message.destroy)
 
     def _check_low_balance(self, user_instance, credit):
@@ -382,12 +412,13 @@ class UserMainPage(CTkFrame):
         )
 
     def on_barcode_scan(self, event):
+        """Handle keyboard-emulated barcode scanner input."""
         # Check if Enter key is pressed, which typically signals the end of a barcode scan
         if event.keysym == "Return":
             # Call the function to process the scanned barcode
             self.search_product(self.barcode)
 
-            logger.debug(f"Scanned barcode: {self.barcode}")
+            logger.debug("Scanned barcode: %s", self.barcode)
             # Reset the barcode value after processing
             self.barcode = ""
         else:
@@ -395,7 +426,8 @@ class UserMainPage(CTkFrame):
             self.barcode += event.char
 
     def check_product_stock_and_notify(self, item: Item):
-        logger.debug(f"Checking stock levels for item {item.id}")
+        """Notify admins when stock is below a critical threshold."""
+        logger.debug("Checking stock levels for item %s", item.id)
         critical_stock_level = 3  # Define threshold
 
         if item.quantity < critical_stock_level:  # Assuming available_quantity is part of item
@@ -416,15 +448,18 @@ class UserMainPage(CTkFrame):
                     )
 
     def search_product(self, barcode_value: str):
+        """Lookup an item by barcode and add it to the cart if found."""
         item: Item = Item.get_by_barcode(self.session, barcode_value)
 
         if item:
             self.add_item_to_list(item)
             logger.debug(
-                f"Item with barcode {barcode_value} found. {item.name} added to shopping cart"
+                "Item with barcode %s found. %s added to shopping cart",
+                barcode_value,
+                item.name,
             )
         else:
-            logger.debug(f"Item with barcode {barcode_value} not found")
+            logger.debug("Item with barcode %s not found", barcode_value)
             self.message = ShowMessage(
                 self.root,
                 image="unsuccessful",

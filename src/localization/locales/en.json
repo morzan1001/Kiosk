@@ -26,6 +26,8 @@
         "credits_label": "Credits",
         "enter_name": "Enter name",
         "last_month_purchase": "Purchases in the last month",
+        "all_time_purchase": "All purchases",
+        "no_transactions": "No transactions",
         "checkout_unsuccessful": "Checkout unsuccessful",
         "checkout_successful": "Checkout successful",
         "amount_debited": "{total:.2f}€ has been deducted from your account",

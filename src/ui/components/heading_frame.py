@@ -1,24 +1,30 @@
+"""Reusable screen heading with back (and optional delete) action."""
+
 from customtkinter import CTkButton, CTkFrame, CTkImage, CTkLabel
 from PIL import Image
 
+from src.logmgr import logger
 from src.utils.paths import get_image_path
 
 
 class HeadingFrame(CTkFrame):
+    """Heading bar used across screens."""
     def __init__(
         self,
         parent,
         heading_text: str,
         back_button_function,
-        delete_button_function=None,
         *args,
-        **kwargs
+        delete_button_function=None,
+        **kwargs,
     ):
         super().__init__(parent, *args, **kwargs)
 
+        self._back_button_function = back_button_function
+        self._heading_text = heading_text
+
         # Configure the frame
         self.configure(fg_color="transparent")
-        self.grid(row=0, column=0, sticky="new", padx=50, pady=20)
         self.grid_columnconfigure((0, 1, 2), weight=1)
         self.grid_rowconfigure(0, weight=1)
 
@@ -26,7 +32,7 @@ class HeadingFrame(CTkFrame):
         back_image = Image.open(get_image_path("back.png"))
         self.back_image = CTkImage(light_image=back_image, dark_image=back_image, size=(42, 32))
 
-        # Create the back button
+        # Create the back button - aligned to left edge
         self.back_button = CTkButton(
             self,
             text="",
@@ -35,15 +41,16 @@ class HeadingFrame(CTkFrame):
             height=32,
             fg_color="transparent",
             hover=False,
-            command=back_button_function,
+            command=self._on_back_pressed,
         )
         self.back_button.grid(row=0, column=0, sticky="w")
 
-        # Create the heading label
+        # Create the heading label - centered
         self.heading_label = CTkLabel(
             self,
             text=heading_text,
             font=("Inter", 24, "bold"),
+            text_color="white",
         )
         self.heading_label.grid(row=0, column=1)
 
@@ -54,7 +61,7 @@ class HeadingFrame(CTkFrame):
                 light_image=delete_image, dark_image=delete_image, size=(30, 35)
             )
 
-            # Create the delete button
+            # Create the delete button - aligned to right edge
             self.delete_button = CTkButton(
                 self,
                 text="",
@@ -66,3 +73,16 @@ class HeadingFrame(CTkFrame):
                 command=delete_button_function,
             )
             self.delete_button.grid(row=0, column=2, sticky="e")
+
+    def _on_back_pressed(self) -> None:
+        fn = self._back_button_function
+        fn_name = getattr(fn, "__qualname__", repr(fn))
+        try:
+            fn()
+        except Exception:  # pylint: disable=broad-exception-caught
+            logger.exception(
+                "Back handler failed | heading=%s | handler=%s",
+                self._heading_text,
+                fn_name,
+            )
+            raise

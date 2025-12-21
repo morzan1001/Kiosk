@@ -1,4 +1,14 @@
-"""This module holds all the database connection as a Singleton."""
+"""Database connection helpers.
+
+The application initializes the database once at startup and then provides
+SQLAlchemy sessions via a singleton `SessionManager`.
+
+To keep side effects contained, the module stores runtime state in a single
+state object instead of multiple module-level globals.
+"""
+
+from dataclasses import dataclass
+from typing import Any, Optional
 
 import sqlalchemy.exc
 from sqlalchemy import create_engine
@@ -8,12 +18,17 @@ from src.logmgr import logger
 
 
 class Base(DeclarativeBase):
-    pass
+    """SQLAlchemy declarative base class."""
 
 
-CONFIG = None
-ENGINE = None
-SESSION_LOCAL = None
+@dataclass
+class _DatabaseState:
+    config: Optional[dict[str, Any]] = None
+    engine: Any = None
+    session_local: Any = None
+
+
+_STATE = _DatabaseState()
 
 
 def build_database_url(db_config):
@@ -51,20 +66,18 @@ def get_engine_kwargs(db_config):
 
 def initialize_database(app_config):
     """Initialize database connection with config from main.py"""
-    global CONFIG, ENGINE, SESSION_LOCAL
-
-    CONFIG = app_config
-    db_config = CONFIG.get("database", {})
+    _STATE.config = app_config
+    db_config = _STATE.config.get("database", {})
 
     database_url = build_database_url(db_config)
     engine_kwargs = get_engine_kwargs(db_config)
 
     try:
-        ENGINE = create_engine(database_url, **engine_kwargs)
+        _STATE.engine = create_engine(database_url, **engine_kwargs)
         db_type = db_config.get("type", "sqlite").upper()
-        logger.info(f"Successfully created database connection: {db_type} -> {database_url}")
+        logger.info("Successfully created database connection: %s -> %s", db_type, database_url)
 
-        with ENGINE.connect():
+        with _STATE.engine.connect():
             logger.info("Database connection test successful")
 
     except sqlalchemy.exc.SQLAlchemyError as ex:
@@ -76,7 +89,7 @@ def initialize_database(app_config):
         raise
 
     try:
-        SESSION_LOCAL = sessionmaker(autocommit=False, autoflush=False, bind=ENGINE)
+        _STATE.session_local = sessionmaker(autocommit=False, autoflush=False, bind=_STATE.engine)
 
         # Import models after engine is successfully created
         from .models.item import Item
@@ -85,14 +98,14 @@ def initialize_database(app_config):
 
         _ = [User, Item, Transaction]
 
-        Base.metadata.create_all(bind=ENGINE)
+        Base.metadata.create_all(bind=_STATE.engine)
         logger.info("Successfully created all tables")
 
     except sqlalchemy.exc.SQLAlchemyError as ex:
-        logger.error("Cannot bind DB engine to session", f"DB connection failed: {str(ex)}")
+        logger.error("Cannot bind DB engine to session", error=f"DB connection failed: {ex!s}")
         raise
-    except Exception as ex:
-        logger.error("Error during table creation", f"General error: {str(ex)}")
+    except (ImportError, OSError) as ex:
+        logger.error("Error during table creation", error=f"General error: {ex!s}")
         raise
 
 
@@ -110,9 +123,9 @@ class SessionManager:
     def start_session(self):
         """Start a new database session if not already started."""
         if self.session is None:
-            if SESSION_LOCAL is None:
+            if _STATE.session_local is None:
                 raise RuntimeError("Database not initialized. Call initialize_database() first.")
-            self.session = SESSION_LOCAL()
+            self.session = _STATE.session_local()
             logger.info("Database session started")
 
     def get_session(self):
@@ -128,8 +141,8 @@ class SessionManager:
             try:
                 self.session.close()
                 logger.info("Database session closed")
-            except Exception as e:
-                logger.error(f"Error closing database session: {e}")
+            except sqlalchemy.exc.SQLAlchemyError:
+                logger.exception("Error closing database session")
             finally:
                 self.session = None
 
@@ -145,6 +158,6 @@ def get_db():
 
 def get_new_session():
     """Returns a new database session. Caller must close it."""
-    if SESSION_LOCAL is None:
+    if _STATE.session_local is None:
         raise RuntimeError("Database not initialized. Call initialize_database() first.")
-    return SESSION_LOCAL()
+    return _STATE.session_local()

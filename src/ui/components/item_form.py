@@ -13,13 +13,13 @@ from customtkinter import (
 from PIL import Image
 
 from src.localization.translator import get_translations
-from src.ui.components.barcode import AddBarcodeFrame
+from src.ui.components.Barcode import AddBarcodeFrame
 from src.ui.components.change_quantity_frame import ChangeQuantityFrame
 from src.utils.paths import get_image_path
 
 
 class ItemForm(CTkFrame):
-    def __init__(self, master, parent_screen, *args, **kwargs):
+    def __init__(self, master, parent_screen, show_inventory_icon: bool = False, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.parent_screen = parent_screen
         self.translations = get_translations()
@@ -27,7 +27,18 @@ class ItemForm(CTkFrame):
         self.file_path: Optional[str] = None
 
         self.grid_columnconfigure((0, 1), weight=1)
-        self.grid_rowconfigure((0, 1, 2, 3, 4), weight=1)
+        # Row 0: Image (fixed)
+        # Row 1: Label (fixed)
+        # Row 2: Name + Inventory (fixed)
+        # Row 3: Price + Category (fixed)
+        # Row 4: Spacer (flex)
+        # Row 5: Buttons (fixed)
+        self.grid_rowconfigure(0, weight=0)
+        self.grid_rowconfigure(1, weight=0)
+        self.grid_rowconfigure(2, weight=0)
+        self.grid_rowconfigure(3, weight=0)
+        self.grid_rowconfigure(4, weight=1)
+        self.grid_rowconfigure(5, weight=0)
 
         self.configure(fg_color="transparent")
 
@@ -45,9 +56,11 @@ class ItemForm(CTkFrame):
             width=165,
             height=120,
             text="",
+            fg_color="white",
+            hover_color="#ddd",
             command=self.upload_image_button_pressed,
         )
-        self.image_button.grid(row=0, column=0, columnspan=2, pady=(20, 10))
+        self.image_button.grid(row=0, column=0, columnspan=2, padx=20, pady=(20, 10), sticky="n")
 
         # Inventory Label
         self.inventory_label = CTkLabel(
@@ -56,8 +69,9 @@ class ItemForm(CTkFrame):
             width=290,
             anchor="w",
             font=("Arial", 18, "bold"),
+            text_color="white",
         )
-        self.inventory_label.grid(row=1, column=1, pady=(10, 0))
+        self.inventory_label.grid(row=1, column=1, padx=(10, 20), pady=(10, 0), sticky="sw")
 
         # Name Entry
         self.name_entry = CTkEntry(
@@ -68,17 +82,20 @@ class ItemForm(CTkFrame):
             corner_radius=10,
             font=("Inter", 18, "bold"),
         )
-        self.name_entry.grid(row=2, column=0, padx=(20, 10))
+        self.name_entry.grid(row=2, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
 
         # Inventory Frame
         self.inventory_frame = ChangeQuantityFrame(
             self,
+            icon_name=("item.png" if show_inventory_icon else None),
             width=290,
-            height=60,
+            height=50,
+            fg_color="#1C1C1C",
             corner_radius=10,
             border_width=2,
+            border_color="#5D5D5D",
         )
-        self.inventory_frame.grid(row=2, column=1, padx=(10, 20), pady=(10, 10), sticky="w")
+        self.inventory_frame.grid(row=2, column=1, padx=(10, 20), pady=(10, 10), sticky="ew")
 
         # Price Entry
         self.price_entry = CTkEntry(
@@ -89,7 +106,7 @@ class ItemForm(CTkFrame):
             corner_radius=10,
             font=("Inter", 18, "bold"),
         )
-        self.price_entry.grid(row=3, column=0, padx=(20, 10), pady=(10, 10))
+        self.price_entry.grid(row=3, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
 
         # Category Dropdown
         self.category_dropdown = CTkOptionMenu(
@@ -101,9 +118,12 @@ class ItemForm(CTkFrame):
             width=290,
             height=50,
             font=("Inter", 18, "bold"),
+            dropdown_fg_color="#2B2B2B",
+            dropdown_text_color="white",
+            dropdown_hover_color="#575757",
             dropdown_font=("Inter", 18, "bold"),
         )
-        self.category_dropdown.grid(row=3, column=1, padx=(10, 20), pady=(10, 10), sticky="w")
+        self.category_dropdown.grid(row=3, column=1, padx=(10, 20), pady=(10, 10), sticky="ew")
 
         # Barcode Button
         self.barcode_button = CTkButton(
@@ -114,7 +134,7 @@ class ItemForm(CTkFrame):
             font=("Inter", 18, "bold"),
             command=self.show_barcode,
         )
-        self.barcode_button.grid(row=4, column=0, padx=(20, 10), pady=(20, 10))
+        self.barcode_button.grid(row=5, column=0, padx=(20, 10), pady=(5, 20), sticky="ew")
 
     def upload_image_button_pressed(self):
         file_path = filedialog.askopenfilename(
@@ -139,11 +159,13 @@ class ItemForm(CTkFrame):
         self.barcode_frame.destroy()
 
     def show_barcode(self):
-        # We use parent_screen because AddBarcodeFrame needs a root-like parent or the screen frame
-        self.barcode_frame = AddBarcodeFrame(self.parent_screen, self.confirm_barcode)
-        self.barcode_frame.grid(row=0, column=0, padx=20, pady=20)
-        self.barcode_frame.update_idletasks()
-        self.barcode_frame.grab_set()
+        # AddBarcodeFrame is a CTkToplevel (separate window), so no grid/pack needed
+        # It positions itself using geometry in its __init__
+        # Use winfo_toplevel() to get the root window for CTkToplevel
+        root = self.winfo_toplevel()
+        self.barcode_frame = AddBarcodeFrame(root, self.confirm_barcode)
+        # Call grab_set after a short delay to ensure the window is fully rendered
+        self.after(100, self.barcode_frame.grab_set)
 
     def get_data(self):
         return {

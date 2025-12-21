@@ -1,3 +1,5 @@
+"""Shared CRUD mixin used by SQLAlchemy models."""
+
 from typing import List, Optional, Type, TypeVar
 
 T = TypeVar("T", bound="CRUDMixin")

@@ -1,3 +1,5 @@
+"""Transient message overlay component."""
+
 from customtkinter import CTkFrame, CTkImage, CTkLabel
 from PIL import Image
 
@@ -6,6 +8,7 @@ from src.utils.paths import get_image_path
 
 
 class ShowMessage(CTkFrame):
+    """Simple message frame with icon, heading and text."""
     def __init__(self, root, image, heading: str, text: str, *args, **kwargs):
         super().__init__(root, *args, **kwargs)
 
@@ -29,8 +32,8 @@ class ShowMessage(CTkFrame):
 
             self.image_label = CTkLabel(self.main_frame, image=ctk_image, text="")
             self.image_label.grid(row=2, column=0, pady=10, padx=10, sticky="s")
-        except Exception as e:
-            logger.error(f"Error loading image {image}: {e}")
+        except (FileNotFoundError, OSError, ValueError) as e:
+            logger.error("Error loading image %s: %s", image, e)
             self.image_label = CTkLabel(self.main_frame, text="[IMG]")
             self.image_label.grid(row=2, column=0, pady=10, padx=10, sticky="s")
 
@@ -39,9 +42,12 @@ class ShowMessage(CTkFrame):
             self.main_frame,
             text=heading,
             font=("Inter", 30, "bold"),
+            text_color="white",
         )
         self.warning_label.grid(row=3, column=0, pady=10, padx=10, sticky="s")
 
         # Additional text
-        self.additional_text_label = CTkLabel(self.main_frame, text=text, font=("Inter", 20))
+        self.additional_text_label = CTkLabel(
+            self.main_frame, text=text, font=("Inter", 20), text_color="white"
+        )
         self.additional_text_label.grid(row=4, column=0, pady=10, padx=10, sticky="n")

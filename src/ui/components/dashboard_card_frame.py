@@ -1,3 +1,6 @@
+"""Admin dashboard card component."""
+
+import tkinter as tk
 from typing import Optional
 
 from customtkinter import CTkFrame, CTkImage, CTkLabel
@@ -24,8 +27,20 @@ class DashboardCardFrame(CTkFrame):
     ):
         super().__init__(master, *args, **kwargs)
 
-        self.grid_columnconfigure((0, 1), weight=1)
-        self.grid_rowconfigure((0, 1), weight=1)
+        # Keep the card at the explicit width/height passed in (admin dashboard wants equal cards).
+        self.grid_propagate(False)
+
+        self.grid_columnconfigure(0, weight=0)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+
+        # Compute a reasonable wrap length based on the configured width.
+        try:
+            card_width = int(self.cget("width"))
+        except (tk.TclError, TypeError, ValueError):
+            card_width = 270
+        title_wrap = max(120, card_width - 120)
 
         # Load and display the image
         try:
@@ -39,8 +54,8 @@ class DashboardCardFrame(CTkFrame):
 
             image_label = CTkLabel(self, image=ctk_image, text="")
             image_label.grid(row=0, column=0, rowspan=2, padx=10, pady=10, sticky="nsew")
-        except Exception as e:
-            logger.error(f"Error loading image {image_filename}: {e}")
+        except (FileNotFoundError, OSError, ValueError) as e:
+            logger.error("Error loading image %s: %s", image_filename, e)
             image_label = CTkLabel(self, text="[IMG]")
             image_label.grid(row=0, column=0, rowspan=2, padx=10, pady=10)
 
@@ -49,13 +64,17 @@ class DashboardCardFrame(CTkFrame):
             self,
             text=title,
             font=("Inter", 16, "bold"),
-            anchor="s",
+            text_color="black",
+            anchor="w",
+            justify="left",
+            wraplength=title_wrap,
         )
-        # If there is a value, title goes to top-right (row 0), else it centers or stays there
-        title_row = 0
-        title_sticky = "sw" if value else "w"
-
-        title_label.grid(row=title_row, column=1, sticky=title_sticky, padx=10, pady=5)
+        if value:
+            # Title above, value below.
+            title_label.grid(row=0, column=1, sticky="sw", padx=10, pady=(10, 2))
+        else:
+            # No value: center the title vertically by spanning both rows.
+            title_label.grid(row=0, column=1, rowspan=2, sticky="w", padx=10)
 
         # Display value if present
         if value:
@@ -63,6 +82,7 @@ class DashboardCardFrame(CTkFrame):
                 self,
                 text=str(value),
                 font=("Inter", 22, "bold"),
+                text_color="black",
                 anchor="n",
             )
-            value_label.grid(row=1, column=1, sticky="nw", padx=10, pady=5)
+            value_label.grid(row=1, column=1, sticky="nw", padx=10, pady=(2, 10))

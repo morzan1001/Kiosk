@@ -6,6 +6,7 @@ Initializes the application, database, and UI.
 import os
 import sys
 from time import sleep
+from typing import Optional
 
 import customtkinter
 from customtkinter import CTk, set_appearance_mode
@@ -13,6 +14,7 @@ from customtkinter import CTk, set_appearance_mode
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # pylint: disable=wrong-import-position
+from src.app_context import cleanup_app_context, initialize_app_context  # noqa: E402
 from src.database.connection import initialize_database  # noqa: E402
 from src.database.connection import session_manager
 from src.localization import initialize_translations  # noqa: E402
@@ -26,14 +28,15 @@ from src.sounds.sound_manager import (  # noqa: E402
     initialize_sound_controller,
     stop_sound_controller,
 )
+from src.ui.components.Message import ShowMessage  # noqa: E402
 from src.ui.screens.welcome_page import KioskMainFrame  # noqa: E402
 from src.utils.config import config  # noqa: E402
 from src.utils.paths import PROJECT_ROOT  # noqa: E402
 
 
-def validate_database_config():
+def validate_database_config() -> None:
     """Validate database configuration."""
-    db_type = config.get("database.type", "").lower()
+    db_type: str = config.get("database.type", "").lower()
 
     if not db_type:
         raise ValueError("Database type not specified in configuration")
@@ -43,8 +46,8 @@ def validate_database_config():
             logger.warning("SQLite database path not specified, using default")
 
     elif db_type == "postgresql":
-        pg_config = config.get("database.postgresql", {})
-        required_fields = ["host", "database", "username", "password"]
+        pg_config: dict = config.get("database.postgresql", {})
+        required_fields: list[str] = ["host", "database", "username", "password"]
 
         for field in required_fields:
             if not pg_config.get(field):
@@ -53,22 +56,23 @@ def validate_database_config():
     else:
         raise ValueError(f"Unsupported database type: {db_type}")
 
-    logger.info(f"Database configuration validated for {db_type.upper()}")
+    logger.info("Database configuration validated for %s", db_type.upper())
 
 
 class KioskCTK(CTk):
     """Main Kiosk Application Class inheriting from CTk."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
-        self.translations = get_translations()
-        self.admin_password = config.get("admin.password")
+        self.translations: dict = get_translations()
+        self.admin_password: Optional[str] = config.get("admin.password")
+        self.message: Optional[object] = None
         self.bind("<Escape>", lambda event: self.exit_fullscreen())
 
-    def exit_fullscreen(self):
+    def exit_fullscreen(self) -> None:
         """Exit fullscreen mode if admin password is correct."""
         logger.debug("Exiting fullscreen mode")
-        admin_password = customtkinter.CTkInputDialog(
+        admin_password: Optional[str] = customtkinter.CTkInputDialog(
             text=self.translations["admin"]["admin_password_prompt"],
             title=self.translations["admin"]["exit_message"],
         ).get_input()
@@ -76,8 +80,6 @@ class KioskCTK(CTk):
         if admin_password == self.admin_password:
             self.attributes("-fullscreen", False)
         else:
-            from src.ui.components.message import ShowMessage
-
             self.message = ShowMessage(
                 self,
                 image="unsuccessful",
@@ -87,8 +89,11 @@ class KioskCTK(CTk):
             self.after(5000, self.message.destroy)
 
 
-def main():
+def main() -> None:
     """Main entry point for the application."""
+    # Initialize the application context
+    initialize_app_context()
+
     try:
         logger.debug("Starting application initialization")
 
@@ -144,8 +149,8 @@ def main():
                 str(PROJECT_ROOT / "src" / "ui" / "kiosk_theme.json")
             )
             logger.info("Loaded custom kiosk theme")
-        except Exception as e:
-            logger.warning(f"Could not load custom theme, using default: {e}")
+        except (OSError, ValueError) as e:
+            logger.warning("Could not load custom theme, using default: %s", e)
             customtkinter.set_default_color_theme("green")
 
         root = KioskCTK()
@@ -169,18 +174,20 @@ def main():
         logger.debug("Starting main application loop")
         root.mainloop()
 
-    except Exception as e:
-        logger.error("Error initializing application: ", e)
+    except Exception:  # pylint: disable=broad-exception-caught
+        logger.exception("Error initializing application")
     finally:
+        cleanup_app_context()
         cleanup_gpio()
 
 
-def on_closing(root):
+def on_closing(root: CTk) -> None:
     """Handle application closing event."""
     logger.info("Exiting application")
     shutdown_scheduler()
     session_manager.close_session()
     stop_sound_controller()
+    cleanup_app_context()
     cleanup_gpio()
     root.destroy()
     root.quit()

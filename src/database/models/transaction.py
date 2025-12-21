@@ -20,7 +20,10 @@ class Transaction(Base, CRUDMixin):
     category = Column(String, nullable=False)
 
     def __repr__(self):
-        return f"<Transaction(id={self.id}, category={self.category}, cost='{self.cost}', item_id='{self.item_id}', user_id='{self.user_id}', date='{self.date}')>"
+        return (
+            f"<Transaction(id={self.id}, category={self.category}, cost='{self.cost}', "
+            f"item_id='{self.item_id}', user_id='{self.user_id}', date='{self.date}')>"
+        )
 
     @classmethod
     def read_all_for_user(cls, session, user_id: int) -> List["Transaction"]:
