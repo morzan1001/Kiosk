@@ -23,7 +23,7 @@ requests = "^2.32.5"
 psycopg2-binary = "^2.9.11"
 
 [tool.poetry.group.dev.dependencies]
-alembic = "^1.17.2" 
+alembic = "^1.18.1" 
 pylint = "^4.0.4"
 flake8 = "^7.3.0"
 black = "^25.12.0"
