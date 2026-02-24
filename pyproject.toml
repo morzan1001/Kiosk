@@ -18,7 +18,7 @@ pillow = "^12.1.1"
 sounddevice = "^0.5.5"
 soundfile = "^0.13.1"
 numpy = "^2.4.2"
-scipy = "^1.17.0" 
+scipy = "^1.17.1" 
 requests = "^2.32.5" 
 psycopg2-binary = "^2.9.11"
 
