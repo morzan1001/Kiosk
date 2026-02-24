@@ -27,7 +27,7 @@ alembic = "^1.18.4"
 pylint = "^4.0.5"
 flake8 = "^7.3.0"
 black = "^26.1.0"
-isort = "^7.0.0"
+isort = "^8.0.0"
 
 [build-system]
 requires = ["poetry-core"]
