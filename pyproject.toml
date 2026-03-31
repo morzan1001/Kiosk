@@ -19,7 +19,7 @@ sounddevice = "^0.5.5"
 soundfile = "^0.13.1"
 numpy = "^2.4.3"
 scipy = "^1.17.1" 
-requests = "^2.33.0" 
+requests = "^2.33.1" 
 psycopg2-binary = "^2.9.11"
 
 [tool.poetry.group.dev.dependencies]
