@@ -20,7 +20,7 @@ soundfile = "^0.13.1"
 numpy = "^2.4.4"
 scipy = "^1.17.1" 
 requests = "^2.33.1" 
-psycopg2-binary = "^2.9.11"
+psycopg2-binary = "^2.9.12"
 
 [tool.poetry.group.dev.dependencies]
 alembic = "^1.18.4" 
