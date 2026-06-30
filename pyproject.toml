@@ -8,7 +8,7 @@ packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-customtkinter = "^5.2.2"
+customtkinter = "^6.0.0"
 sqlalchemy = "^2.0.51"
 py532lib = { git = "https://github.com/Liam-Deacon/py532lib.git" }
 gpiod = { version = "^2.5.0", markers = "sys_platform == 'linux'" }
