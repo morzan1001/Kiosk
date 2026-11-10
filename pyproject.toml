@@ -11,7 +11,7 @@ python = "^3.11"
 customtkinter = "^6.0.0"
 sqlalchemy = "^2.1.8"
 py532lib = { git = "https://github.com/Liam-Deacon/py532lib.git" }
-gpiod = { version = "^2.5.0", markers = "sys_platform == 'linux'" }
+gpiod = { version = "^2.6.0", markers = "sys_platform == 'linux'" }
 APScheduler = "^3.11.3"
 jinja2 = "^3.1.6"
 pillow = "^13.0.0"
